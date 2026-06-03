@@ -216,26 +216,26 @@ This is the first migration; no existing data to migrate. The migration must be 
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly against a fresh DB (`npx supabase db reset`)
-- [x] 1.2 Both tables report `rowsecurity = true` with exactly 4 policies each
+- [x] 1.1 Migration applies cleanly against a fresh DB (`npx supabase db reset`) — f25ae5c
+- [x] 1.2 Both tables report `rowsecurity = true` with exactly 4 policies each — f25ae5c
 - [ ] 1.3 Lint passes (`npm run lint`)
 
 #### Manual
 
-- [x] 1.4 Studio shows both tables, FK cascade, two `updated_at` triggers, 8 named policies
-- [x] 1.5 Updating any row bumps `updated_at` automatically
+- [x] 1.4 Studio shows both tables, FK cascade, two `updated_at` triggers, 8 named policies — f25ae5c
+- [x] 1.5 Updating any row bumps `updated_at` automatically — f25ae5c
 
 ### Phase 2: Entity types + data-access layer
 
 #### Automated
 
-- [ ] 2.1 Type checking passes (`npx tsc --noEmit`)
+- [x] 2.1 Type checking passes (`npx tsc --noEmit`)
 - [ ] 2.2 Lint passes (`npm run lint`)
 
 #### Manual
 
-- [ ] 2.3 Types in `src/types.ts` match the migration columns one-to-one
-- [ ] 2.4 Service functions take the request-scoped client and never reference `user_id`
+- [x] 2.3 Types in `src/types.ts` match the migration columns one-to-one
+- [x] 2.4 Service functions take the request-scoped client and never reference `user_id`
 
 ### Phase 3: RLS isolation verification
 
