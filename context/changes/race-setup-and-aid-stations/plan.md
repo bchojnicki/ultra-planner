@@ -338,15 +338,15 @@ No schema migration. The NOT-NULL parameter columns from F-01 are satisfied by s
 
 #### Automated
 
-- [x] 3.1 Type checking passes (`npx tsc --noEmit`)
-- [x] 3.2 Lint passes (`npm run lint`)
-- [x] 3.3 Production build succeeds (`npm run build`)
-- [x] 3.4 E2e flow passes with test credentials (`npx playwright test tests/plans-setup.spec.ts`)
+- [x] 3.1 Type checking passes (`npx tsc --noEmit`) — 88ddd1f
+- [x] 3.2 Lint passes (`npm run lint`) — 88ddd1f
+- [x] 3.3 Production build succeeds (`npm run build`) — 88ddd1f
+- [x] 3.4 E2e flow passes with test credentials (`npx playwright test tests/plans-setup.spec.ts`) — 88ddd1f
 
 #### Manual
 
-- [x] 3.5 Editing a param shows Saving → Saved; reload shows persisted values
-- [x] 3.6 Hours+minutes round-trip losslessly to stored minutes
-- [x] 3.7 Out-of-order stations list sorted by cumulative distance; delete is immediate with no dialog
-- [x] 3.8 Simulated save failure surfaces the error indicator without a blocking dialog
-- [x] 3.9 Layout usable at mobile width
+- [x] 3.5 Editing a param shows Saving → Saved; reload shows persisted values — 88ddd1f
+- [x] 3.6 Hours+minutes round-trip losslessly to stored minutes — 88ddd1f
+- [x] 3.7 Out-of-order stations list sorted by cumulative distance; delete is immediate with no dialog — 88ddd1f
+- [x] 3.8 Simulated save failure surfaces the error indicator without a blocking dialog — 88ddd1f
+- [x] 3.9 Layout usable at mobile width — 88ddd1f
