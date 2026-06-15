@@ -153,6 +153,30 @@ describe("RLS owner isolation", () => {
     expect(data).toEqual([]);
   });
 
+  it("(b) runner B's UPDATE of runner A's aid station affects no rows", async () => {
+    const { data, error } = await clientB
+      .from("aid_stations")
+      .update({ notes: "hijacked" })
+      .eq("id", aidStationAId)
+      .select();
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
+
+    // Confirm A's aid station is untouched.
+    const { data: stillMine } = await clientA.from("aid_stations").select("notes").eq("id", aidStationAId).single();
+    expect(stillMine?.notes).toBeNull();
+  });
+
+  it("(b) runner B's DELETE of runner A's aid station affects no rows", async () => {
+    const { data, error } = await clientB.from("aid_stations").delete().eq("id", aidStationAId).select();
+    expect(error).toBeNull();
+    expect(data).toEqual([]);
+
+    // A's aid station still exists.
+    const { data: stillThere } = await clientA.from("aid_stations").select("id").eq("id", aidStationAId).single();
+    expect(stillThere?.id).toBe(aidStationAId);
+  });
+
   it("(b) runner B's UPDATE of runner A's plan affects no rows", async () => {
     const { data, error } = await clientB.from("plans").update({ name: "hijacked" }).eq("id", planAId).select();
     expect(error).toBeNull();
