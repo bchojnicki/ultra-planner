@@ -25,6 +25,26 @@ export async function createPlan(client: Client, input: PlanInsert): Promise<Pla
   return res.data;
 }
 
+// Create a draft plan with seeded defaults. The F-01 `plans` columns are all
+// NOT NULL, so a partial draft can't be persisted as NULLs without a migration;
+// instead the row is created with placeholders that autosave (PATCH) overwrites
+// as the runner fills the form. `userId` satisfies the RLS WITH CHECK.
+export async function createDraftPlan(client: Client, userId: string): Promise<Plan> {
+  const draft: PlanInsert = {
+    user_id: userId,
+    name: "Untitled plan",
+    total_distance_km: 0,
+    total_elevation_gain_m: 0,
+    total_elevation_loss_m: 0,
+    start_time: new Date().toISOString(),
+    total_expected_minutes: 0,
+    hourly_fluid_ml: 0,
+    hourly_carb_g: 0,
+    hourly_sodium_mg: 0,
+  };
+  return createPlan(client, draft);
+}
+
 export async function updatePlan(client: Client, id: string, patch: PlanUpdate): Promise<Plan> {
   const res = await client.from("plans").update(patch).eq("id", id).select().single();
   if (res.error) throw res.error;
