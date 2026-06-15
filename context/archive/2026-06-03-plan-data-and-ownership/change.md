@@ -1,10 +1,10 @@
 ---
 change_id: plan-data-and-ownership
 title: Persist plans & aid stations with per-user ownership via RLS
-status: implemented
+status: archived
 created: 2026-06-03
 updated: 2026-06-15
-archived_at: null
+archived_at: 2026-06-15T13:19:57Z
 ---
 
 ## Notes
