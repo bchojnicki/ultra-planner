@@ -294,6 +294,10 @@ NFR data volume is small. Autosave debounce (~600–800ms) plus latest-wins coal
 
 No schema migration. The NOT-NULL parameter columns from F-01 are satisfied by seeded draft defaults (`createDraftPlan`); no existing data to migrate.
 
+## Addendum
+
+- **`eslint.config.js` (Phase 2)** — disabled `@typescript-eslint/no-misused-promises` for `**/*.astro`. The type-aware rule crashes on the standard `return Astro.redirect(...)` idiom in `.astro` frontmatter (a synthetic function with no parent node). Scoped to `.astro` only; not in the original file list.
+
 ## References
 
 - Roadmap: `context/foundation/roadmap.md` → S-01 (race-setup-and-aid-stations)

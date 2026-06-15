@@ -31,7 +31,11 @@ export const PATCH: APIRoute = async (context) => {
   try {
     const updated = await updatePlan(supabase, id, parsed.data);
     return json({ updated_at: updated.updated_at }, 200);
-  } catch {
-    return new Response("Not found", { status: 404 });
+  } catch (e) {
+    // RLS hides non-owned rows, so .single() yields PostgREST "no rows"
+    // (PGRST116) → 404. Anything else is a real failure; rethrow so it
+    // surfaces as a 500 rather than being masked as "Not found".
+    if ((e as { code?: string }).code === "PGRST116") return new Response("Not found", { status: 404 });
+    throw e;
   }
 };

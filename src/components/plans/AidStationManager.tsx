@@ -91,8 +91,13 @@ export default function AidStationManager({ planId, initialStations }: Props) {
   }
 
   async function remove(id: string) {
+    setError(null);
     const res = await fetch(`/api/aid-stations/${id}`, { method: "DELETE" });
-    if (res.ok) setStations((prev) => prev.filter((s) => s.id !== id));
+    if (res.ok) {
+      setStations((prev) => prev.filter((s) => s.id !== id));
+    } else {
+      setError("Couldn't delete the station. Please try again.");
+    }
   }
 
   return (
