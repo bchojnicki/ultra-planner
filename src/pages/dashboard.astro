@@ -1,27 +1,64 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { listPlans } from "@/lib/services/plans";
+import type { Plan } from "@/types";
 
-const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const plans: Plan[] = supabase ? await listPlans(supabase) : [];
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 ---
 
 <Layout title="Dashboard">
-  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
-      <h1 class="mb-4 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-        Dashboard
-      </h1>
-      <p class="text-blue-100/80">
-        Welcome, <span class="font-semibold text-white">{user?.email}</span>
-      </p>
-      <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
-      <form method="POST" action="/api/auth/signout" class="mt-6">
+  <div class="bg-cosmic min-h-screen p-4">
+    <div class="mx-auto max-w-2xl text-white">
+      <header class="mb-6 flex items-center justify-between">
+        <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+          Your plans
+        </h1>
+        <form method="POST" action="/api/auth/signout">
+          <button
+            type="submit"
+            class="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm transition-colors hover:bg-white/20"
+          >
+            Sign out
+          </button>
+        </form>
+      </header>
+
+      <form method="POST" action="/api/plans" class="mb-6">
         <button
           type="submit"
-          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
+          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium transition-colors hover:bg-white/20"
         >
-          Sign out
+          + New plan
         </button>
       </form>
+
+      {
+        plans.length === 0 ? (
+          <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center backdrop-blur-xl">
+            <p class="text-blue-100/80">You have no plans yet.</p>
+            <p class="mt-1 text-sm text-blue-100/50">Click “New plan” to create your first race plan.</p>
+          </div>
+        ) : (
+          <ul class="space-y-2">
+            {plans.map((plan) => (
+              <li>
+                <a
+                  href={`/plans/${plan.id}`}
+                  class="flex items-center justify-between rounded-xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-xl transition-colors hover:bg-white/20"
+                >
+                  <span class="font-medium">{plan.name}</span>
+                  <span class="text-sm text-blue-100/50">Updated {fmtDate(plan.updated_at)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </div>
 </Layout>

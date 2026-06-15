@@ -65,6 +65,10 @@ const astroConfig = tseslint.config({
     "astro/no-set-html-directive": "error",
     "astro/no-unused-css-selector": "warn",
     "astro/prefer-class-list-directive": "warn",
+    // Astro represents frontmatter as a synthetic function, so a top-level
+    // `return Astro.redirect(...)` (the standard redirect idiom) has no parent
+    // function node — which crashes this type-aware rule. Disable it for .astro.
+    "@typescript-eslint/no-misused-promises": "off",
   },
 });
 

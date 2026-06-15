@@ -1,0 +1,77 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { getPlan } from "@/lib/services/plans";
+import { listAidStations } from "@/lib/services/aid-stations";
+
+// Middleware gates /plans behind auth. Load the plan via the request-scoped
+// client so RLS scopes it to the owner; a missing/non-owned id returns null.
+const { id } = Astro.params;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (!id || !supabase) return Astro.redirect("/dashboard");
+
+const plan = await getPlan(supabase, id);
+if (!plan) return Astro.redirect("/dashboard");
+
+const stations = await listAidStations(supabase, id);
+
+const hours = Math.floor(plan.total_expected_minutes / 60);
+const minutes = plan.total_expected_minutes % 60;
+---
+
+<Layout title={plan.name}>
+  <div class="bg-cosmic min-h-screen p-4">
+    <div class="mx-auto max-w-2xl text-white">
+      <a href="/dashboard" class="text-sm text-purple-300 hover:underline">← Back to plans</a>
+      <h1
+        class="mt-2 mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent"
+      >
+        {plan.name}
+      </h1>
+
+      {/* Phase 3 replaces this static display with the RaceSetupForm autosave island. */}
+      <section class="mb-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-lg font-semibold">Race parameters</h2>
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+          <dt class="text-blue-100/60">Total distance</dt>
+          <dd>{plan.total_distance_km} km</dd>
+          <dt class="text-blue-100/60">Elevation gain</dt>
+          <dd>{plan.total_elevation_gain_m} m</dd>
+          <dt class="text-blue-100/60">Elevation loss</dt>
+          <dd>{plan.total_elevation_loss_m} m</dd>
+          <dt class="text-blue-100/60">Start time</dt>
+          <dd>{new Date(plan.start_time).toLocaleString()}</dd>
+          <dt class="text-blue-100/60">Expected finish</dt>
+          <dd>{hours}h {minutes}m</dd>
+          <dt class="text-blue-100/60">Hourly fluid</dt>
+          <dd>{plan.hourly_fluid_ml} ml</dd>
+          <dt class="text-blue-100/60">Hourly carbs</dt>
+          <dd>{plan.hourly_carb_g} g</dd>
+          <dt class="text-blue-100/60">Hourly sodium</dt>
+          <dd>{plan.hourly_sodium_mg} mg</dd>
+        </dl>
+      </section>
+
+      {/* Phase 3 replaces this static list with the AidStationManager island. */}
+      <section class="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+        <h2 class="mb-4 text-lg font-semibold">Aid stations</h2>
+        {
+          stations.length === 0 ? (
+            <p class="text-sm text-blue-100/50">No aid stations yet.</p>
+          ) : (
+            <ul class="space-y-2 text-sm">
+              {stations.map((s) => (
+                <li class="flex justify-between border-b border-white/10 pb-1">
+                  <span>
+                    {s.cumulative_distance_km} km · +{s.cumulative_elevation_gain_m} m
+                  </span>
+                  <span class="text-blue-100/50">{s.notes}</span>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </section>
+    </div>
+  </div>
+</Layout>

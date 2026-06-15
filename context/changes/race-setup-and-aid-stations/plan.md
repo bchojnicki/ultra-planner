@@ -309,30 +309,30 @@ No schema migration. The NOT-NULL parameter columns from F-01 are satisfied by s
 
 #### Automated
 
-- [x] 1.1 Type checking passes (`npx tsc --noEmit`)
-- [x] 1.2 Lint passes (`npm run lint`)
-- [x] 1.3 Integration + schema tests pass (`npx vitest run tests/integration/plans-flow.test.ts`)
+- [x] 1.1 Type checking passes (`npx tsc --noEmit`) — e9c033b
+- [x] 1.2 Lint passes (`npm run lint`) — e9c033b
+- [x] 1.3 Integration + schema tests pass (`npx vitest run tests/integration/plans-flow.test.ts`) — e9c033b
 
 #### Manual
 
-- [x] 1.4 `POST /api/plans` (logged in) creates a seeded draft and redirects to `/plans/<id>`
-- [x] 1.5 `PATCH /api/plans/<id>` persists valid JSON; invalid body returns 400
-- [x] 1.6 Unauthenticated requests to the new endpoints return 401
+- [x] 1.4 `POST /api/plans` (logged in) creates a seeded draft and redirects to `/plans/<id>` — e9c033b
+- [x] 1.5 `PATCH /api/plans/<id>` persists valid JSON; invalid body returns 400 — e9c033b
+- [x] 1.6 Unauthenticated requests to the new endpoints return 401 — e9c033b
 
 ### Phase 2: Server-rendered pages & navigation
 
 #### Automated
 
-- [ ] 2.1 Type checking passes (`npx tsc --noEmit`)
-- [ ] 2.2 Lint passes (`npm run lint`)
-- [ ] 2.3 Production build compiles the new/changed pages (`npm run build`)
+- [x] 2.1 Type checking passes (`npx tsc --noEmit`)
+- [x] 2.2 Lint passes (`npm run lint`)
+- [x] 2.3 Production build compiles the new/changed pages (`npm run build`)
 
 #### Manual
 
-- [ ] 2.4 `/dashboard` shows New-plan button and plan list or empty state
-- [ ] 2.5 New plan creates a draft and lands on `/plans/<id>` with seeded defaults
-- [ ] 2.6 Non-owned / nonexistent `/plans/<id>` redirects to `/dashboard`
-- [ ] 2.7 Unauthenticated `/plans/<id>` and `/dashboard` redirect to `/auth/signin`
+- [x] 2.4 `/dashboard` shows New-plan button and plan list or empty state
+- [x] 2.5 New plan creates a draft and lands on `/plans/<id>` with seeded defaults
+- [x] 2.6 Non-owned / nonexistent `/plans/<id>` redirects to `/dashboard`
+- [x] 2.7 Unauthenticated `/plans/<id>` and `/dashboard` redirect to `/auth/signin`
 
 ### Phase 3: Interactive islands + e2e
 
