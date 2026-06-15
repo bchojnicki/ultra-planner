@@ -323,30 +323,30 @@ No schema migration. The NOT-NULL parameter columns from F-01 are satisfied by s
 
 #### Automated
 
-- [x] 2.1 Type checking passes (`npx tsc --noEmit`)
-- [x] 2.2 Lint passes (`npm run lint`)
-- [x] 2.3 Production build compiles the new/changed pages (`npm run build`)
+- [x] 2.1 Type checking passes (`npx tsc --noEmit`) — a2f588c
+- [x] 2.2 Lint passes (`npm run lint`) — a2f588c
+- [x] 2.3 Production build compiles the new/changed pages (`npm run build`) — a2f588c
 
 #### Manual
 
-- [x] 2.4 `/dashboard` shows New-plan button and plan list or empty state
-- [x] 2.5 New plan creates a draft and lands on `/plans/<id>` with seeded defaults
-- [x] 2.6 Non-owned / nonexistent `/plans/<id>` redirects to `/dashboard`
-- [x] 2.7 Unauthenticated `/plans/<id>` and `/dashboard` redirect to `/auth/signin`
+- [x] 2.4 `/dashboard` shows New-plan button and plan list or empty state — a2f588c
+- [x] 2.5 New plan creates a draft and lands on `/plans/<id>` with seeded defaults — a2f588c
+- [x] 2.6 Non-owned / nonexistent `/plans/<id>` redirects to `/dashboard` — a2f588c
+- [x] 2.7 Unauthenticated `/plans/<id>` and `/dashboard` redirect to `/auth/signin` — a2f588c
 
 ### Phase 3: Interactive islands + e2e
 
 #### Automated
 
-- [ ] 3.1 Type checking passes (`npx tsc --noEmit`)
-- [ ] 3.2 Lint passes (`npm run lint`)
-- [ ] 3.3 Production build succeeds (`npm run build`)
-- [ ] 3.4 E2e flow passes with test credentials (`npx playwright test tests/plans-setup.spec.ts`)
+- [x] 3.1 Type checking passes (`npx tsc --noEmit`)
+- [x] 3.2 Lint passes (`npm run lint`)
+- [x] 3.3 Production build succeeds (`npm run build`)
+- [x] 3.4 E2e flow passes with test credentials (`npx playwright test tests/plans-setup.spec.ts`)
 
 #### Manual
 
-- [ ] 3.5 Editing a param shows Saving → Saved; reload shows persisted values
-- [ ] 3.6 Hours+minutes round-trip losslessly to stored minutes
-- [ ] 3.7 Out-of-order stations list sorted by cumulative distance; delete is immediate with no dialog
-- [ ] 3.8 Simulated save failure surfaces the error indicator without a blocking dialog
-- [ ] 3.9 Layout usable at mobile width
+- [x] 3.5 Editing a param shows Saving → Saved; reload shows persisted values
+- [x] 3.6 Hours+minutes round-trip losslessly to stored minutes
+- [x] 3.7 Out-of-order stations list sorted by cumulative distance; delete is immediate with no dialog
+- [x] 3.8 Simulated save failure surfaces the error indicator without a blocking dialog
+- [x] 3.9 Layout usable at mobile width
