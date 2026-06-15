@@ -218,7 +218,7 @@ This is the first migration; no existing data to migrate. The migration must be 
 
 - [x] 1.1 Migration applies cleanly against a fresh DB (`npx supabase db reset`) — f25ae5c
 - [x] 1.2 Both tables report `rowsecurity = true` with exactly 4 policies each — f25ae5c
-- [ ] 1.3 Lint passes (`npm run lint`)
+- [x] 1.3 Lint passes (`npm run lint`)
 
 #### Manual
 
@@ -229,21 +229,21 @@ This is the first migration; no existing data to migrate. The migration must be 
 
 #### Automated
 
-- [x] 2.1 Type checking passes (`npx tsc --noEmit`)
-- [ ] 2.2 Lint passes (`npm run lint`)
+- [x] 2.1 Type checking passes (`npx tsc --noEmit`) — edf82e7
+- [x] 2.2 Lint passes (`npm run lint`)
 
 #### Manual
 
-- [x] 2.3 Types in `src/types.ts` match the migration columns one-to-one
-- [x] 2.4 Service functions take the request-scoped client and never reference `user_id`
+- [x] 2.3 Types in `src/types.ts` match the migration columns one-to-one — edf82e7
+- [x] 2.4 Service functions take the request-scoped client and never reference `user_id` — edf82e7
 
 ### Phase 3: RLS isolation verification
 
 #### Automated
 
-- [ ] 3.1 Isolation test passes against local Supabase (`npx vitest run tests/integration/rls-ownership.test.ts`)
-- [ ] 3.2 Lint passes (`npm run lint`)
+- [x] 3.1 Isolation test passes against local Supabase (`npx vitest run tests/integration/rls-ownership.test.ts`)
+- [x] 3.2 Lint passes (`npm run lint`)
 
 #### Manual
 
-- [ ] 3.3 Disabling one policy makes the corresponding assertion fail (confirms the test exercises RLS)
+- [x] 3.3 Disabling one policy makes the corresponding assertion fail (confirms the test exercises RLS)
