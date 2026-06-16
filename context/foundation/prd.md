@@ -1,8 +1,9 @@
 ---
 project: "Ultra Planner"
-version: 2
+version: 3
 status: draft
 created: 2026-05-19
+updated: 2026-06-16
 context_type: greenfield
 product_type: web-app
 target_scale:
@@ -108,19 +109,22 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 - No confirmation dialog is required for aid station deletion
 - The plan table updates immediately after deletion
 
-### US-06: Runner configures a gear profile
+### US-06: Runner configures a gear profile and tunes per-segment fueling
 
-- **Given** a logged-in runner who has completed the race parameters step (step 1) and is now on the gear profile step (step 2)
-- **When** they optionally enter their gear details (bladder or soft flask, gels, carbohydrate drink) and proceed
-- **Then** their gear profile is saved; the generated plan table will show unit-level quantities for each segment instead of gram/ml targets
+- **Given** a logged-in runner editing a plan, with a Gear section between race parameters and aid stations
+- **When** they optionally build a gear catalog (gels, carbohydrate drink, solid food, water carrier, salt caps) and, per segment, accept the auto-suggested unit quantities or adjust them
+- **Then** the gear is saved; the generated plan table shows, per segment, the whole-unit quantities to carry plus how those units compare to the gram/ml/mg targets
 
 #### Acceptance Criteria
 
-- The gear profile step is optional: the runner can skip it and proceed to step 3 (aid stations) without entering any gear
-- If skipped, the generated plan table shows gram/ml targets for fluid and carbohydrates
-- If entered, the generated plan table shows unit-level equivalents (e.g. "4 gels + 500ml drink") for each segment
-- Gear inputs: bladder or soft flask (count and capacity per unit), gel (size and carbohydrate content per unit), carbohydrate drink (container capacity and carbohydrates per serving)
-- Each gear item is individually optional — the runner may enter only gels without entering a bladder
+- The Gear section is optional: the runner can skip it and the plan table shows gram/ml/mg targets only
+- With gear defined, the plan table shows the per-segment fueling in whole units (a dedicated "Fuel" column lists each item once, e.g. "1× drink, 9× gel, 2× bar"), while the Fluid/Carbs/Sodium columns show achieved-vs-target numbers with a signed delta
+- Auto-suggestion is carb-led: the carbohydrate target is split across the runner's carb sources by a per-product carb-ratio weight; the resulting drink units cover fluid (a water carrier fills any gap) and the resulting gel/drink/food units cover sodium (salt caps fill any gap)
+- Per segment, the runner can cap a product's units (a limit, which redistributes the remainder across the other carb sources by ratio) and/or pin an exact unit count (a direct override that wins over the suggestion)
+- Per-segment limits and overrides are stored sparsely (only deviations) and auto-saved; quantities round to the nearest whole unit
+- Gear item kinds and their inputs: gel (carbs + optional sodium per unit), carbohydrate drink (carbs + fluid + optional sodium per serving), solid food (carbs + optional sodium per unit), water carrier (capacity per unit), salt cap (sodium per unit); each carb source carries a carb-ratio weight
+- Each gear item is individually optional — the runner may enter only gels without a drink or carrier
+- Adding or deleting an aid station changes the segment layout; per-segment selections that no longer map are cleared and the affected segments are re-suggested
 
 ### US-07: Runner views a previously saved plan
 
@@ -179,8 +183,9 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
   > Socrates: Counter-argument considered: "flat-pace MVP would skip elevation complexity." Resolution: kept — elevation is required from day one; plans without elevation correction would give misleading time estimates in an ultra context.
   > Note: total expected finish time is a required input — Business Logic distributes it across segments (segment hours = total_expected_hours × segment weight share). Added to the parameter list for consistency with Business Logic.
 
-- FR-004: Runner can optionally configure a gear profile (bladder or soft flask with count and capacity; gels with size and carbohydrate content per unit; carbohydrate drink with container capacity and carbs per serving). Without a gear profile, the plan table shows gram/ml targets only; with a gear profile, it shows unit-level output (e.g. "4 gels + 500ml drink"). Priority: must-have
-  > Socrates: Counter-argument considered: "gear could use defaults, making this optional." Resolution: gear profile is now optional but unlocks unit-level output. Two modes — simple (gram/ml) and detailed (gear units). FR updated.
+- FR-004: Runner can optionally build a per-plan gear catalog of five item kinds (gel, carbohydrate drink, solid food, water carrier, salt cap), each with its per-unit nutrition content and — for carb sources — a carb-ratio weight. With no gear, the plan table shows gram/ml/mg targets only; with gear, it auto-suggests whole-unit fueling per segment (carb-led: the carb target is split across carb sources by ratio, drink units + a water carrier cover fluid, gel/drink/food units + salt caps cover sodium), shows achieved-vs-target with a signed delta, and lets the runner cap a product per stage (with redistribution) or pin an exact per-stage override. Priority: must-have
+  > Socrates: Counter-argument considered: "gear could use defaults, making this optional." Resolution: gear profile is optional but unlocks unit-level output.
+  > Scope evolution (2026-06-16, change `gear-profile-units`): the original one-way gram→unit transform was expanded to a **hybrid** model — auto-suggestion plus per-segment limits and direct overrides — and sodium was added as a third unit-mapped target (salt caps). Sources are a per-plan catalog of five kinds rather than a fixed bladder/gel/drink trio. The underlying gram/ml/mg calc (Business Logic) is unchanged; gear only decorates and compares against it.
 
 ### Aid Stations
 

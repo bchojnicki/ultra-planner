@@ -434,21 +434,21 @@ Two additive migrations only; no existing-data backfill. Both tables are empty u
 
 #### Automated
 
-- [x] 5.1 Type checking passes: `npx tsc --noEmit`
-- [x] 5.2 Linting passes: `npm run lint`
-- [x] 5.3 E2E flow passes: `npx playwright test tests/gear-units.spec.ts`
-- [x] 5.4 Full suite passes with no regressions: `npx playwright test`
+- [x] 5.1 Type checking passes: `npx tsc --noEmit` — 56a8c0e
+- [x] 5.2 Linting passes: `npm run lint` — 56a8c0e
+- [x] 5.3 E2E flow passes: `npx playwright test tests/gear-units.spec.ts` — 56a8c0e
+- [x] 5.4 Full suite passes with no regressions: `npx playwright test` — 56a8c0e
 
 #### Manual
 
-- [x] 5.5 Units + target/±delta display; expandable panel; limit redistribution; override wins + persists; station delete clears stale overrides; mobile-usable
+- [x] 5.5 Units + target/±delta display; expandable panel; limit redistribution; override wins + persists; station delete clears stale overrides; mobile-usable — 56a8c0e
 
 ### Phase 6: Docs reconciliation
 
 #### Automated
 
-- [ ] 6.1 Prettier passes on changed markdown: `npm run format`
+- [x] 6.1 Prettier passes on changed markdown: `npm run format`
 
 #### Manual
 
-- [ ] 6.2 FR-004/US-06 + roadmap S-03 accurately describe shipped behavior; PRD version bumped
+- [x] 6.2 FR-004/US-06 + roadmap S-03 accurately describe shipped behavior; PRD version bumped

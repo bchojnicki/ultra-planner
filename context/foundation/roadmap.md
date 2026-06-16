@@ -4,7 +4,7 @@ version: 1
 status: draft
 created: 2026-06-01
 updated: 2026-06-16
-prd_version: 2
+prd_version: 3
 main_goal: speed
 top_blocker: capacity
 ---
@@ -27,25 +27,25 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 
 ## At a glance
 
-| ID    | Change ID                    | Outcome (user can …)                                              | Prerequisites | PRD refs                              | Status   |
-| ----- | ---------------------------- | ----------------------------------------------------------------- | ------------- | ------------------------------------- | -------- |
-| F-01  | plan-data-and-ownership      | (foundation) plans & aid stations persisted, owner-scoped via RLS | —             | FR-008, NFR (privacy), Access Control | done     |
-| S-01  | race-setup-and-aid-stations  | create a race plan and add/list/delete aid stations, auto-saved   | F-01          | US-04, US-05, US-08, FR-003, FR-005, FR-006, FR-008 | done     |
-| S-02  | generate-plan-table          | generate a correct segment-by-segment plan table                  | S-01          | US-01, FR-007, NFR (instant)          | done     |
-| S-03  | gear-profile-units           | configure gear so the table shows unit-level quantities           | S-02          | US-06, FR-004                         | proposed |
-| S-04  | plan-dashboard-view          | see saved plans and open one in read-only view                    | S-02          | US-07, FR-009, US-03                  | proposed |
-| S-05  | delete-saved-plan            | permanently delete a saved plan with confirmation                 | S-04          | US-09, FR-011                         | proposed |
-| S-06  | email-password-auth          | register / sign in with email + password and reach a gated app    | —             | US-02, US-03, FR-001, FR-002          | ready    |
+| ID   | Change ID                   | Outcome (user can …)                                                                         | Prerequisites | PRD refs                                            | Status   |
+| ---- | --------------------------- | -------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------------- | -------- |
+| F-01 | plan-data-and-ownership     | (foundation) plans & aid stations persisted, owner-scoped via RLS                            | —             | FR-008, NFR (privacy), Access Control               | done     |
+| S-01 | race-setup-and-aid-stations | create a race plan and add/list/delete aid stations, auto-saved                              | F-01          | US-04, US-05, US-08, FR-003, FR-005, FR-006, FR-008 | done     |
+| S-02 | generate-plan-table         | generate a correct segment-by-segment plan table                                             | S-01          | US-01, FR-007, NFR (instant)                        | done     |
+| S-03 | gear-profile-units          | build a gear catalog so the table auto-suggests per-segment fueling units, tunable per stage | S-02          | US-06, FR-004                                       | proposed |
+| S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | proposed |
+| S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | proposed |
+| S-06 | email-password-auth         | register / sign in with email + password and reach a gated app                               | —             | US-02, US-03, FR-001, FR-002                        | ready    |
 
 ## Streams
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme                  | Chain                                  | Note                                                                      |
-| ------ | ---------------------- | -------------------------------------- | ------------------------------------------------------------------------- |
-| A      | Rdzeń planu (wedge)    | `F-01` → `S-01` → `S-02` → `S-03`      | Krytyczna ścieżka do gwiazdy; S-03 dekoruje wynik generowania.            |
-| B      | Cykl życia planu       | `S-04` → `S-05`                        | Dołącza do Stream A w `S-02` (potrzebuje wygenerowanego planu do wyświetlenia). |
-| C      | Konto                  | `S-06`                                 | Samodzielny; auth scaffold już obecny (present) — weryfikacja + bramka.   |
+| Stream | Theme               | Chain                             | Note                                                                            |
+| ------ | ------------------- | --------------------------------- | ------------------------------------------------------------------------------- |
+| A      | Rdzeń planu (wedge) | `F-01` → `S-01` → `S-02` → `S-03` | Krytyczna ścieżka do gwiazdy; S-03 dekoruje wynik generowania.                  |
+| B      | Cykl życia planu    | `S-04` → `S-05`                   | Dołącza do Stream A w `S-02` (potrzebuje wygenerowanego planu do wyświetlenia). |
+| C      | Konto               | `S-06`                            | Samodzielny; auth scaffold już obecny (present) — weryfikacja + bramka.         |
 
 ## Baseline
 
@@ -101,16 +101,17 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** This is the wedge and the calculation-accuracy guardrail lives here — a wrong nutrition number is actively harmful (PRD Guardrail), so this slice is isolated to let its correctness be verified independently. The algorithm is fully specified in Business Logic (Naismith weight, k = 0.01 km/m), removing implementation ambiguity.
 - **Status:** done
 
-### S-03: Gear profile → unit-level output
+### S-03: Gear catalog → per-segment fueling units (hybrid)
 
-- **Outcome:** Runner can optionally configure a gear profile (bladder/soft flask, gels, carb drink) so the plan table shows unit-level quantities (e.g. "4 gels + 500ml drink") instead of gram/ml targets.
+- **Outcome:** Runner can optionally build a per-plan gear catalog (gels, carb drink, solid food, water carrier, salt caps); the plan table then auto-suggests whole-unit fueling per segment (carb-led, ratio-weighted, with fluid/sodium gap-fill) and lets the runner cap a product or pin an exact override per stage, showing achieved-vs-target with a signed delta. With no gear, the table stays in gram/ml/mg targets.
 - **Change ID:** gear-profile-units
 - **PRD refs:** US-06, FR-004
 - **Prerequisites:** S-02
 - **Parallel with:** S-04
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** Each gear item is individually optional; this slice adds a gear table plus a presentation transform over the existing calc output — it must not alter the underlying gram/ml math, only its display. Sequenced after generation because it decorates the generated table.
+- **Risk:** A pure allocation transform + two owner-scoped tables (catalog + sparse per-segment selections) decorate the existing calc output — it must not alter the underlying gram/ml/mg math, only present and compare against it. Sequenced after generation because it decorates the generated table.
+- **Scope note (2026-06-16):** Implemented as a **hybrid** (auto-suggest + per-segment limits and overrides) with sodium as a third unit-mapped target — broader than the original one-way gram→unit transform. PRD FR-004/US-06 updated to match (prd v3).
 - **Status:** proposed
 
 ### S-04: Plan dashboard (view saved plans)
@@ -151,15 +152,15 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                   | Suggested issue title                                  | Ready for `/10x-plan` | Notes                                  |
-| ---------- | --------------------------- | ------------------------------------------------------ | --------------------- | -------------------------------------- |
-| F-01       | plan-data-and-ownership     | Persist plans & aid stations with per-user RLS         | yes                   | Run `/10x-plan plan-data-and-ownership` |
-| S-01       | race-setup-and-aid-stations | Race setup form + aid-station add/list/delete (autosave) | no                  | After F-01                             |
-| S-02       | generate-plan-table         | Generate segment-by-segment plan table                 | no                    | North star; after S-01                 |
-| S-03       | gear-profile-units          | Gear profile → unit-level plan output                  | no                    | After S-02                             |
-| S-04       | plan-dashboard-view         | Dashboard list + read-only saved-plan view             | no                    | After S-02; parallel with S-03         |
-| S-05       | delete-saved-plan           | Delete saved plan with confirmation                    | no                    | After S-04                             |
-| S-06       | email-password-auth         | Verify email+password auth + route gating              | yes                   | Auth scaffold present; matches PRD v2  |
+| Roadmap ID | Change ID                   | Suggested issue title                                    | Ready for `/10x-plan` | Notes                                   |
+| ---------- | --------------------------- | -------------------------------------------------------- | --------------------- | --------------------------------------- |
+| F-01       | plan-data-and-ownership     | Persist plans & aid stations with per-user RLS           | yes                   | Run `/10x-plan plan-data-and-ownership` |
+| S-01       | race-setup-and-aid-stations | Race setup form + aid-station add/list/delete (autosave) | no                    | After F-01                              |
+| S-02       | generate-plan-table         | Generate segment-by-segment plan table                   | no                    | North star; after S-01                  |
+| S-03       | gear-profile-units          | Gear profile → unit-level plan output                    | no                    | After S-02                              |
+| S-04       | plan-dashboard-view         | Dashboard list + read-only saved-plan view               | no                    | After S-02; parallel with S-03          |
+| S-05       | delete-saved-plan           | Delete saved plan with confirmation                      | no                    | After S-04                              |
+| S-06       | email-password-auth         | Verify email+password auth + route gating                | yes                   | Auth scaffold present; matches PRD v2   |
 
 ## Open Roadmap Questions
 
