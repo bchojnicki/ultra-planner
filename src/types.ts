@@ -87,6 +87,77 @@ export type AidStationInsert = Omit<
 export type AidStationUpdate = Partial<Omit<AidStation, "id" | "plan_id" | "created_at" | "updated_at">>;
 
 // ---------------------------------------------------------------------------
+// Gear catalog (S-03). A per-plan list of fueling items; the plan table's
+// unit-level output is derived from these plus per-segment selections below.
+// Mirrors supabase/migrations/20260616073640_create_gear_items.sql.
+// Per-kind nutrition fields are nullable: a gel carries carb_g/sodium_mg, a
+// water carrier only capacity_ml, a salt cap only sodium_mg, etc.
+// ---------------------------------------------------------------------------
+
+// The five fueling item kinds. gel/solid_food carry carbs (+ optional sodium);
+// drink carries carbs + fluid (+ optional sodium); water_carrier carries fluid
+// capacity only; salt_cap carries sodium only.
+export type GearKind = "gel" | "drink" | "solid_food" | "water_carrier" | "salt_cap";
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- must be a type alias (see Plan note)
+export type GearItem = {
+  id: string;
+  plan_id: string;
+  kind: GearKind;
+  name: string;
+  carb_g: number | null;
+  sodium_mg: number | null;
+  fluid_ml: number | null;
+  capacity_ml: number | null;
+  carb_ratio: number;
+  created_at: string;
+  updated_at: string;
+};
+
+// Insert: server-managed columns omitted. plan_id/kind/name are required; the per-unit
+// nutrition fields are nullable (omitted → NULL) and carb_ratio has a DB default — all optional here.
+export type GearItemInsert = Omit<
+  GearItem,
+  "id" | "created_at" | "updated_at" | "carb_g" | "sodium_mg" | "fluid_ml" | "capacity_ml" | "carb_ratio"
+> &
+  Partial<Pick<GearItem, "carb_g" | "sodium_mg" | "fluid_ml" | "capacity_ml" | "carb_ratio">>;
+
+// Update: every mutable field is optional; id/plan_id/timestamps are not user-editable.
+export type GearItemUpdate = Partial<Omit<GearItem, "id" | "plan_id" | "created_at" | "updated_at">>;
+
+// ---------------------------------------------------------------------------
+// Per-segment gear selections (S-03). Sparse: a row exists only when the runner
+// deviates from the live suggestion for a (gear item, segment) — a per-stage unit
+// cap (limit_units) and/or an exact pin (override_units). Absence = use suggestion.
+// Mirrors supabase/migrations/20260616073641_create_gear_segment_selections.sql.
+// ---------------------------------------------------------------------------
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- must be a type alias (see Plan note)
+export type GearSegmentSelection = {
+  id: string;
+  plan_id: string;
+  gear_item_id: string;
+  segment_index: number;
+  limit_units: number | null;
+  override_units: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
+// Insert: server-managed columns omitted. plan_id/gear_item_id/segment_index are
+// required; the limit/override are nullable (omitted → NULL) — optional here.
+export type GearSegmentSelectionInsert = Omit<
+  GearSegmentSelection,
+  "id" | "created_at" | "updated_at" | "limit_units" | "override_units"
+> &
+  Partial<Pick<GearSegmentSelection, "limit_units" | "override_units">>;
+
+// Update: every mutable field is optional; id and the identifying keys are not user-editable.
+export type GearSegmentSelectionUpdate = Partial<
+  Omit<GearSegmentSelection, "id" | "plan_id" | "gear_item_id" | "segment_index" | "created_at" | "updated_at">
+>;
+
+// ---------------------------------------------------------------------------
 // Generated plan table (S-02). Derived, never persisted — computed on read by
 // src/lib/plan-table.ts. All numeric fields are exact floats (rounding is a
 // display concern); timestamps are ISO strings.
@@ -139,6 +210,18 @@ export interface Database {
         Row: AidStation;
         Insert: AidStationInsert;
         Update: AidStationUpdate;
+        Relationships: [];
+      };
+      gear_items: {
+        Row: GearItem;
+        Insert: GearItemInsert;
+        Update: GearItemUpdate;
+        Relationships: [];
+      };
+      gear_segment_selections: {
+        Row: GearSegmentSelection;
+        Insert: GearSegmentSelectionInsert;
+        Update: GearSegmentSelectionUpdate;
         Relationships: [];
       };
     };
