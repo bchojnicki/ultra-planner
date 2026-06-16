@@ -274,30 +274,30 @@ None — pure derivation over existing F-01/S-01 data; no schema or data changes
 
 #### Automated
 
-- [x] 2.1 Type checking passes (`npx tsc --noEmit`)
-- [x] 2.2 Lint passes (`npm run lint`)
-- [x] 2.3 Production build succeeds (`npm run build`)
-- [x] 2.4 Existing S-01 e2e still passes (`npx playwright test tests/plans-setup.spec.ts`)
+- [x] 2.1 Type checking passes (`npx tsc --noEmit`) — 2b1e4ae
+- [x] 2.2 Lint passes (`npm run lint`) — 2b1e4ae
+- [x] 2.3 Production build succeeds (`npm run build`) — 2b1e4ae
+- [x] 2.4 Existing S-01 e2e still passes (`npx playwright test tests/plans-setup.spec.ts`) — 2b1e4ae
 
 #### Manual
 
-- [x] 2.5 Params still autosave (Saving → Saved) and persist on reload
-- [x] 2.6 Add / delete aid station still works and stays distance-sorted
-- [x] 2.7 No visual regression on the editor page
+- [x] 2.5 Params still autosave (Saving → Saved) and persist on reload — 2b1e4ae
+- [x] 2.6 Add / delete aid station still works and stays distance-sorted — 2b1e4ae
+- [x] 2.7 No visual regression on the editor page — 2b1e4ae
 
 ### Phase 3: PlanTable rendering + e2e
 
 #### Automated
 
-- [ ] 3.1 Type checking passes (`npx tsc --noEmit`)
-- [ ] 3.2 Lint passes (`npm run lint`)
-- [ ] 3.3 Production build succeeds (`npm run build`)
-- [ ] 3.4 E2e passes with test credentials (`npx playwright test tests/plans-setup.spec.ts`)
+- [x] 3.1 Type checking passes (`npx tsc --noEmit`)
+- [x] 3.2 Lint passes (`npm run lint`)
+- [x] 3.3 Production build succeeds (`npm run build`)
+- [x] 3.4 E2e passes with test credentials (`npx playwright test tests/plans-setup.spec.ts`)
 
 #### Manual
 
-- [ ] 3.5 Table updates live as params/stations change (no re-trigger)
-- [ ] 3.6 Zero aid stations → single start→finish row
-- [ ] 3.7 Missing a required param → error/prompt, not a broken table
-- [ ] 3.8 Higher rest time shifts later arrivals; finish arrival stays at start + expected
-- [ ] 3.9 Facilities/rest/notes + totals render; layout usable on mobile
+- [x] 3.5 Table updates live as params/stations change (no re-trigger)
+- [x] 3.6 Zero aid stations → single start→finish row
+- [x] 3.7 Missing a required param → error/prompt, not a broken table
+- [x] 3.8 Higher rest time shifts later arrivals; finish arrival stays at start + expected
+- [x] 3.9 Facilities/rest/notes + totals render; layout usable on mobile

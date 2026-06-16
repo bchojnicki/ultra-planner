@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { AidStation, Plan } from "@/types";
+import { computePlanTable } from "@/lib/plan-table";
 import RaceSetupForm from "@/components/plans/RaceSetupForm";
 import AidStationManager from "@/components/plans/AidStationManager";
+import PlanTable from "@/components/plans/PlanTable";
 
 interface Props {
   plan: Plan;
@@ -15,16 +17,13 @@ export default function PlanEditor({ plan, initialStations }: Props) {
   const [params, setParams] = useState<Plan>(plan);
   const [stations, setStations] = useState<AidStation[]>(initialStations);
 
+  const result = useMemo(() => computePlanTable(params, stations), [params, stations]);
+
   return (
     <>
       <RaceSetupForm plan={plan} onParamsChange={setParams} />
       <AidStationManager planId={plan.id} initialStations={initialStations} onStationsChange={setStations} />
-
-      {/* Phase 3 replaces this placeholder with <PlanTable>, computed from params + stations. */}
-      <section className="mt-6 rounded-2xl border border-white/10 bg-white/10 p-6 text-sm text-blue-100/50 backdrop-blur-xl">
-        Your plan table will appear here ({stations.length} aid station{stations.length === 1 ? "" : "s"} ·{" "}
-        {params.total_distance_km} km).
-      </section>
+      <PlanTable result={result} />
     </>
   );
 }

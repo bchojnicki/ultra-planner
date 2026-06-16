@@ -71,4 +71,40 @@ test.describe("Race setup + aid stations (requires TEST_EMAIL / TEST_PASSWORD)",
     await expect(page.getByTestId("station-row")).toHaveCount(1);
     await expect(page.getByTestId("station-row").first()).toContainText("80 km");
   });
+
+  test("generates a correct plan table", async ({ page }) => {
+    await page.goto("/auth/signin");
+    await waitHydrated(page);
+    await page.getByLabel("Email").fill(email ?? "");
+    await page.getByLabel("Password", { exact: true }).fill(password ?? "");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.waitForURL("/");
+
+    await page.goto("/dashboard");
+    await page.getByRole("button", { name: "New plan" }).click();
+    await page.waitForURL(/\/plans\/.+/);
+    await waitHydrated(page);
+
+    // Required params (worked reference): 100 km, 2000 m gain, 10h, hourly fluid 500 ml.
+    await page.getByLabel("Plan name").fill("Table E2E");
+    await page.getByLabel("Total distance (km)").fill("100");
+    await page.getByLabel("Elevation gain (m)", { exact: true }).fill("2000");
+    await page.getByLabel("Hourly fluid (ml)").fill("500");
+    await page.getByLabel("Expected finish hours").fill("10");
+    await page.getByLabel("Expected finish minutes").fill("0");
+
+    // One station at 40 km / 1000 m (rest 0).
+    await page.getByTestId("as-distance").fill("40");
+    await page.getByTestId("as-gain").fill("1000");
+    await page.getByTestId("as-add").click();
+    await expect(page.getByTestId("station-row")).toHaveCount(1);
+
+    // Live table: seg1 = Start→AS1, 40 km, fluid = 500·(250/60) ≈ 2083 ml; totals 100 km.
+    await expect(page.getByTestId("plan-table")).toBeVisible();
+    const firstRow = page.getByTestId("plan-row").first();
+    await expect(firstRow).toContainText("Start → AS1");
+    await expect(firstRow).toContainText("40 km");
+    await expect(firstRow).toContainText("2083 ml");
+    await expect(page.getByTestId("plan-totals")).toContainText("100 km");
+  });
 });
