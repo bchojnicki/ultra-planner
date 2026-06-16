@@ -1,7 +1,8 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AidStation, GearItem, GearSegmentSelection, Plan } from "@/types";
 import { computePlanTable } from "@/lib/plan-table";
 import { computeGearAllocation, staleSegmentIndexes } from "@/lib/gear-allocation";
+import type { SaveStatus } from "@/components/hooks/useAutosave";
 import RaceSetupForm from "@/components/plans/RaceSetupForm";
 import GearProfileForm from "@/components/plans/GearProfileForm";
 import AidStationManager from "@/components/plans/AidStationManager";
@@ -24,6 +25,10 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
   const [stations, setStations] = useState<AidStation[]>(initialStations);
   const [gearItems, setGearItems] = useState<GearItem[]>(initialGearItems);
   const [selections, setSelections] = useState<GearSegmentSelection[]>(initialSelections);
+  // Shared save status for per-segment selection writes (saving/saved/error), surfaced
+  // in the plan table. Mirrors RaceSetupForm's passive indicator; a failed write keeps the
+  // optimistic local value and is superseded by the next edit (retry-on-next-change).
+  const [selectionStatus, setSelectionStatus] = useState<SaveStatus>("idle");
 
   const result = useMemo(() => computePlanTable(params, stations), [params, stations]);
 
@@ -45,13 +50,29 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
   // table re-suggests live while the runner types.
   const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
+  // Clear any pending debounce timers on unmount so a fired timer never fetches against a
+  // torn-down island (mirrors the cleanup in useAutosave).
+  useEffect(() => {
+    const pending = timers.current;
+    return () => {
+      for (const t of pending.values()) clearTimeout(t);
+    };
+  }, []);
+
   const putSelection = useCallback(
-    (segmentIndex: number, gearItemId: string, patch: SelectionPatch) => {
-      void fetch(`/api/plans/${plan.id}/gear-selections`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ gear_item_id: gearItemId, segment_index: segmentIndex, ...patch }),
-      });
+    async (segmentIndex: number, gearItemId: string, patch: SelectionPatch) => {
+      setSelectionStatus("saving");
+      try {
+        const res = await fetch(`/api/plans/${plan.id}/gear-selections`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gear_item_id: gearItemId, segment_index: segmentIndex, ...patch }),
+        });
+        if (!res.ok) throw new Error(`save failed: ${res.status}`);
+        setSelectionStatus("saved");
+      } catch {
+        setSelectionStatus("error");
+      }
     },
     [plan.id],
   );
@@ -81,7 +102,7 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
       timers.current.set(
         key,
         setTimeout(() => {
-          putSelection(segmentIndex, gearItemId, patch);
+          void putSelection(segmentIndex, gearItemId, patch);
         }, 600),
       );
     },
@@ -102,7 +123,7 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
         const toClear = selections.filter((s) => staleSet.has(s.segment_index));
         setSelections((prev) => prev.filter((s) => !staleSet.has(s.segment_index)));
         for (const s of toClear)
-          putSelection(s.segment_index, s.gear_item_id, { limit_units: null, override_units: null });
+          void putSelection(s.segment_index, s.gear_item_id, { limit_units: null, override_units: null });
       }
       setStations(next);
     },
@@ -120,6 +141,7 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
         allocations={allocations}
         selections={selections}
         onSelectionChange={onSelectionChange}
+        selectionStatus={selectionStatus}
       />
     </>
   );

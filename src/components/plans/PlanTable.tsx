@@ -1,6 +1,14 @@
 import { useState } from "react";
 import type { GearAllocationResult, GearItem, GearSegmentSelection, PlanTableResult } from "@/types";
+import type { SaveStatus } from "@/components/hooks/useAutosave";
 import { enabledFacilities } from "@/lib/aid-station-facilities";
+
+const SELECTION_STATUS_TEXT: Record<SaveStatus, string> = {
+  idle: "",
+  saving: "Saving…",
+  saved: "Saved",
+  error: "Save failed — will retry on next change",
+};
 
 // Per-segment limit/override patch the panel emits upward. Sending both fields keeps
 // the upsert sparse: { null, null } clears the selection back to the live suggestion.
@@ -48,6 +56,8 @@ interface Props {
   allocations?: GearAllocationResult[];
   selections?: GearSegmentSelection[];
   onSelectionChange?: (segmentIndex: number, gearItemId: string, patch: SelectionPatch) => void;
+  // Passive save indicator for per-segment limit/override writes.
+  selectionStatus?: SaveStatus;
 }
 
 // A signed-delta secondary line: "392/400 g (−8)". Under-target is amber, on/over is muted.
@@ -131,7 +141,14 @@ function GearPanel({
   );
 }
 
-export default function PlanTable({ result, items, allocations, selections, onSelectionChange }: Props) {
+export default function PlanTable({
+  result,
+  items,
+  allocations,
+  selections,
+  onSelectionChange,
+  selectionStatus = "idle",
+}: Props) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
   if (!result.ok) {
@@ -151,6 +168,8 @@ export default function PlanTable({ result, items, allocations, selections, onSe
   const allocs = allocations ?? [];
   const sels = selections ?? [];
   const gearActive = gearItems.length > 0 && allocs.length === rows.length;
+  // Column count: 8 base + Aid station, plus the Fuel column when gear is active.
+  const colCount = gearActive ? 10 : 9;
 
   function toggle(idx: number) {
     setExpanded((prev) => {
@@ -163,7 +182,14 @@ export default function PlanTable({ result, items, allocations, selections, onSe
 
   return (
     <section className="mt-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-      <h2 className="mb-4 text-lg font-semibold">Plan table</h2>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Plan table</h2>
+        {gearActive ? (
+          <span data-testid="gear-save-status" className="text-xs text-blue-100/60" aria-live="polite">
+            {SELECTION_STATUS_TEXT[selectionStatus]}
+          </span>
+        ) : null}
+      </div>
       <div className="overflow-x-auto">
         <table data-testid="plan-table" className="w-full border-collapse text-left text-sm">
           <thead className="text-blue-100/60">
@@ -255,7 +281,7 @@ export default function PlanTable({ result, items, allocations, selections, onSe
               ? rows.map((r, idx) =>
                   expanded.has(idx) ? (
                     <tr key={`${r.label}-panel`} className="border-t border-white/5">
-                      <td colSpan={10} className="py-2">
+                      <td colSpan={colCount} className="py-2">
                         <GearPanel
                           segmentIndex={idx}
                           items={gearItems}

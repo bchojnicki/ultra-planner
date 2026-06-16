@@ -107,12 +107,14 @@ export function computeGearAllocation(input: GearAllocationInput): GearAllocatio
       break;
     }
 
+    const exceederIds = new Set<string>();
     for (const it of exceeders) {
       const cap = capGrams.get(it.id) ?? Infinity;
       fixedGrams.set(it.id, cap);
       units.set(it.id, Math.round(cap / (it.carb_g ?? 1)));
+      exceederIds.add(it.id);
     }
-    active = active.filter((it) => !exceeders.includes(it));
+    active = active.filter((it) => !exceederIds.has(it.id));
   }
 
   // ---- (b) fluid: drinks already counted; water carriers fill the gap ----

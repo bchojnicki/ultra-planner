@@ -20,6 +20,10 @@ export async function listGearSelections(client: Client, planId: string): Promis
 // contract: a row exists only while it carries a cap and/or a pin. When both limit_units
 // and override_units resolve to null, any existing row is deleted and null is returned,
 // so the segment falls back to the live auto-suggestion.
+//
+// Last-write-wins: the caller debounces these PUTs per (segment, item), but separate
+// requests have no cross-request ordering guarantee. Concurrent edits to the same cell
+// are serialized only by that client-side debounce — adequate for the single-user MVP.
 export async function upsertGearSelection(
   client: Client,
   input: GearSegmentSelectionInsert,
