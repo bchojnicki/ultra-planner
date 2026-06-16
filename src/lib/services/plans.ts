@@ -15,7 +15,13 @@ export async function listPlans(client: Client): Promise<Plan[]> {
 
 export async function getPlan(client: Client, id: string): Promise<Plan | null> {
   const { data, error } = await client.from("plans").select("*").eq("id", id).maybeSingle();
-  if (error) throw error;
+  // A malformed id (not a valid uuid) surfaces as Postgres 22P02; treat it as
+  // "no such plan" so callers redirect like any missing plan, rather than a 500
+  // with a stack trace. Real failures still throw.
+  if (error) {
+    if (error.code === "22P02") return null;
+    throw error;
+  }
   return data;
 }
 

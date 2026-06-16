@@ -15,5 +15,5 @@ export const POST: APIRoute = async (context) => {
   if (!supabase) return new Response("Supabase is not configured", { status: 500 });
 
   const plan = await createDraftPlan(supabase, user.id);
-  return context.redirect(`/plans/${plan.id}`);
+  return context.redirect(`/plans/${plan.id}/edit`);
 };
