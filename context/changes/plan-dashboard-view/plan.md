@@ -275,10 +275,10 @@ No data migration. The only externally observable change is the post-create redi
 
 #### Automated
 
-- [x] 3.1 New spec passes: `npx playwright test tests/plan-view.spec.ts`
-- [x] 3.2 Full e2e suite green: `npx playwright test`
-- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 New spec passes: `npx playwright test tests/plan-view.spec.ts` — 43696e6
+- [x] 3.2 Full e2e suite green: `npx playwright test` — 43696e6
+- [x] 3.3 Linting passes: `npm run lint` — 43696e6
 
 #### Manual
 
-- [x] 3.4 Spec is skipped (not failed) when `TEST_EMAIL`/`TEST_PASSWORD` are unset
+- [x] 3.4 Spec is skipped (not failed) when `TEST_EMAIL`/`TEST_PASSWORD` are unset — 43696e6
