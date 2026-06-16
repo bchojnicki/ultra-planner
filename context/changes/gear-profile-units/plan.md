@@ -447,8 +447,8 @@ Two additive migrations only; no existing-data backfill. Both tables are empty u
 
 #### Automated
 
-- [x] 6.1 Prettier passes on changed markdown: `npm run format`
+- [x] 6.1 Prettier passes on changed markdown: `npm run format` — d820242
 
 #### Manual
 
-- [x] 6.2 FR-004/US-06 + roadmap S-03 accurately describe shipped behavior; PRD version bumped
+- [x] 6.2 FR-004/US-06 + roadmap S-03 accurately describe shipped behavior; PRD version bumped — d820242
