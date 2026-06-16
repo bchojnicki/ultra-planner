@@ -410,10 +410,10 @@ Two additive migrations only; no existing-data backfill. Both tables are empty u
 
 #### Automated
 
-- [x] 3.1 Allocation golden-number unit tests pass: `npx playwright test tests/unit/gear-allocation.test.ts`
-- [x] 3.2 Type checking passes: `npx tsc --noEmit`
-- [x] 3.3 Linting passes: `npm run lint`
-- [x] 3.4 `tests/unit/plan-table.test.ts` still passes unchanged
+- [x] 3.1 Allocation golden-number unit tests pass: `npx playwright test tests/unit/gear-allocation.test.ts` — 077add8
+- [x] 3.2 Type checking passes: `npx tsc --noEmit` — 077add8
+- [x] 3.3 Linting passes: `npm run lint` — 077add8
+- [x] 3.4 `tests/unit/plan-table.test.ts` still passes unchanged — 077add8
 
 #### Manual
 
@@ -423,12 +423,12 @@ Two additive migrations only; no existing-data backfill. Both tables are empty u
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 Linting passes: `npm run lint`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 4.3 Gear section placed correctly; per-kind fields shown; edits autosave and survive reload; skip leaves gram/ml mode
+- [x] 4.3 Gear section placed correctly; per-kind fields shown; edits autosave and survive reload; skip leaves gram/ml mode
 
 ### Phase 5: Plan table integration + e2e
 

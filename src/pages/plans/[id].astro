@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
 import { getPlan } from "@/lib/services/plans";
 import { listAidStations } from "@/lib/services/aid-stations";
+import { listGearItems } from "@/lib/services/gear-items";
 import PlanEditor from "@/components/plans/PlanEditor";
 
 // Middleware gates /plans behind auth. Load the plan via the request-scoped
@@ -15,6 +16,7 @@ const plan = await getPlan(supabase, id);
 if (!plan) return Astro.redirect("/dashboard");
 
 const stations = await listAidStations(supabase, id);
+const gearItems = await listGearItems(supabase, id);
 ---
 
 <Layout title={plan.name}>
@@ -27,7 +29,7 @@ const stations = await listAidStations(supabase, id);
         {plan.name}
       </h1>
 
-      <PlanEditor plan={plan} initialStations={stations} client:load />
+      <PlanEditor plan={plan} initialStations={stations} initialGearItems={gearItems} client:load />
     </div>
   </div>
 </Layout>
