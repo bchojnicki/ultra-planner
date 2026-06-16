@@ -33,7 +33,7 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-01 | race-setup-and-aid-stations | create a race plan and add/list/delete aid stations, auto-saved                              | F-01          | US-04, US-05, US-08, FR-003, FR-005, FR-006, FR-008 | done     |
 | S-02 | generate-plan-table         | generate a correct segment-by-segment plan table                                             | S-01          | US-01, FR-007, NFR (instant)                        | done     |
 | S-03 | gear-profile-units          | build a gear catalog so the table auto-suggests per-segment fueling units, tunable per stage | S-02          | US-06, FR-004                                       | done     |
-| S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | proposed |
+| S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | done     |
 | S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | proposed |
 | S-06 | email-password-auth         | register / sign in with email + password and reach a gated app                               | —             | US-02, US-03, FR-001, FR-002                        | ready    |
 
@@ -124,7 +124,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Read-only view only — full editing of saved-plan parameters is v2 (Parked). The table must render as last generated without re-triggering generation. Low risk: mostly a listing + read view over already-persisted data.
-- **Status:** proposed
+- **Status:** done
 
 ### S-05: Delete saved plan
 
@@ -190,3 +190,4 @@ None open. Both prior questions were resolved in PRD v2:
 - **S-01: Runner can create a race plan (parameters) and add, list, and delete aid stations, with every change auto-saved.** — Archived 2026-06-15 → `context/archive/2026-06-15-race-setup-and-aid-stations/`. Lesson: —.
 - **S-02: Runner can generate a correct segment-by-segment plan table — per-segment travel time, estimated clock arrival, and fluid/carb/sodium targets, with aid-station context inline.** — Archived 2026-06-16 → `context/archive/2026-06-15-generate-plan-table/`. Lesson: —.
 - **S-03: Runner can optionally build a per-plan gear catalog (gels, carb drink, solid food, water carrier, salt caps); the plan table then auto-suggests whole-unit fueling per segment (carb-led, ratio-weighted, with fluid/sodium gap-fill) and lets the runner cap a product or pin an exact override per stage, showing achieved-vs-target with a signed delta. With no gear, the table stays in gram/ml/mg targets.** — Archived 2026-06-16 → `context/archive/2026-06-16-gear-profile-units/`. Lesson: —.
+- **S-04: Runner can see all their saved plans on a dashboard and open one in read-only view; a runner with no plans sees an empty-state prompt to create their first plan.** — Archived 2026-06-16 → `context/archive/2026-06-16-plan-dashboard-view/`. Lesson: —.
