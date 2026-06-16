@@ -13,6 +13,10 @@ import { defineConfig, devices } from "@playwright/test";
  */
 export default defineConfig({
   testDir: "./tests",
+  // Only the e2e specs. Vitest owns the *.test.ts files under tests/unit and
+  // tests/integration (see vitest.config.ts); without this, Playwright's default
+  // match also collects those and errors trying to run them under its runner.
+  testMatch: "**/*.spec.ts",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */

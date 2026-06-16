@@ -423,25 +423,25 @@ Two additive migrations only; no existing-data backfill. Both tables are empty u
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npx tsc --noEmit`
-- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit` — 58904cd
+- [x] 4.2 Linting passes: `npm run lint` — 58904cd
 
 #### Manual
 
-- [x] 4.3 Gear section placed correctly; per-kind fields shown; edits autosave and survive reload; skip leaves gram/ml mode
+- [x] 4.3 Gear section placed correctly; per-kind fields shown; edits autosave and survive reload; skip leaves gram/ml mode — 58904cd
 
 ### Phase 5: Plan table integration + e2e
 
 #### Automated
 
-- [ ] 5.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 5.2 Linting passes: `npm run lint`
-- [ ] 5.3 E2E flow passes: `npx playwright test tests/gear-units.spec.ts`
-- [ ] 5.4 Full suite passes with no regressions: `npx playwright test`
+- [x] 5.1 Type checking passes: `npx tsc --noEmit`
+- [x] 5.2 Linting passes: `npm run lint`
+- [x] 5.3 E2E flow passes: `npx playwright test tests/gear-units.spec.ts`
+- [x] 5.4 Full suite passes with no regressions: `npx playwright test`
 
 #### Manual
 
-- [ ] 5.5 Units + target/±delta display; expandable panel; limit redistribution; override wins + persists; station delete clears stale overrides; mobile-usable
+- [x] 5.5 Units + target/±delta display; expandable panel; limit redistribution; override wins + persists; station delete clears stale overrides; mobile-usable
 
 ### Phase 6: Docs reconciliation
 
