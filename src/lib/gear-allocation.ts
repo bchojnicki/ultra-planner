@@ -13,7 +13,14 @@
 //       and salt caps fill the remaining gap.
 // Each source rounds to the nearest whole unit; achieved totals and signed deltas
 // are reported so the UI can show how close the rounded units land.
-import type { GearAllocationResult, GearAllocationUnit, GearItem, GearNutrients, GearSegmentSelection } from "@/types";
+import type {
+  GearAllocationResult,
+  GearAllocationUnit,
+  GearItem,
+  GearNutrients,
+  GearSegmentSelection,
+  PlanTableResult,
+} from "@/types";
 
 export interface GearAllocationInput {
   carbTarget: number;
@@ -178,6 +185,27 @@ export function computeGearAllocation(input: GearAllocationInput): GearAllocatio
   };
 
   return { units: unitList, achieved, delta };
+}
+
+// Per-segment allocations parallel to a plan table's rows (index = segment_index).
+// Returns [] when the table didn't generate (not ok). Shared by the editor (live
+// recompute) and the read-only view (server-side recompute) so both derive units
+// identically. Selections are filtered to each segment here.
+export function computeAllocations(
+  result: PlanTableResult,
+  items: GearItem[],
+  selections: GearSegmentSelection[],
+): GearAllocationResult[] {
+  if (!result.ok) return [];
+  return result.rows.map((row, idx) =>
+    computeGearAllocation({
+      carbTarget: row.carb_g,
+      fluidTarget: row.fluid_ml,
+      sodiumTarget: row.sodium_mg,
+      items,
+      selections: selections.filter((s) => s.segment_index === idx),
+    }),
+  );
 }
 
 // Reconciliation helper: after an aid-station add/delete changes the segment count,

@@ -58,6 +58,10 @@ interface Props {
   onSelectionChange?: (segmentIndex: number, gearItemId: string, patch: SelectionPatch) => void;
   // Passive save indicator for per-segment limit/override writes.
   selectionStatus?: SaveStatus;
+  // Read-only view (S-04): render the full generated output (Fuel column, deltas,
+  // totals) but suppress the editing affordances — the per-row gear expand toggle
+  // and the save-status line. The expand panels already require onSelectionChange.
+  readOnly?: boolean;
 }
 
 // A signed-delta secondary line: "392/400 g (−8)". Under-target is amber, on/over is muted.
@@ -148,6 +152,7 @@ export default function PlanTable({
   selections,
   onSelectionChange,
   selectionStatus = "idle",
+  readOnly = false,
 }: Props) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
@@ -184,7 +189,7 @@ export default function PlanTable({
     <section className="mt-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Plan table</h2>
-        {gearActive ? (
+        {gearActive && !readOnly ? (
           <span data-testid="gear-save-status" className="text-xs text-blue-100/60" aria-live="polite">
             {SELECTION_STATUS_TEXT[selectionStatus]}
           </span>
@@ -215,7 +220,7 @@ export default function PlanTable({
                 <tr key={r.label} data-testid="plan-row" className="border-t border-white/10 align-top">
                   <td className="py-2 pr-4 font-medium whitespace-nowrap">
                     {r.label}
-                    {gearActive ? (
+                    {gearActive && !readOnly ? (
                       <button
                         type="button"
                         data-testid="gear-toggle"

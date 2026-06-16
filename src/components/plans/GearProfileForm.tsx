@@ -1,39 +1,15 @@
 import { useCallback, useState } from "react";
 import type { GearItem, GearItemUpdate, GearKind } from "@/types";
 import { useAutosave, type SaveStatus } from "@/components/hooks/useAutosave";
+import {
+  GEAR_FIELD_LABELS as FIELD_LABELS,
+  GEAR_KIND_FIELDS as KIND_FIELDS,
+  GEAR_KIND_LABELS as KIND_LABELS,
+  GEAR_KIND_ORDER as KIND_ORDER,
+} from "@/lib/gear-kinds";
 
 const inputCls =
   "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
-
-// The fueling field each kind exposes. carb_ratio only matters for carb sources
-// (it weights the auto-suggestion split); a water carrier holds capacity, a salt cap sodium.
-type FieldKey = "carb_g" | "sodium_mg" | "fluid_ml" | "capacity_ml" | "carb_ratio";
-
-const FIELD_LABELS: Record<FieldKey, string> = {
-  carb_g: "Carbs / unit (g)",
-  sodium_mg: "Sodium / unit (mg)",
-  fluid_ml: "Fluid / serving (ml)",
-  capacity_ml: "Capacity / unit (ml)",
-  carb_ratio: "Carb ratio",
-};
-
-const KIND_FIELDS: Record<GearKind, FieldKey[]> = {
-  gel: ["carb_g", "sodium_mg", "carb_ratio"],
-  drink: ["carb_g", "fluid_ml", "sodium_mg", "carb_ratio"],
-  solid_food: ["carb_g", "sodium_mg", "carb_ratio"],
-  water_carrier: ["capacity_ml"],
-  salt_cap: ["sodium_mg"],
-};
-
-const KIND_LABELS: Record<GearKind, string> = {
-  gel: "Gel",
-  drink: "Carb drink",
-  solid_food: "Solid food",
-  water_carrier: "Water carrier",
-  salt_cap: "Salt cap",
-};
-
-const KIND_ORDER: GearKind[] = ["gel", "drink", "solid_food", "water_carrier", "salt_cap"];
 
 const STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",

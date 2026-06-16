@@ -1,0 +1,45 @@
+---
+import type { Plan } from "@/types";
+
+// Read-only race-parameters summary (S-04). Mirrors the fields of RaceSetupForm
+// as static labeled values — no inputs. The plan name is rendered as the page
+// heading by the parent, so it is not repeated here.
+interface Props {
+  plan: Plan;
+}
+
+const { plan } = Astro.props;
+
+const fmtStart = (iso: string) => {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+};
+
+const hours = Math.floor(plan.total_expected_minutes / 60);
+const minutes = plan.total_expected_minutes % 60;
+
+const items: { label: string; value: string }[] = [
+  { label: "Total distance", value: `${plan.total_distance_km} km` },
+  { label: "Elevation gain", value: `${plan.total_elevation_gain_m} m` },
+  { label: "Elevation loss", value: `${plan.total_elevation_loss_m} m` },
+  { label: "Start time", value: fmtStart(plan.start_time) },
+  { label: "Expected finish", value: `${hours}h ${String(minutes).padStart(2, "0")}m` },
+  { label: "Hourly fluid", value: `${plan.hourly_fluid_ml} ml` },
+  { label: "Hourly carbs", value: `${plan.hourly_carb_g} g` },
+  { label: "Hourly sodium", value: `${plan.hourly_sodium_mg} mg` },
+];
+---
+
+<section class="mb-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+  <h2 class="mb-4 text-lg font-semibold">Race parameters</h2>
+  <dl class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    {
+      items.map((it) => (
+        <div>
+          <dt class="text-sm text-blue-100/60">{it.label}</dt>
+          <dd class="mt-0.5 font-medium">{it.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>

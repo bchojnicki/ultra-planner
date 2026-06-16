@@ -2,17 +2,34 @@
 import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
 import { getPlan } from "@/lib/services/plans";
+import { listAidStations } from "@/lib/services/aid-stations";
+import { listGearItems } from "@/lib/services/gear-items";
+import { listGearSelections } from "@/lib/services/gear-selections";
+import { computePlanTable } from "@/lib/plan-table";
+import { computeAllocations } from "@/lib/gear-allocation";
+import PlanSummary from "@/components/plans/PlanSummary.astro";
+import AidStationList from "@/components/plans/AidStationList.astro";
+import GearList from "@/components/plans/GearList.astro";
+import PlanTable from "@/components/plans/PlanTable";
 
 // Read-only saved-plan view (S-04). Middleware gates /plans behind auth; the plan
 // is loaded via the request-scoped client so RLS scopes it to the owner. The
-// editable flow lives at /plans/[id]/edit. Phase 2 fills in the full read-only
-// content (params, aid stations, gear, generated table); this is the shell.
+// editable flow lives at /plans/[id]/edit. The plan table + gear allocations are
+// recomputed server-side from the persisted data (both are pure, deterministic),
+// so the view renders as last generated without re-triggering generation.
 const { id } = Astro.params;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 if (!id || !supabase) return Astro.redirect("/dashboard");
 
 const plan = await getPlan(supabase, id);
 if (!plan) return Astro.redirect("/dashboard");
+
+const stations = await listAidStations(supabase, id);
+const gearItems = await listGearItems(supabase, id);
+const gearSelections = await listGearSelections(supabase, id);
+
+const result = computePlanTable(plan, stations);
+const allocations = computeAllocations(result, gearItems, gearSelections);
 ---
 
 <Layout title={plan.name}>
@@ -30,6 +47,11 @@ if (!plan) return Astro.redirect("/dashboard");
           Edit plan
         </a>
       </div>
+
+      <PlanSummary plan={plan} />
+      <AidStationList stations={stations} />
+      <GearList items={gearItems} />
+      <PlanTable result={result} items={gearItems} allocations={allocations} readOnly />
     </div>
   </div>
 </Layout>

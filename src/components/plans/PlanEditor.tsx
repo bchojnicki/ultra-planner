@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AidStation, GearItem, GearSegmentSelection, Plan } from "@/types";
 import { computePlanTable } from "@/lib/plan-table";
-import { computeGearAllocation, staleSegmentIndexes } from "@/lib/gear-allocation";
+import { computeAllocations, staleSegmentIndexes } from "@/lib/gear-allocation";
 import type { SaveStatus } from "@/components/hooks/useAutosave";
 import RaceSetupForm from "@/components/plans/RaceSetupForm";
 import GearProfileForm from "@/components/plans/GearProfileForm";
@@ -33,18 +33,7 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
   const result = useMemo(() => computePlanTable(params, stations), [params, stations]);
 
   // Per-segment unit allocation, parallel to the table rows (index = segment_index).
-  const allocations = useMemo(() => {
-    if (!result.ok) return [];
-    return result.rows.map((row, idx) =>
-      computeGearAllocation({
-        carbTarget: row.carb_g,
-        fluidTarget: row.fluid_ml,
-        sodiumTarget: row.sodium_mg,
-        items: gearItems,
-        selections: selections.filter((s) => s.segment_index === idx),
-      }),
-    );
-  }, [result, gearItems, selections]);
+  const allocations = useMemo(() => computeAllocations(result, gearItems, selections), [result, gearItems, selections]);
 
   // Debounced per-(segment,item) PUT timers; the local state update is immediate so the
   // table re-suggests live while the runner types.

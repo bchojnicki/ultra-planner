@@ -246,30 +246,30 @@ No data migration. The only externally observable change is the post-create redi
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx astro sync && npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Existing plan e2e still passes: `npx playwright test tests/plans-setup.spec.ts`
+- [x] 1.1 Type checking passes: `npx astro sync && npm run build` — 4542f8c
+- [x] 1.2 Linting passes: `npm run lint` — 4542f8c
+- [x] 1.3 Existing plan e2e still passes: `npx playwright test tests/plans-setup.spec.ts` — 4542f8c
 
 #### Manual
 
-- [x] 1.4 "+ New plan" lands on `/plans/[id]/edit` with editable forms
-- [x] 1.5 `/plans/[id]` shows the read-only shell with a working "Edit plan" link
-- [x] 1.6 Non-owned/missing plan id redirects to `/dashboard` on both routes
+- [x] 1.4 "+ New plan" lands on `/plans/[id]/edit` with editable forms — 4542f8c
+- [x] 1.5 `/plans/[id]` shows the read-only shell with a working "Edit plan" link — 4542f8c
+- [x] 1.6 Non-owned/missing plan id redirects to `/dashboard` on both routes — 4542f8c
 
 ### Phase 2: Read-only view (presentational components + read-only table)
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx astro sync && npm run build`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Unit/integration suites still green: `npx playwright test tests/unit tests/integration`
+- [x] 2.1 Type checking passes: `npx astro sync && npm run build`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Unit/integration suites still green: `npx playwright test tests/unit tests/integration`
 
 #### Manual
 
-- [ ] 2.4 Complete saved plan shows params/stations/gear/table with no inputs, save indicators, or gear toggles
-- [ ] 2.5 Gear plan shows Fuel column + deltas; gearless plan shows gram/ml/mg targets
-- [ ] 2.6 Incomplete draft shows saved values + explanatory message, with "Edit plan" available
-- [ ] 2.7 Plan table renders as static HTML (no hydrated island) on `/plans/[id]`
+- [x] 2.4 Complete saved plan shows params/stations/gear/table with no inputs, save indicators, or gear toggles
+- [x] 2.5 Gear plan shows Fuel column + deltas; gearless plan shows gram/ml/mg targets
+- [x] 2.6 Incomplete draft shows saved values + explanatory message, with "Edit plan" available
+- [x] 2.7 Plan table renders as static HTML (no hydrated island) on `/plans/[id]`
 
 ### Phase 3: e2e test + verification
 
