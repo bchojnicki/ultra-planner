@@ -1,10 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
-import { getPlan } from "@/lib/services/plans";
-import { listAidStations } from "@/lib/services/aid-stations";
-import { listGearItems } from "@/lib/services/gear-items";
-import { listGearSelections } from "@/lib/services/gear-selections";
+import { loadPlanBundle } from "@/lib/services/plan-bundle";
 import { computePlanTable } from "@/lib/plan-table";
 import { computeAllocations } from "@/lib/gear-allocation";
 import PlanSummary from "@/components/plans/PlanSummary.astro";
@@ -21,12 +18,9 @@ const { id } = Astro.params;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 if (!id || !supabase) return Astro.redirect("/dashboard");
 
-const plan = await getPlan(supabase, id);
-if (!plan) return Astro.redirect("/dashboard");
-
-const stations = await listAidStations(supabase, id);
-const gearItems = await listGearItems(supabase, id);
-const gearSelections = await listGearSelections(supabase, id);
+const bundle = await loadPlanBundle(supabase, id);
+if (!bundle) return Astro.redirect("/dashboard");
+const { plan, stations, gearItems, gearSelections } = bundle;
 
 const result = computePlanTable(plan, stations);
 const allocations = computeAllocations(result, gearItems, gearSelections);
