@@ -1,17 +1,9 @@
 import { useState } from "react";
 import type { AidStation } from "@/types";
+import { AID_STATION_FLAGS as FLAGS, enabledFacilities } from "@/lib/aid-station-facilities";
 
 const inputCls =
   "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
-
-const FLAGS = [
-  ["water_only", "Water only"],
-  ["food_available", "Food"],
-  ["warm_meal", "Warm meal"],
-  ["drop_bag_available", "Drop bag"],
-  ["rest_area", "Rest area"],
-  ["support_crew_allowed", "Crew"],
-] as const;
 
 type FlagKey = (typeof FLAGS)[number][0];
 type Flags = Record<FlagKey, boolean>;
@@ -41,12 +33,6 @@ function num(v: string): number | undefined {
 
 function sortStations(list: AidStation[]): AidStation[] {
   return [...list].sort((a, b) => a.cumulative_distance_km - b.cumulative_distance_km);
-}
-
-function enabledFacilities(s: AidStation): string {
-  return FLAGS.filter(([key]) => s[key])
-    .map(([, label]) => label)
-    .join(", ");
 }
 
 export default function AidStationManager({ planId, initialStations, onStationsChange }: Props) {
@@ -220,7 +206,9 @@ export default function AidStationManager({ planId, initialStations, onStationsC
               <div>
                 <span className="font-medium">{s.cumulative_distance_km} km</span>
                 <span className="text-blue-100/50"> · +{s.cumulative_elevation_gain_m} m</span>
-                {enabledFacilities(s) ? <span className="text-blue-100/50"> · {enabledFacilities(s)}</span> : null}
+                {enabledFacilities(s).length > 0 ? (
+                  <span className="text-blue-100/50"> · {enabledFacilities(s).join(", ")}</span>
+                ) : null}
                 {s.notes ? <span className="text-blue-100/40"> · {s.notes}</span> : null}
               </div>
               <button

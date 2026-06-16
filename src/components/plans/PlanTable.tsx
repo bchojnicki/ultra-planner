@@ -1,17 +1,5 @@
-import type { AidStation, PlanTableResult } from "@/types";
-
-const FLAGS = [
-  ["water_only", "Water only"],
-  ["food_available", "Food"],
-  ["warm_meal", "Warm meal"],
-  ["drop_bag_available", "Drop bag"],
-  ["rest_area", "Rest area"],
-  ["support_crew_allowed", "Crew"],
-] as const;
-
-function enabledFacilities(s: AidStation): string[] {
-  return FLAGS.filter(([key]) => s[key]).map(([, label]) => label);
-}
+import type { PlanTableResult } from "@/types";
+import { enabledFacilities } from "@/lib/aid-station-facilities";
 
 // Display-only rounding — the calc keeps full float precision (accuracy guardrail).
 function fmtDuration(min: number): string {

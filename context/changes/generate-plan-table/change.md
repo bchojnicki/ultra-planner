@@ -1,7 +1,7 @@
 ---
 change_id: generate-plan-table
 title: Generate plan table
-status: implemented
+status: impl_reviewed
 created: 2026-06-15
 updated: 2026-06-16
 archived_at: null

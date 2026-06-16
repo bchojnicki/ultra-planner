@@ -247,6 +247,11 @@ NFR: table appears < 1s for up to 50 stations. The calc is O(stations) pure arit
 
 None — pure derivation over existing F-01/S-01 data; no schema or data changes.
 
+## Addendum
+
+- **`src/pages/plans/[id].astro` (Phase 3)** — widened the editor container `max-w-2xl` → `max-w-5xl` (user-requested during manual verification) so the wider islands and the 9-column plan table fit with less horizontal scrolling. Cosmetic; not in the original Phase 3 file contract.
+- **`src/lib/aid-station-facilities.ts` (impl-review F3)** — extracted the shared `AID_STATION_FLAGS` tuple + `enabledFacilities` helper, consumed by both `AidStationManager` and `PlanTable` (removed the duplicated copies).
+
 ## References
 
 - Roadmap: `context/foundation/roadmap.md` → S-02 (generate-plan-table); North star

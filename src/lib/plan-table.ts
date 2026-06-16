@@ -83,6 +83,9 @@ export function computePlanTable(plan: Plan, stations: AidStation[]): PlanTableR
   const totalWeight = segments.reduce((sum, s) => sum + s.weight, 0);
 
   const startMs = new Date(plan.start_time).getTime();
+  if (Number.isNaN(startMs)) {
+    return { ok: false, error: "missing_params", message: "Enter a valid race start time to generate your plan." };
+  }
   let elapsedMin = 0; // moving + rest accumulated from the start
   const rows: PlanTableRow[] = segments.map((seg) => {
     const moving = moving_minutes * (seg.weight / totalWeight);
