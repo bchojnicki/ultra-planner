@@ -32,7 +32,7 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | F-01 | plan-data-and-ownership     | (foundation) plans & aid stations persisted, owner-scoped via RLS                            | —             | FR-008, NFR (privacy), Access Control               | done     |
 | S-01 | race-setup-and-aid-stations | create a race plan and add/list/delete aid stations, auto-saved                              | F-01          | US-04, US-05, US-08, FR-003, FR-005, FR-006, FR-008 | done     |
 | S-02 | generate-plan-table         | generate a correct segment-by-segment plan table                                             | S-01          | US-01, FR-007, NFR (instant)                        | done     |
-| S-03 | gear-profile-units          | build a gear catalog so the table auto-suggests per-segment fueling units, tunable per stage | S-02          | US-06, FR-004                                       | proposed |
+| S-03 | gear-profile-units          | build a gear catalog so the table auto-suggests per-segment fueling units, tunable per stage | S-02          | US-06, FR-004                                       | done     |
 | S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | proposed |
 | S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | proposed |
 | S-06 | email-password-auth         | register / sign in with email + password and reach a gated app                               | —             | US-02, US-03, FR-001, FR-002                        | ready    |
@@ -112,7 +112,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:** —
 - **Risk:** A pure allocation transform + two owner-scoped tables (catalog + sparse per-segment selections) decorate the existing calc output — it must not alter the underlying gram/ml/mg math, only present and compare against it. Sequenced after generation because it decorates the generated table.
 - **Scope note (2026-06-16):** Implemented as a **hybrid** (auto-suggest + per-segment limits and overrides) with sodium as a third unit-mapped target — broader than the original one-way gram→unit transform. PRD FR-004/US-06 updated to match (prd v3).
-- **Status:** proposed
+- **Status:** done
 
 ### S-04: Plan dashboard (view saved plans)
 
@@ -189,3 +189,4 @@ None open. Both prior questions were resolved in PRD v2:
 - **F-01: (foundation) plans and aid stations are stored server-side and are readable/writable only by their owning runner.** — Archived 2026-06-15 → `context/archive/2026-06-03-plan-data-and-ownership/`. Lesson: —.
 - **S-01: Runner can create a race plan (parameters) and add, list, and delete aid stations, with every change auto-saved.** — Archived 2026-06-15 → `context/archive/2026-06-15-race-setup-and-aid-stations/`. Lesson: —.
 - **S-02: Runner can generate a correct segment-by-segment plan table — per-segment travel time, estimated clock arrival, and fluid/carb/sodium targets, with aid-station context inline.** — Archived 2026-06-16 → `context/archive/2026-06-15-generate-plan-table/`. Lesson: —.
+- **S-03: Runner can optionally build a per-plan gear catalog (gels, carb drink, solid food, water carrier, salt caps); the plan table then auto-suggests whole-unit fueling per segment (carb-led, ratio-weighted, with fluid/sodium gap-fill) and lets the runner cap a product or pin an exact override per stage, showing achieved-vs-target with a signed delta. With no gear, the table stays in gram/ml/mg targets.** — Archived 2026-06-16 → `context/archive/2026-06-16-gear-profile-units/`. Lesson: —.
