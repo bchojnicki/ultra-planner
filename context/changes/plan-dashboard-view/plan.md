@@ -260,25 +260,25 @@ No data migration. The only externally observable change is the post-create redi
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx astro sync && npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Unit/integration suites still green: `npx playwright test tests/unit tests/integration`
+- [x] 2.1 Type checking passes: `npx astro sync && npm run build` — da4a585
+- [x] 2.2 Linting passes: `npm run lint` — da4a585
+- [x] 2.3 Unit/integration suites still green: `npx playwright test tests/unit tests/integration` — da4a585
 
 #### Manual
 
-- [x] 2.4 Complete saved plan shows params/stations/gear/table with no inputs, save indicators, or gear toggles
-- [x] 2.5 Gear plan shows Fuel column + deltas; gearless plan shows gram/ml/mg targets
-- [x] 2.6 Incomplete draft shows saved values + explanatory message, with "Edit plan" available
-- [x] 2.7 Plan table renders as static HTML (no hydrated island) on `/plans/[id]`
+- [x] 2.4 Complete saved plan shows params/stations/gear/table with no inputs, save indicators, or gear toggles — da4a585
+- [x] 2.5 Gear plan shows Fuel column + deltas; gearless plan shows gram/ml/mg targets — da4a585
+- [x] 2.6 Incomplete draft shows saved values + explanatory message, with "Edit plan" available — da4a585
+- [x] 2.7 Plan table renders as static HTML (no hydrated island) on `/plans/[id]` — da4a585
 
 ### Phase 3: e2e test + verification
 
 #### Automated
 
-- [ ] 3.1 New spec passes: `npx playwright test tests/plan-view.spec.ts`
-- [ ] 3.2 Full e2e suite green: `npx playwright test`
-- [ ] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 New spec passes: `npx playwright test tests/plan-view.spec.ts`
+- [x] 3.2 Full e2e suite green: `npx playwright test`
+- [x] 3.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.4 Spec is skipped (not failed) when `TEST_EMAIL`/`TEST_PASSWORD` are unset
+- [x] 3.4 Spec is skipped (not failed) when `TEST_EMAIL`/`TEST_PASSWORD` are unset
