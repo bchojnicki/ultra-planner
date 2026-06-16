@@ -86,6 +86,43 @@ export type AidStationInsert = Omit<
 // Update: every mutable field is optional; id/plan_id/timestamps are not user-editable.
 export type AidStationUpdate = Partial<Omit<AidStation, "id" | "plan_id" | "created_at" | "updated_at">>;
 
+// ---------------------------------------------------------------------------
+// Generated plan table (S-02). Derived, never persisted — computed on read by
+// src/lib/plan-table.ts. All numeric fields are exact floats (rounding is a
+// display concern); timestamps are ISO strings.
+// ---------------------------------------------------------------------------
+
+// One leg of the race: start→first station, station→station, or last station→finish.
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- type alias, mirrors the row-types convention above
+export type PlanTableRow = {
+  label: string; // e.g. "Start → AS1", "AS1 → AS2", "AS3 → Finish"
+  segment_distance_km: number;
+  segment_elevation_gain_m: number;
+  moving_minutes: number;
+  arrival: string; // ISO clock arrival at the end of this segment
+  fluid_ml: number;
+  carb_g: number;
+  sodium_mg: number;
+  endStation: AidStation | null; // the station this segment arrives at; null = finish
+};
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- type alias (see note above)
+export type PlanTableTotals = {
+  distance_km: number;
+  elevation_gain_m: number;
+  moving_minutes: number;
+  rest_minutes: number;
+  fluid_ml: number;
+  carb_g: number;
+  sodium_mg: number;
+  finish_arrival: string; // ISO; equals start_time + total_expected_minutes
+};
+
+// Discriminated result: a renderable table, or an error the UI surfaces as a prompt.
+export type PlanTableResult =
+  | { ok: true; rows: PlanTableRow[]; totals: PlanTableTotals }
+  | { ok: false; error: "missing_params" | "rest_exceeds_budget"; message: string };
+
 // Minimal Supabase Database type so the SSR client is typed (no generated database.types.ts).
 // Threaded through createClient() in src/lib/supabase.ts; gives `.from("plans")` typed
 // Row/Insert/Update inference and eliminates `any` in the data-access layer.
