@@ -398,9 +398,9 @@ Two additive migrations only; no existing-data backfill. Both tables are empty u
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Endpoint integration tests (happy path + ownership rejection) pass
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 8775134
+- [x] 2.2 Linting passes: `npm run lint` — 8775134
+- [x] 2.3 Endpoint integration tests (happy path + ownership rejection) pass — 8775134
 
 #### Manual
 
@@ -410,10 +410,10 @@ Two additive migrations only; no existing-data backfill. Both tables are empty u
 
 #### Automated
 
-- [ ] 3.1 Allocation golden-number unit tests pass: `npx playwright test tests/unit/gear-allocation.test.ts`
-- [ ] 3.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.3 Linting passes: `npm run lint`
-- [ ] 3.4 `tests/unit/plan-table.test.ts` still passes unchanged
+- [x] 3.1 Allocation golden-number unit tests pass: `npx playwright test tests/unit/gear-allocation.test.ts`
+- [x] 3.2 Type checking passes: `npx tsc --noEmit`
+- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.4 `tests/unit/plan-table.test.ts` still passes unchanged
 
 #### Manual
 

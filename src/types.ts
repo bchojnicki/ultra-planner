@@ -158,6 +158,33 @@ export type GearSegmentSelectionUpdate = Partial<
 >;
 
 // ---------------------------------------------------------------------------
+// Gear allocation result (S-03). Pure, derived per segment by
+// src/lib/gear-allocation.ts — never persisted. Converts a segment's gram/ml
+// targets into whole-unit suggestions per gear item, and reports what those
+// units actually deliver (achieved) vs the target (delta = achieved − target).
+// ---------------------------------------------------------------------------
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- type alias, mirrors the row-types convention above
+export type GearNutrients = {
+  carb_g: number;
+  fluid_ml: number;
+  sodium_mg: number;
+};
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- type alias (see note above)
+export type GearAllocationUnit = {
+  gear_item_id: string;
+  units: number; // whole units suggested for this item on this segment (may be 0)
+};
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- type alias (see note above)
+export type GearAllocationResult = {
+  units: GearAllocationUnit[]; // one entry per input item, in input order
+  achieved: GearNutrients; // totals delivered by the suggested units
+  delta: GearNutrients; // achieved − target (signed; negative = under-fuelled)
+};
+
+// ---------------------------------------------------------------------------
 // Generated plan table (S-02). Derived, never persisted — computed on read by
 // src/lib/plan-table.ts. All numeric fields are exact floats (rounding is a
 // display concern); timestamps are ISO strings.
