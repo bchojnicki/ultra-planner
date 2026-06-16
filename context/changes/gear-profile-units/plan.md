@@ -385,22 +385,22 @@ Two additive migrations only; no existing-data backfill. Both tables are empty u
 
 #### Automated
 
-- [x] 1.1 Migrations apply cleanly: `npx supabase db reset`
-- [x] 1.2 Type checking passes: `npx tsc --noEmit`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Integration tests (new-table RLS + zod) pass: `npx playwright test tests/integration/gear-flow.test.ts`
+- [x] 1.1 Migrations apply cleanly: `npx supabase db reset` — 4a0a1d8
+- [x] 1.2 Type checking passes: `npx tsc --noEmit` — 4a0a1d8
+- [x] 1.3 Linting passes: `npm run lint` — 4a0a1d8
+- [x] 1.4 Integration tests (new-table RLS + zod) pass: `npx playwright test tests/integration/gear-flow.test.ts` — 4a0a1d8
 
 #### Manual
 
-- [x] 1.5 Both tables exist in studio with expected columns, kind check, and four RLS policies each
+- [x] 1.5 Both tables exist in studio with expected columns, kind check, and four RLS policies each — 4a0a1d8
 
 ### Phase 2: Services & API endpoints
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Endpoint integration tests (happy path + ownership rejection) pass
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Endpoint integration tests (happy path + ownership rejection) pass
 
 #### Manual
 

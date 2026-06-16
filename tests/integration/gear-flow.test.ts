@@ -17,6 +17,12 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Database } from "../../src/types";
 import { createDraftPlan } from "../../src/lib/services/plans";
+import { createGearItem, deleteGearItem, listGearItems, updateGearItem } from "../../src/lib/services/gear-items";
+import {
+  deleteSelectionsForSegments,
+  listGearSelections,
+  upsertGearSelection,
+} from "../../src/lib/services/gear-selections";
 import { gearItemCreateSchema, gearItemUpdateSchema, gearSelectionUpsertSchema } from "../../src/lib/schemas";
 
 const DEFAULT_URL = "http://127.0.0.1:54321";
@@ -242,5 +248,147 @@ describe("gear RLS on the new tables (ownership flows through plan_id)", () => {
     await clientA.from("gear_items").delete().eq("id", gearItemId);
     const remaining = await clientA.from("gear_segment_selections").select("*").eq("gear_item_id", gearItemId);
     expect(remaining.data).toHaveLength(0);
+  });
+});
+
+describe("gear services (Phase 2): catalog + selection CRUD and ownership", () => {
+  let userIdA = "";
+  let userIdB = "";
+  let clientA: Client;
+  let clientB: Client;
+  let planAId = "";
+
+  beforeAll(async () => {
+    assertLocal(SUPABASE_URL);
+
+    const { data: a, error: ea } = await admin.auth.admin.createUser({
+      email: `s03-svc-a-${stamp}@example.com`,
+      password: PASSWORD,
+      email_confirm: true,
+    });
+    if (ea ?? !a.user) throw ea ?? new Error("failed to create user A");
+    userIdA = a.user.id;
+
+    const { data: b, error: eb } = await admin.auth.admin.createUser({
+      email: `s03-svc-b-${stamp}@example.com`,
+      password: PASSWORD,
+      email_confirm: true,
+    });
+    if (eb ?? !b.user) throw eb ?? new Error("failed to create user B");
+    userIdB = b.user.id;
+
+    clientA = anonClient();
+    clientB = anonClient();
+    const { error: sa } = await clientA.auth.signInWithPassword({
+      email: `s03-svc-a-${stamp}@example.com`,
+      password: PASSWORD,
+    });
+    if (sa) throw sa;
+    const { error: sb } = await clientB.auth.signInWithPassword({
+      email: `s03-svc-b-${stamp}@example.com`,
+      password: PASSWORD,
+    });
+    if (sb) throw sb;
+
+    const plan = await createDraftPlan(clientA, userIdA);
+    planAId = plan.id;
+  });
+
+  afterAll(async () => {
+    if (userIdA) await admin.auth.admin.deleteUser(userIdA);
+    if (userIdB) await admin.auth.admin.deleteUser(userIdB);
+  });
+
+  it("createGearItem → listGearItems → updateGearItem → deleteGearItem (happy path)", async () => {
+    const created = await createGearItem(clientA, {
+      plan_id: planAId,
+      kind: "gel",
+      name: "Gel",
+      carb_g: 22,
+      carb_ratio: 2,
+    });
+    expect(created.kind).toBe("gel");
+    expect(created.carb_g).toBe(22);
+
+    const listed = await listGearItems(clientA, planAId);
+    expect(listed.find((g) => g.id === created.id)).toBeTruthy();
+
+    const updated = await updateGearItem(clientA, created.id, { carb_g: 25, name: "Gel v2" });
+    expect(updated.carb_g).toBe(25);
+    expect(updated.name).toBe("Gel v2");
+
+    await deleteGearItem(clientA, created.id);
+    const after = await listGearItems(clientA, planAId);
+    expect(after.find((g) => g.id === created.id)).toBeUndefined();
+  });
+
+  it("createGearItem on a non-owned plan is rejected (42501)", async () => {
+    await expect(
+      createGearItem(clientB, { plan_id: planAId, kind: "gel", name: "Sneaky", carb_g: 22 }),
+    ).rejects.toMatchObject({ code: "42501" });
+  });
+
+  it("upsertGearSelection sets a cap, updates it, then clears the row when both are null", async () => {
+    const item = await createGearItem(clientA, {
+      plan_id: planAId,
+      kind: "gel",
+      name: "Gel",
+      carb_g: 22,
+      carb_ratio: 1,
+    });
+
+    const first = await upsertGearSelection(clientA, {
+      plan_id: planAId,
+      gear_item_id: item.id,
+      segment_index: 0,
+      limit_units: 1,
+    });
+    expect(first?.limit_units).toBe(1);
+
+    // Upsert on the same (item, segment) updates rather than duplicating.
+    const second = await upsertGearSelection(clientA, {
+      plan_id: planAId,
+      gear_item_id: item.id,
+      segment_index: 0,
+      override_units: 3,
+    });
+    expect(second?.override_units).toBe(3);
+    const onlyOne = await listGearSelections(clientA, planAId);
+    expect(onlyOne.filter((s) => s.gear_item_id === item.id && s.segment_index === 0)).toHaveLength(1);
+
+    // Empty pair clears the row (sparse contract).
+    const cleared = await upsertGearSelection(clientA, { plan_id: planAId, gear_item_id: item.id, segment_index: 0 });
+    expect(cleared).toBeNull();
+    const none = await listGearSelections(clientA, planAId);
+    expect(none.filter((s) => s.gear_item_id === item.id && s.segment_index === 0)).toHaveLength(0);
+
+    await deleteGearItem(clientA, item.id);
+  });
+
+  it("deleteSelectionsForSegments removes stale rows and no-ops on an empty list", async () => {
+    const item = await createGearItem(clientA, {
+      plan_id: planAId,
+      kind: "gel",
+      name: "Gel",
+      carb_g: 22,
+      carb_ratio: 1,
+    });
+    await upsertGearSelection(clientA, { plan_id: planAId, gear_item_id: item.id, segment_index: 0, limit_units: 1 });
+    await upsertGearSelection(clientA, {
+      plan_id: planAId,
+      gear_item_id: item.id,
+      segment_index: 2,
+      override_units: 2,
+    });
+
+    await deleteSelectionsForSegments(clientA, planAId, []); // no-op
+    expect(await listGearSelections(clientA, planAId)).toHaveLength(2);
+
+    await deleteSelectionsForSegments(clientA, planAId, [2]);
+    const remaining = await listGearSelections(clientA, planAId);
+    expect(remaining).toHaveLength(1);
+    expect(remaining[0].segment_index).toBe(0);
+
+    await deleteGearItem(clientA, item.id);
   });
 });
