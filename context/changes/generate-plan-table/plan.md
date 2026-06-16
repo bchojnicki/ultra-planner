@@ -289,15 +289,15 @@ None — pure derivation over existing F-01/S-01 data; no schema or data changes
 
 #### Automated
 
-- [x] 3.1 Type checking passes (`npx tsc --noEmit`)
-- [x] 3.2 Lint passes (`npm run lint`)
-- [x] 3.3 Production build succeeds (`npm run build`)
-- [x] 3.4 E2e passes with test credentials (`npx playwright test tests/plans-setup.spec.ts`)
+- [x] 3.1 Type checking passes (`npx tsc --noEmit`) — 21bd40a
+- [x] 3.2 Lint passes (`npm run lint`) — 21bd40a
+- [x] 3.3 Production build succeeds (`npm run build`) — 21bd40a
+- [x] 3.4 E2e passes with test credentials (`npx playwright test tests/plans-setup.spec.ts`) — 21bd40a
 
 #### Manual
 
-- [x] 3.5 Table updates live as params/stations change (no re-trigger)
-- [x] 3.6 Zero aid stations → single start→finish row
-- [x] 3.7 Missing a required param → error/prompt, not a broken table
-- [x] 3.8 Higher rest time shifts later arrivals; finish arrival stays at start + expected
-- [x] 3.9 Facilities/rest/notes + totals render; layout usable on mobile
+- [x] 3.5 Table updates live as params/stations change (no re-trigger) — 21bd40a
+- [x] 3.6 Zero aid stations → single start→finish row — 21bd40a
+- [x] 3.7 Missing a required param → error/prompt, not a broken table — 21bd40a
+- [x] 3.8 Higher rest time shifts later arrivals; finish arrival stays at start + expected — 21bd40a
+- [x] 3.9 Facilities/rest/notes + totals render; layout usable on mobile — 21bd40a
