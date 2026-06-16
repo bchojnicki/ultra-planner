@@ -7,6 +7,9 @@ const inputCls =
 
 interface Props {
   plan: Plan;
+  // Emits the current parsed Plan on every edit so a parent (PlanEditor) can
+  // recompute the live plan table. Autosave is unaffected.
+  onParamsChange?: (plan: Plan) => void;
 }
 
 interface FormState {
@@ -96,7 +99,7 @@ const STATUS_TEXT: Record<SaveStatus, string> = {
   error: "Save failed — will retry on next change",
 };
 
-export default function RaceSetupForm({ plan }: Props) {
+export default function RaceSetupForm({ plan, onParamsChange }: Props) {
   const [form, setForm] = useState<FormState>(() => initialState(plan));
 
   const save = useCallback(
@@ -118,6 +121,8 @@ export default function RaceSetupForm({ plan }: Props) {
     const next = { ...form, [field]: value };
     setForm(next);
     schedule(buildPatch(next));
+    // Merge valid parsed fields over the base plan so the parent has a full Plan.
+    onParamsChange?.({ ...plan, ...buildPatch(next) });
   };
 
   return (

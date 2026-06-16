@@ -28,6 +28,9 @@ const EMPTY_FLAGS: Flags = {
 interface Props {
   planId: string;
   initialStations: AidStation[];
+  // Emits the new sorted list after a successful add/delete so a parent
+  // (PlanEditor) can recompute the live plan table.
+  onStationsChange?: (stations: AidStation[]) => void;
 }
 
 function num(v: string): number | undefined {
@@ -46,7 +49,7 @@ function enabledFacilities(s: AidStation): string {
     .join(", ");
 }
 
-export default function AidStationManager({ planId, initialStations }: Props) {
+export default function AidStationManager({ planId, initialStations, onStationsChange }: Props) {
   const [stations, setStations] = useState<AidStation[]>(() => sortStations(initialStations));
   const [dist, setDist] = useState("");
   const [gain, setGain] = useState("");
@@ -77,7 +80,9 @@ export default function AidStationManager({ planId, initialStations }: Props) {
       });
       if (!res.ok) throw new Error(`add failed: ${res.status}`);
       const created = (await res.json()) as AidStation;
-      setStations((prev) => sortStations([...prev, created]));
+      const next = sortStations([...stations, created]);
+      setStations(next);
+      onStationsChange?.(next);
       setDist("");
       setGain("");
       setTime("");
@@ -94,7 +99,9 @@ export default function AidStationManager({ planId, initialStations }: Props) {
     setError(null);
     const res = await fetch(`/api/aid-stations/${id}`, { method: "DELETE" });
     if (res.ok) {
-      setStations((prev) => prev.filter((s) => s.id !== id));
+      const next = stations.filter((s) => s.id !== id);
+      setStations(next);
+      onStationsChange?.(next);
     } else {
       setError("Couldn't delete the station. Please try again.");
     }

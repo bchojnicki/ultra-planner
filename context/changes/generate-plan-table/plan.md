@@ -262,28 +262,28 @@ None — pure derivation over existing F-01/S-01 data; no schema or data changes
 
 #### Automated
 
-- [x] 1.1 Type checking passes (`npx tsc --noEmit`)
-- [x] 1.2 Lint passes (`npm run lint`)
-- [x] 1.3 Calc unit tests pass (`npx vitest run tests/unit/plan-table.test.ts`)
+- [x] 1.1 Type checking passes (`npx tsc --noEmit`) — 2b7464e
+- [x] 1.2 Lint passes (`npm run lint`) — 2b7464e
+- [x] 1.3 Calc unit tests pass (`npx vitest run tests/unit/plan-table.test.ts`) — 2b7464e
 
 #### Manual
 
-- [x] 1.4 Golden-number expectations independently re-derived from the PRD formula (match the worked reference)
+- [x] 1.4 Golden-number expectations independently re-derived from the PRD formula (match the worked reference) — 2b7464e
 
 ### Phase 2: Merge `/plans/[id]` into one reactive PlanEditor island
 
 #### Automated
 
-- [ ] 2.1 Type checking passes (`npx tsc --noEmit`)
-- [ ] 2.2 Lint passes (`npm run lint`)
-- [ ] 2.3 Production build succeeds (`npm run build`)
-- [ ] 2.4 Existing S-01 e2e still passes (`npx playwright test tests/plans-setup.spec.ts`)
+- [x] 2.1 Type checking passes (`npx tsc --noEmit`)
+- [x] 2.2 Lint passes (`npm run lint`)
+- [x] 2.3 Production build succeeds (`npm run build`)
+- [x] 2.4 Existing S-01 e2e still passes (`npx playwright test tests/plans-setup.spec.ts`)
 
 #### Manual
 
-- [ ] 2.5 Params still autosave (Saving → Saved) and persist on reload
-- [ ] 2.6 Add / delete aid station still works and stays distance-sorted
-- [ ] 2.7 No visual regression on the editor page
+- [x] 2.5 Params still autosave (Saving → Saved) and persist on reload
+- [x] 2.6 Add / delete aid station still works and stays distance-sorted
+- [x] 2.7 No visual regression on the editor page
 
 ### Phase 3: PlanTable rendering + e2e
 

@@ -3,8 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
 import { getPlan } from "@/lib/services/plans";
 import { listAidStations } from "@/lib/services/aid-stations";
-import RaceSetupForm from "@/components/plans/RaceSetupForm";
-import AidStationManager from "@/components/plans/AidStationManager";
+import PlanEditor from "@/components/plans/PlanEditor";
 
 // Middleware gates /plans behind auth. Load the plan via the request-scoped
 // client so RLS scopes it to the owner; a missing/non-owned id returns null.
@@ -28,8 +27,7 @@ const stations = await listAidStations(supabase, id);
         {plan.name}
       </h1>
 
-      <RaceSetupForm plan={plan} client:load />
-      <AidStationManager planId={plan.id} initialStations={stations} client:load />
+      <PlanEditor plan={plan} initialStations={stations} client:load />
     </div>
   </div>
 </Layout>
