@@ -4,7 +4,7 @@ version: 1
 status: draft
 created: 2026-06-01
 updated: 2026-06-17
-prd_version: 3
+prd_version: 4
 main_goal: speed
 top_blocker: capacity
 ---
@@ -35,7 +35,7 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-03 | gear-profile-units          | build a gear catalog so the table auto-suggests per-segment fueling units, tunable per stage | S-02          | US-06, FR-004                                       | done     |
 | S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | done     |
 | S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | done     |
-| S-06 | email-password-auth         | register / sign in with email + password and reach a gated app                               | —             | US-02, US-03, FR-001, FR-002                        | ready    |
+| S-06 | email-otp-auth              | sign up / sign in with an emailed one-time code and reach a gated app                        | —             | US-02, US-03, FR-001, FR-002                        | ready    |
 
 ## Streams
 
@@ -55,7 +55,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Frontend:** present — Astro 6 SSR + React 19 islands + Tailwind 4 + shadcn/ui (`src/layouts/Layout.astro`, `src/components/ui/button.tsx`).
 - **Backend / API:** present — Astro SSR API routes (`src/pages/api/auth/*.ts`); `output: "server"`.
 - **Data:** absent — no migrations, no plan/aid-station schema (`supabase/` has only `config.toml`; no `supabase/migrations`).
-- **Auth:** present — Supabase scaffold on **email + password** (`signInWithPassword`/`signUp`, `confirm-email`, middleware gating `/dashboard`). Matches PRD v2 (FR-001/FR-002 + US-02/US-03 reconciled to email + password).
+- **Auth:** present but **mismatched** — the bootstrapped Supabase scaffold uses email + password (`signInWithPassword`/`signUp`, `confirm-email`, middleware gating `/dashboard` + `/plans`). PRD v4 specifies **passwordless email OTP** (6-digit code), so S-06 **replaces** the password flow with `signInWithOtp`/`verifyOtp` rather than verifying the scaffold.
 - **Deploy / infra:** present — Cloudflare Workers, `wrangler.jsonc`, GitHub Actions (`ci.yml`, `deploy.yml`, `playwright.yml`).
 - **Observability:** present — Workers Observability enabled (per `infrastructure.md`).
 
@@ -138,16 +138,16 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** Hard delete with a confirmation dialog; no undo in MVP (Parked). The confirmation dialog is the only guard against accidental loss. Depends on the dashboard list existing.
 - **Status:** done
 
-### S-06: Account access (email + password)
+### S-06: Account access (passwordless email OTP)
 
-- **Outcome:** Runner can register and sign in with email + password, sign out, and is redirected to the sign-in screen when reaching a gated route unauthenticated.
-- **Change ID:** email-password-auth
+- **Outcome:** Runner can sign up / sign in with a 6-digit one-time code emailed to them, sign out, and is redirected to the sign-in screen when reaching a gated route unauthenticated. No password is stored.
+- **Change ID:** email-otp-auth
 - **PRD refs:** US-02, US-03, FR-001, FR-002
 - **Prerequisites:** —
 - **Parallel with:** F-01, S-01
 - **Blockers:** —
 - **Unknowns:** —
-- **Risk:** The auth scaffold is already present (`signInWithPassword`/`signUp`, `confirm-email`, middleware gating `/dashboard`) and matches PRD v2 (email + password), so this slice verifies the flow end-to-end rather than building it. Self-service password reset is out of MVP scope (deferred to v2).
+- **Risk:** The present scaffold is password-based, so this slice **replaces** it with the OTP flow (`signInWithOtp` → emailed 6-digit code → `verifyOtp`) rather than verifying it. Sign-up and sign-in unify into one flow (no separate signup form, no password-reset, no `confirm-email` step). The main thing to validate end-to-end is Supabase email OTP + SSR cookie handling on Cloudflare Workers (see infrastructure.md risk register).
 - **Status:** ready
 
 ## Backlog Handoff
@@ -160,16 +160,14 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-03       | gear-profile-units          | Gear profile → unit-level plan output                    | no                    | After S-02                              |
 | S-04       | plan-dashboard-view         | Dashboard list + read-only saved-plan view               | no                    | After S-02; parallel with S-03          |
 | S-05       | delete-saved-plan           | Delete saved plan with confirmation                      | no                    | After S-04                              |
-| S-06       | email-password-auth         | Verify email+password auth + route gating                | yes                   | Auth scaffold present; matches PRD v2   |
+| S-06       | email-otp-auth              | Passwordless email OTP (code) auth + route gating        | yes                   | Replaces the password scaffold; PRD v4  |
 
 ## Open Roadmap Questions
 
-None open. Both prior questions were resolved in PRD v2:
+None open. Prior questions resolved:
 
-1. ~~Auth method: email + password vs. magic link.~~ **Resolved** — PRD FR-001/FR-002 + US-02/US-03 reconciled to email + password, matching the existing scaffold.
+1. ~~Auth method: email + password vs. passwordless.~~ **Resolved (PRD v4, 2026-06-17)** — **passwordless email OTP** (6-digit code via `signInWithOtp`/`verifyOtp`). This reverses the v3 email+password reconciliation (which had only matched the bootstrapped scaffold) and restores the original `shape-notes.md` passwordless intent, choosing an OTP code over a magic link for cross-device / email-client reliability. S-06 replaces the password scaffold.
 2. ~~"Total expected finish time" as a race parameter.~~ **Resolved** — added to FR-003's parameter list, consistent with Business Logic.
-
-(Update the backlog handoff for S-06's issue note once `/10x-plan` runs — the PRD divergence caveat no longer applies.)
 
 ## Parked
 

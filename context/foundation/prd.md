@@ -1,9 +1,9 @@
 ---
 project: "Ultra Planner"
-version: 3
+version: 4
 status: draft
 created: 2026-05-19
-updated: 2026-06-16
+updated: 2026-06-17
 context_type: greenfield
 product_type: web-app
 target_scale:
@@ -56,29 +56,30 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 - Fluid and carbohydrate quantities are derived from the runner's hourly targets and the estimated time for that segment, not from the total race distance
 - A plan with zero aid stations shows an explanatory state rather than an empty or broken table
 
-### US-02: Runner registers an account
+### US-02: Runner signs up with a one-time code
 
-- **Given** an unauthenticated visitor on the sign-up screen
-- **When** they enter their email address and a password and submit for the first time
-- **Then** they see a "check your email" confirmation screen; clicking the confirmation link in the email activates their account, after which they can sign in and reach the plan dashboard
+- **Given** an unauthenticated visitor on the sign-in screen who has not registered before
+- **When** they enter their email address for the first time and request a code
+- **Then** the app emails them a 6-digit one-time code and shows a code-entry screen; entering the valid code creates their account and takes them to the plan dashboard
 
 #### Acceptance Criteria
 
-- The form requires an email address and a password
-- After submission, the app navigates to a confirmation screen; it does not show an inline message
-- Clicking the confirmation link in the email activates the runner's account
-- The confirmation screen does not reveal whether the email address was previously registered
+- The form requires only an email address — no password
+- Requesting a code for a new email creates the account on first successful code entry; there is no separate registration step
+- After requesting a code, the app navigates to a code-entry screen; it does not show an inline message
+- Neither the request nor the code-entry screen reveals whether the email address was previously registered
+- An expired or incorrect code shows an error and lets the runner request a new code
 
-### US-03: Runner logs in to an existing account
+### US-03: Runner signs in to an existing account
 
 - **Given** a registered runner who is not currently logged in
-- **When** they enter their email address and password and submit on the sign-in screen
-- **Then** they are authenticated and taken to the plan dashboard
+- **When** they enter their email address on the sign-in screen and request a code
+- **Then** the app emails a 6-digit one-time code; entering the valid code authenticates them and takes them to the plan dashboard
 
 #### Acceptance Criteria
 
-- The sign-in form requires an email address and a password
-- Successful authentication redirects the runner to the dashboard; invalid credentials show an error on the sign-in screen
+- The sign-in form requires only an email address — no password
+- A valid code authenticates the runner and redirects to the dashboard; an expired or incorrect code shows an error on the code-entry screen and allows requesting a new code
 - A runner with no saved plans sees an empty dashboard with a prompt to create their first plan
 - An unauthenticated user who reaches a gated route is redirected to the sign-in screen
 
@@ -169,12 +170,12 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 
 ### Authentication
 
-- FR-001: Runner can register with an email address and password. Priority: must-have
+- FR-001: Runner can sign up with just an email address — the app emails a 6-digit one-time code that, when entered, creates the account. No password is set or stored. Priority: must-have
 
-  > Socrates: Counter-argument considered: "account creation adds friction for a one-time use tool." Resolution: kept — plans must be tied to an identity for cross-device access (Secondary success criterion). Registration stands. Auth method is email + password, matching the bootstrapped Supabase scaffold.
+  > Socrates: Counter-argument considered: "account creation adds friction for a one-time use tool." Resolution: kept — plans must be tied to an identity for cross-device access (Secondary success criterion). Auth is passwordless email OTP (Supabase `signInWithOtp` → `verifyOtp`), realigning with the original shape-notes passwordless intent. A 6-digit code is used rather than a magic link for cross-device / email-client reliability (v4, 2026-06-17 — reverses the v3 email+password reconciliation, which had only matched the bootstrapped scaffold).
 
-- FR-002: Runner can log in with their email address and password. Priority: must-have
-  > Socrates: Counter-argument considered: "email + password means building a password-reset flow." Resolution: accepted — email + password matches the existing Supabase scaffold. A self-service password-reset flow is out of MVP scope and deferred to v2.
+- FR-002: Runner can sign in to an existing account with the same email + one-time-code flow. Priority: must-have
+  > Socrates: Counter-argument considered: "passwordless means a code round-trip on every login." Resolution: accepted — no password is stored or managed, which removes the password-reset flow entirely. Sign-up and sign-in share one flow: `signInWithOtp` creates the user on first use and authenticates returning users thereafter.
 
 ### Race Setup
 
@@ -236,7 +237,7 @@ The runner encounters the rule by entering all parameters and aid stations, then
 
 ## Access Control
 
-Multi-user web application. Each runner registers and logs in with an email address and password, managed by Supabase Auth. Plans are stored server-side and tied to the authenticated user; a runner can access their plans from any device once logged in.
+Multi-user web application. Each runner signs up and signs in with a passwordless email one-time code (6-digit), managed by Supabase Auth — no password is stored or managed. Plans are stored server-side and tied to the authenticated user; a runner can access their plans from any device once logged in.
 
 User model is flat: all registered users are runners with identical capabilities. No admin role exists in the MVP. An unauthenticated user who reaches a gated route is redirected to the login screen.
 

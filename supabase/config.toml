@@ -231,6 +231,12 @@ otp_expiry = 3600
 # subject = "You have been invited"
 # content_path = "./supabase/templates/invite.html"
 
+# Passwordless sign-in: the magic_link template backs signInWithOtp. Render the
+# 6-digit {{ .Token }} so the email shows a code (not just a link) — email-otp-auth (S-06).
+[auth.email.template.magic_link]
+subject = "Your Ultra Planner sign-in code"
+content_path = "./supabase/templates/magic_link.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true

@@ -91,7 +91,7 @@ The MVP shipped, but two weeks behind schedule. Both failures were workerd-vs-No
 |---|---|---|---|---|
 | CJS NPM dependency breaks at runtime | Devil's advocate | M | H | Before adding any new package, check for `require()` in its source or run `npx cjs-module-lexer` against the bundle. Prefer ESM-native packages. |
 | Missing `disable_nodejs_process_v2` flag breaks SSR responses | Devil's advocate | H | H | Add `"disable_nodejs_process_v2"` to `compatibility_flags` in `wrangler.jsonc` immediately (see Getting Started). |
-| Supabase SSR cookie failure on Workers redirect | Pre-mortem | M | H | Test the full auth flow (magic link → redirect → session read) via `wrangler dev`, not just `astro dev`. Cookie writes must occur before `Response` is constructed. |
+| Supabase SSR cookie failure on Workers redirect | Pre-mortem | M | H | Test the full auth flow (request OTP code → `verifyOtp` → SSR session cookie read) via `wrangler dev`, not just `astro dev`. Cookie writes must occur before `Response` is constructed. |
 | Free-tier CPU limit hit by future features | Devil's advocate | L | M | Monitor CPU-ms via Cloudflare dashboard. If approaching limits, upgrade to $5/month Workers Paid (30M CPU-ms/month). |
 | `astro dev` vs `wrangler dev` env mismatch hides bugs | Unknown unknowns | M | M | Run `wrangler dev` for any test involving auth, secrets, or Supabase connectivity. Use `astro dev` only for fast UI iteration. |
 | Stale `deployment_target: cloudflare-pages` metadata | Devil's advocate | L | L | Update `tech-stack.md` `deployment_target` field to `cloudflare-workers` to avoid confusion. |

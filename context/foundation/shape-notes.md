@@ -23,7 +23,7 @@ checkpoint:
     - topic: "persona scope"
       decision: "individual ultra runner — one athlete building their own plan"
     - topic: "auth method"
-      decision: "magic link / passwordless; no password storage; plans stored server-side"
+      decision: "passwordless email one-time code (6-digit OTP); no password storage; plans stored server-side"
     - topic: "role model"
       decision: "flat — all logged-in users are runners with identical capabilities; no admin role in MVP"
   frs_drafted: 11
@@ -44,7 +44,7 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 
 ## Access Control
 
-Multi-user web application. Each runner registers and logs in via a passwordless magic link sent to their email — no password is stored or managed. Plans are stored server-side and tied to the authenticated user; a runner can access their plans from any device once logged in.
+Multi-user web application. Each runner signs up and signs in via a passwordless email one-time code (6-digit) — no password is stored or managed. Plans are stored server-side and tied to the authenticated user; a runner can access their plans from any device once logged in.
 
 User model is flat: all registered users are runners with identical capabilities. No admin role exists in the MVP. An unauthenticated user who reaches a gated route is redirected to the login screen.
 
@@ -68,12 +68,12 @@ _Timeline: 3 weeks of after-hours work. User assessed this as achievable._
 
 ### Authentication
 
-- FR-001: Runner can register with email (magic link / passwordless — no password required). Priority: must-have
+- FR-001: Runner can sign up with email (passwordless — a 6-digit one-time code is emailed; no password required). Priority: must-have
 
   > Socrates: Counter-argument considered: "account creation adds friction for a one-time use tool." Resolution: kept — plans must be tied to an identity for cross-device access (Secondary success criterion). Registration stands.
 
-- FR-002: Runner can log in via a passwordless magic link sent to their email. Priority: must-have
-  > Socrates: Counter-argument considered: "email + password means building a reset flow." Resolution: changed — auth is now magic link / passwordless. No password storage, no reset flow required. FR updated.
+- FR-002: Runner can sign in via a passwordless 6-digit one-time code emailed to them. Priority: must-have
+  > Socrates: Counter-argument considered: "email + password means building a reset flow." Resolution: changed — auth is passwordless email OTP (one-time code). No password storage, no reset flow required. FR updated.
 
 ### Race Setup
 
