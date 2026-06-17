@@ -3,7 +3,7 @@ project: "Ultra Planner"
 version: 1
 status: draft
 created: 2026-06-01
-updated: 2026-06-16
+updated: 2026-06-17
 prd_version: 3
 main_goal: speed
 top_blocker: capacity
@@ -34,7 +34,7 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-02 | generate-plan-table         | generate a correct segment-by-segment plan table                                             | S-01          | US-01, FR-007, NFR (instant)                        | done     |
 | S-03 | gear-profile-units          | build a gear catalog so the table auto-suggests per-segment fueling units, tunable per stage | S-02          | US-06, FR-004                                       | done     |
 | S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | done     |
-| S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | proposed |
+| S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | done     |
 | S-06 | email-password-auth         | register / sign in with email + password and reach a gated app                               | —             | US-02, US-03, FR-001, FR-002                        | ready    |
 
 ## Streams
@@ -136,7 +136,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Hard delete with a confirmation dialog; no undo in MVP (Parked). The confirmation dialog is the only guard against accidental loss. Depends on the dashboard list existing.
-- **Status:** proposed
+- **Status:** done
 
 ### S-06: Account access (email + password)
 
@@ -191,3 +191,4 @@ None open. Both prior questions were resolved in PRD v2:
 - **S-02: Runner can generate a correct segment-by-segment plan table — per-segment travel time, estimated clock arrival, and fluid/carb/sodium targets, with aid-station context inline.** — Archived 2026-06-16 → `context/archive/2026-06-15-generate-plan-table/`. Lesson: —.
 - **S-03: Runner can optionally build a per-plan gear catalog (gels, carb drink, solid food, water carrier, salt caps); the plan table then auto-suggests whole-unit fueling per segment (carb-led, ratio-weighted, with fluid/sodium gap-fill) and lets the runner cap a product or pin an exact override per stage, showing achieved-vs-target with a signed delta. With no gear, the table stays in gram/ml/mg targets.** — Archived 2026-06-16 → `context/archive/2026-06-16-gear-profile-units/`. Lesson: —.
 - **S-04: Runner can see all their saved plans on a dashboard and open one in read-only view; a runner with no plans sees an empty-state prompt to create their first plan.** — Archived 2026-06-16 → `context/archive/2026-06-16-plan-dashboard-view/`. Lesson: —.
+- **S-05: Runner can permanently delete a saved plan from the dashboard after explicitly confirming in a dialog.** — Archived 2026-06-17 → `context/archive/2026-06-16-delete-saved-plan/`. Lesson: —.
