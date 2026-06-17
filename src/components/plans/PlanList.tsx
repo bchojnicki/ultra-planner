@@ -21,6 +21,7 @@ export default function PlanList({ plans: initial }: Props) {
 
   const confirming = plans.find((p) => p.id === confirmingId) ?? null;
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => {
     if (pending) return; // don't dismiss mid-request
@@ -28,12 +29,38 @@ export default function PlanList({ plans: initial }: Props) {
     setError(null);
   }, [pending]);
 
-  // a11y basics for the modal: focus the Cancel button on open, Escape to close.
+  // a11y for the modal: focus the Cancel button on open, Escape to close, and
+  // trap Tab focus within the dialog (cycle between Cancel/Delete) so keyboard
+  // focus can't wander to the page behind the overlay.
   useEffect(() => {
     if (!confirming) return;
     cancelRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
+      if (e.key === "Escape") {
+        close();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const root = dialogRef.current;
+      if (!root) return;
+      const focusable = root.querySelectorAll<HTMLElement>("button:not([disabled])");
+      if (focusable.length === 0) {
+        e.preventDefault(); // nothing focusable (e.g. mid-request) — keep focus in the dialog
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      if (!root.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => {
@@ -109,7 +136,10 @@ export default function PlanList({ plans: initial }: Props) {
             onClick={close}
             className="absolute inset-0 cursor-default bg-black/60"
           />
-          <div className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-slate-900/90 p-6 text-white backdrop-blur-xl">
+          <div
+            ref={dialogRef}
+            className="relative w-full max-w-sm rounded-2xl border border-white/10 bg-slate-900/90 p-6 text-white backdrop-blur-xl"
+          >
             <h2 id="delete-plan-title" className="text-lg font-semibold">
               Delete plan?
             </h2>
