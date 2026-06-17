@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
-import { updatePlan } from "@/lib/services/plans";
+import { deletePlan, updatePlan } from "@/lib/services/plans";
 import { planUpdateSchema } from "@/lib/schemas";
 
 export const prerender = false;
@@ -38,4 +38,22 @@ export const PATCH: APIRoute = async (context) => {
     if ((e as { code?: string }).code === "PGRST116") return new Response("Not found", { status: 404 });
     throw e;
   }
+};
+
+// DELETE /api/plans/:id — permanently delete a plan (US-09 / FR-011). RLS hides
+// rows the caller doesn't own, so deleting a non-owned/already-gone id is an
+// idempotent no-op (still 204). Child rows (aid_stations, gear_items,
+// gear_segment_selections) cascade via their plan_id FKs.
+export const DELETE: APIRoute = async (context) => {
+  const user = context.locals.user;
+  if (!user) return new Response("Unauthorized", { status: 401 });
+
+  const supabase = createClient(context.request.headers, context.cookies);
+  if (!supabase) return new Response("Supabase is not configured", { status: 500 });
+
+  const id = context.params.id;
+  if (!id) return new Response("Missing plan id", { status: 400 });
+
+  await deletePlan(supabase, id);
+  return new Response(null, { status: 204 });
 };
