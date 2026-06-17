@@ -2,13 +2,11 @@
 import Layout from "@/layouts/Layout.astro";
 import { createClient } from "@/lib/supabase";
 import { listPlans } from "@/lib/services/plans";
+import PlanList from "@/components/plans/PlanList";
 import type { Plan } from "@/types";
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const plans: Plan[] = supabase ? await listPlans(supabase) : [];
-
-const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 ---
 
 <Layout title="Dashboard">
@@ -37,28 +35,7 @@ const fmtDate = (iso: string) =>
         </button>
       </form>
 
-      {
-        plans.length === 0 ? (
-          <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center backdrop-blur-xl">
-            <p class="text-blue-100/80">You have no plans yet.</p>
-            <p class="mt-1 text-sm text-blue-100/50">Click “New plan” to create your first race plan.</p>
-          </div>
-        ) : (
-          <ul class="space-y-2">
-            {plans.map((plan) => (
-              <li>
-                <a
-                  href={`/plans/${plan.id}`}
-                  class="flex items-center justify-between rounded-xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-xl transition-colors hover:bg-white/20"
-                >
-                  <span class="font-medium">{plan.name}</span>
-                  <span class="text-sm text-blue-100/50">Updated {fmtDate(plan.updated_at)}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
+      <PlanList plans={plans} client:load />
     </div>
   </div>
 </Layout>

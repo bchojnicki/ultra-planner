@@ -212,30 +212,30 @@ No migration. The delete RLS policy and all child-table cascades already exist f
 
 #### Automated
 
-- [x] 1.1 Type checking / build passes: `npx astro sync && npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Integration suite still green: `npx vitest run tests/integration`
+- [x] 1.1 Type checking / build passes: `npx astro sync && npm run build` — 782da89
+- [x] 1.2 Linting passes: `npm run lint` — 782da89
+- [x] 1.3 Integration suite still green: `npx vitest run tests/integration` — 782da89
 
 #### Manual
 
-- [x] 1.4 `DELETE /api/plans/<own-plan-id>` returns 204 and the plan is gone after reload
-- [x] 1.5 The plan's aid stations and gear rows are also gone (cascade)
+- [x] 1.4 `DELETE /api/plans/<own-plan-id>` returns 204 and the plan is gone after reload — 782da89
+- [x] 1.5 The plan's aid stations and gear rows are also gone (cascade) — 782da89
 
 ### Phase 2: Dashboard delete UI (PlanList island)
 
 #### Automated
 
-- [ ] 2.1 Type checking / build passes: `npx astro sync && npm run build`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Unit/integration suites still green: `npx vitest run tests/unit tests/integration`
+- [x] 2.1 Type checking / build passes: `npx astro sync && npm run build`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Unit/integration suites still green: `npx vitest run tests/unit tests/integration`
 
 #### Manual
 
-- [ ] 2.4 Each row has a delete control; clicking opens a modal naming the plan
-- [ ] 2.5 Confirming removes the row immediately (no reload); deleting the last plan reveals the empty-state
-- [ ] 2.6 Cancel, Escape, and backdrop click dismiss without deleting
-- [ ] 2.7 A failed delete keeps the row + shows an inline error; control disabled while in flight
-- [ ] 2.8 "New plan" and sign-out still work
+- [x] 2.4 Each row has a delete control; clicking opens a modal naming the plan
+- [x] 2.5 Confirming removes the row immediately (no reload); deleting the last plan reveals the empty-state
+- [x] 2.6 Cancel, Escape, and backdrop click dismiss without deleting
+- [x] 2.7 A failed delete keeps the row + shows an inline error; control disabled while in flight
+- [x] 2.8 "New plan" and sign-out still work
 
 ### Phase 3: Tests
 
