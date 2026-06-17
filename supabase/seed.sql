@@ -1,13 +1,17 @@
 -- Local development seed — runs automatically after migrations on `supabase db reset`.
 --
--- Creates one confirmed test runner so a reset never leaves you without a login
--- (and so the Playwright e2e's TEST_EMAIL/TEST_PASSWORD user exists locally):
---   email:    runner@test.local
---   password: runner123
+-- Creates one confirmed test runner so a reset never leaves you without an account:
+--   email: runner@test.local
 --
--- LOCAL ONLY. This writes directly into auth.users/auth.identities with a known
--- password hash — never run it against a hosted Supabase project. Idempotent:
--- re-running (another reset) is a no-op via ON CONFLICT.
+-- Auth is now passwordless email OTP (email-otp-auth / S-06): sign in by entering
+-- this email and reading the 6-digit code from Inbucket (http://127.0.0.1:54324).
+-- The encrypted_password column below is vestigial — kept only so the row is a
+-- valid confirmed auth.users record; the password is never used by the app. The
+-- e2e suite mints its own throwaway addresses (signInWithOtp creates them), so it
+-- doesn't depend on this user.
+--
+-- LOCAL ONLY. This writes directly into auth.users/auth.identities — never run it
+-- against a hosted Supabase project. Idempotent: re-running is a no-op via ON CONFLICT.
 
 -- Fixed UUID so the rows are stable across resets and the ON CONFLICT guards bite.
 -- pgcrypto (crypt/gen_salt) lives in the `extensions` schema on Supabase.

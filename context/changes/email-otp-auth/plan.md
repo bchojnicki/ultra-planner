@@ -263,27 +263,27 @@ Negligible; OTP adds one email round-trip per login. The e2e's Inbucket read add
 
 #### Automated
 
-- [x] 2.1 Type checking / build passes: `npx astro sync && npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 No references to deleted paths: `grep -rE "auth/signup|confirm-email|PasswordToggle|signInWithPassword|SignUpForm" src/` returns nothing
+- [x] 2.1 Type checking / build passes: `npx astro sync && npm run build` — 1d1f40f
+- [x] 2.2 Linting passes: `npm run lint` — 1d1f40f
+- [x] 2.3 No references to deleted paths: `grep -rE "auth/signup|confirm-email|PasswordToggle|signInWithPassword|SignUpForm" src/` returns nothing — 1d1f40f
 
 #### Manual
 
-- [x] 2.4 `/auth/signin` shows an email-only form; valid email advances to the code step
-- [x] 2.5 Inbucket code signs in and lands on the dashboard; new email creates an account on first use
-- [x] 2.6 Wrong/expired code shows inline error; resend works after cooldown; "different email" returns to email step
-- [x] 2.7 `/auth/signup` + `/auth/confirm-email` 404; sign-out works; unauth `/dashboard` redirects to `/auth/signin`
+- [x] 2.4 `/auth/signin` shows an email-only form; valid email advances to the code step — 1d1f40f
+- [x] 2.5 Inbucket code signs in and lands on the dashboard; new email creates an account on first use — 1d1f40f
+- [x] 2.6 Wrong/expired code shows inline error; resend works after cooldown; "different email" returns to email step — 1d1f40f
+- [x] 2.7 `/auth/signup` + `/auth/confirm-email` 404; sign-out works; unauth `/dashboard` redirects to `/auth/signin` — 1d1f40f
 
 ### Phase 3: Tests + seed reconciliation
 
 #### Automated
 
-- [ ] 3.1 Auth spec passes: `npx playwright test tests/auth.spec.ts`
-- [ ] 3.2 Full e2e suite green: `npx playwright test`
-- [ ] 3.3 Integration suite still green: `npx vitest run tests/integration`
-- [ ] 3.4 Linting passes: `npm run lint`
+- [x] 3.1 Auth spec passes: `npx playwright test tests/auth.spec.ts`
+- [x] 3.2 Full e2e suite green: `npx playwright test`
+- [x] 3.3 Integration suite still green: `npx vitest run tests/integration`
+- [x] 3.4 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.5 Gated specs skip (not fail) when `TEST_EMAIL` is unset
-- [ ] 3.6 Inbucket-backed success path is reliable across a couple of runs
+- [x] 3.5 Gated specs skip (not fail) when `TEST_EMAIL` is unset
+- [x] 3.6 Inbucket-backed success path is reliable across a couple of runs

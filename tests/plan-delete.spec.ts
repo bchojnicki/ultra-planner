@@ -2,36 +2,26 @@ import { test, expect } from "@playwright/test";
 
 // End-to-end flow for deleting a saved plan (S-05, delete-saved-plan).
 //
-// Requires a real authenticated session, so it is gated behind TEST_EMAIL /
-// TEST_PASSWORD (like tests/auth.spec.ts) and skips when they are unset.
-// Run against LOCAL Supabase (the dev server reads .dev.vars) to avoid
-// polluting the remote project — e.g. with a confirmed local user:
-//   TEST_EMAIL=runner@test.local TEST_PASSWORD='…' npx playwright test tests/plan-delete.spec.ts
+// Requires a local Supabase + Mailpit env; gated behind TEST_EMAIL (its presence
+// signals that env) and skipped otherwise. Authenticates via the passwordless OTP
+// helper (tests/helpers/otp.ts) with a unique throwaway email per run. Run:
+//   TEST_EMAIL=1 npx playwright test tests/plan-delete.spec.ts
 
 import type { Page } from "@playwright/test";
+import { signInViaOtp, uniqueTestEmail } from "./helpers/otp";
 
-const email = process.env.TEST_EMAIL;
-const password = process.env.TEST_PASSWORD;
+const localEnv = process.env.TEST_EMAIL;
 
 // React islands SSR with an `ssr` attribute that Astro removes once hydrated.
 async function waitHydrated(page: Page) {
   await expect(page.locator("astro-island[ssr]")).toHaveCount(0, { timeout: 15000 });
 }
 
-async function signIn(page: Page) {
-  await page.goto("/auth/signin");
-  await waitHydrated(page);
-  await page.getByLabel("Email").fill(email ?? "");
-  await page.getByLabel("Password", { exact: true }).fill(password ?? "");
-  await page.getByRole("button", { name: "Sign in" }).click();
-  await page.waitForURL("/");
-}
-
-test.describe("Delete saved plan (requires TEST_EMAIL / TEST_PASSWORD)", () => {
-  test.skip(!email || !password, "Set TEST_EMAIL and TEST_PASSWORD env vars to run this test");
+test.describe("Delete saved plan (requires TEST_EMAIL + local Supabase/Mailpit)", () => {
+  test.skip(!localEnv, "Set TEST_EMAIL (and run local Supabase) to run this test");
 
   test("confirm dialog gates deletion; confirming removes the row", async ({ page }) => {
-    await signIn(page);
+    await signInViaOtp(page, uniqueTestEmail());
 
     // Create a plan with a recognizable name.
     await page.goto("/dashboard");
