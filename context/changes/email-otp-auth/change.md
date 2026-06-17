@@ -1,7 +1,7 @@
 ---
 change_id: email-otp-auth
 title: Passwordless email OTP (6-digit code) authentication
-status: implemented
+status: impl_reviewed
 created: 2026-06-17
 updated: 2026-06-17
 archived_at: null

@@ -242,6 +242,15 @@ Negligible; OTP adds one email round-trip per login. The e2e's Inbucket read add
 - Supabase config: `supabase/config.toml` (`[auth.email]`, `[inbucket]`)
 - Infra risk (auth + Workers cookies): `context/foundation/infrastructure.md`
 
+## Addenda (post-implementation)
+
+Two approved deviations from the plan body above, reconciled here (Phase blocks left intact as the historical record):
+
+1. **Custom email template dropped** (Phase 1 #1 / Migration Notes are superseded). Supabase's default magic-link email already renders the 6-digit code ("Alternatively, enter the code: {{ .Token }}"), so the `[auth.email.template.magic_link]` config + `supabase/templates/magic_link.html` were removed in Phase 3. **There is no production email-template manual step** — the default template carries the code in prod too. (For prod, configure `site_url`/redirect URLs so the email's magic link, which we don't use, isn't a dead end.)
+2. **Mail server is Mailpit, not Inbucket.** Local Supabase serves Mailpit on the `[inbucket]` port (54324); the test helper (`tests/helpers/otp.ts`) uses Mailpit's API (`/api/v1/search`, `/api/v1/message/<id>`). All "Inbucket" references in specs were updated.
+
+3. **Follow-up (from impl-review F2, deferred):** for production, add Supabase Auth captcha and/or a per-IP rate limit on the OTP request endpoint — `signInWithOtp({ shouldCreateUser: true })` lets anyone trigger an account + email to any address (throttled only per-email by `max_frequency`). Acceptable for MVP.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
