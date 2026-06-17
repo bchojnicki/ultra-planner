@@ -17,6 +17,12 @@ export type Plan = {
   total_distance_km: number;
   total_elevation_gain_m: number;
   total_elevation_loss_m: number;
+  // Raw GPX-computed totals (NULL = no GPX imported). The total_* columns above
+  // are the user-correctable values; these hold the original GPX numbers so the
+  // per-metric calibration delta (corrected - gpx)/gpx stays computable.
+  gpx_distance_km: number | null;
+  gpx_elevation_gain_m: number | null;
+  gpx_elevation_loss_m: number | null;
   start_time: string;
   total_expected_minutes: number;
   hourly_fluid_ml: number;
@@ -29,7 +35,13 @@ export type Plan = {
 // Insert: server-managed columns (id, created_at, updated_at) are omitted.
 // user_id is required — the RLS WITH CHECK (user_id = auth.uid()) only permits a runner
 // to insert rows owned by themselves; the caller supplies their own id from the session.
-export type PlanInsert = Omit<Plan, "id" | "created_at" | "updated_at">;
+// The gpx_* columns are nullable (DB default NULL) — optional here; they are written
+// only by the GPX import flow, not at plan creation.
+export type PlanInsert = Omit<
+  Plan,
+  "id" | "created_at" | "updated_at" | "gpx_distance_km" | "gpx_elevation_gain_m" | "gpx_elevation_loss_m"
+> &
+  Partial<Pick<Plan, "gpx_distance_km" | "gpx_elevation_gain_m" | "gpx_elevation_loss_m">>;
 
 // Update: every mutable field is optional; id/user_id/timestamps are not user-editable.
 export type PlanUpdate = Partial<Omit<Plan, "id" | "user_id" | "created_at" | "updated_at">>;
@@ -40,6 +52,7 @@ export type AidStation = {
   plan_id: string;
   cumulative_distance_km: number;
   cumulative_elevation_gain_m: number;
+  cumulative_elevation_loss_m: number;
   time_spent_min: number;
   water_only: boolean;
   food_available: boolean;
@@ -60,6 +73,7 @@ export type AidStationInsert = Omit<
   | "id"
   | "created_at"
   | "updated_at"
+  | "cumulative_elevation_loss_m"
   | "time_spent_min"
   | "water_only"
   | "food_available"
@@ -72,6 +86,7 @@ export type AidStationInsert = Omit<
   Partial<
     Pick<
       AidStation,
+      | "cumulative_elevation_loss_m"
       | "time_spent_min"
       | "water_only"
       | "food_available"

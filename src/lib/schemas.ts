@@ -26,6 +26,7 @@ export const planUpdateSchema = z.strictObject({
 export const aidStationCreateSchema = z.strictObject({
   cumulative_distance_km: nonNegative,
   cumulative_elevation_gain_m: nonNegative,
+  cumulative_elevation_loss_m: nonNegative.optional(),
   time_spent_min: nonNegative.optional(),
   water_only: z.boolean().optional(),
   food_available: z.boolean().optional(),
@@ -34,6 +35,29 @@ export const aidStationCreateSchema = z.strictObject({
   rest_area: z.boolean().optional(),
   support_crew_allowed: z.boolean().optional(),
   notes: z.string().nullable().optional(),
+});
+
+// GPX import (gpx-import). The dedicated import endpoint receives the raw
+// GPX-computed totals (the calibration delta's denominator), the corrected
+// totals to write onto the plan, and the projected waypoint stations. plan_id
+// comes from the route param, not the body. gpx_* are written only here — they
+// are intentionally absent from planUpdateSchema so autosave can never overwrite
+// the delta denominator.
+const gpxStationSchema = z.strictObject({
+  cumulative_distance_km: nonNegative,
+  cumulative_elevation_gain_m: nonNegative,
+  cumulative_elevation_loss_m: nonNegative,
+  notes: z.string().nullable().optional(),
+});
+
+export const gpxImportSchema = z.strictObject({
+  gpx_distance_km: nonNegative,
+  gpx_elevation_gain_m: nonNegative,
+  gpx_elevation_loss_m: nonNegative,
+  total_distance_km: nonNegative,
+  total_elevation_gain_m: nonNegative,
+  total_elevation_loss_m: nonNegative,
+  stations: z.array(gpxStationSchema),
 });
 
 // Gear catalog (S-03). A gear item create requires kind + name; the per-unit
@@ -77,6 +101,7 @@ export const gearSelectionUpsertSchema = z.strictObject({
 
 export type PlanUpdateInput = z.infer<typeof planUpdateSchema>;
 export type AidStationCreateInput = z.infer<typeof aidStationCreateSchema>;
+export type GpxImportInput = z.infer<typeof gpxImportSchema>;
 export type GearItemCreateInput = z.infer<typeof gearItemCreateSchema>;
 export type GearItemUpdateInput = z.infer<typeof gearItemUpdateSchema>;
 export type GearSelectionUpsertInput = z.infer<typeof gearSelectionUpsertSchema>;
