@@ -1,0 +1,50 @@
+---
+import type { GearItem } from "@/types";
+import { GEAR_FIELD_LABELS, GEAR_KIND_FIELDS, GEAR_KIND_LABELS, GEAR_KIND_ORDER } from "@/lib/gear-kinds";
+
+// Read-only gear catalog (S-04). Lists each item with its kind, name, and the
+// per-unit nutrition fields relevant to its kind — no inputs/delete. Empty state
+// mirrors the editor's "table shows gram/ml targets" hint.
+interface Props {
+  items: GearItem[];
+}
+
+const { items } = Astro.props;
+const order = (k: GearItem["kind"]) => GEAR_KIND_ORDER.indexOf(k);
+const sorted = [...items].sort((a, b) => order(a.kind) - order(b.kind));
+
+const fieldValue = (item: GearItem, field: (typeof GEAR_KIND_FIELDS)[GearItem["kind"]][number]): string => {
+  const v = item[field];
+  return v === null ? "—" : String(v);
+};
+---
+
+<section class="mb-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+  <h2 class="mb-4 text-lg font-semibold">Gear</h2>
+  {
+    sorted.length === 0 ? (
+      <p class="text-sm text-blue-100/50">No gear — the plan table shows gram/ml targets.</p>
+    ) : (
+      <ul class="space-y-3">
+        {sorted.map((item) => (
+          <li class="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+            <div class="mb-2 flex items-baseline justify-between gap-2">
+              <span class="font-medium">{item.name}</span>
+              <span class="text-xs font-medium tracking-wide text-purple-200/80 uppercase">
+                {GEAR_KIND_LABELS[item.kind]}
+              </span>
+            </div>
+            <dl class="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+              {GEAR_KIND_FIELDS[item.kind].map((field) => (
+                <div class="flex gap-1">
+                  <dt class="text-blue-100/60">{GEAR_FIELD_LABELS[field]}:</dt>
+                  <dd class="font-medium">{fieldValue(item, field)}</dd>
+                </div>
+              ))}
+            </dl>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</section>

@@ -1,0 +1,43 @@
+---
+import type { AidStation } from "@/types";
+import { enabledFacilities } from "@/lib/aid-station-facilities";
+
+// Read-only aid-station list (S-04). Sorted by cumulative distance; facility
+// badges, rest time, and crew notes shown as static content — no add/delete.
+interface Props {
+  stations: AidStation[];
+}
+
+const { stations } = Astro.props;
+const sorted = [...stations].sort((a, b) => a.cumulative_distance_km - b.cumulative_distance_km);
+---
+
+<section class="mb-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
+  <h2 class="mb-4 text-lg font-semibold">Aid stations</h2>
+  {
+    sorted.length === 0 ? (
+      <p class="text-sm text-blue-100/50">No aid stations — the plan runs start to finish as a single segment.</p>
+    ) : (
+      <ul class="space-y-2">
+        {sorted.map((s) => (
+          <li class="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <span class="font-medium">
+                {s.cumulative_distance_km} km · {s.cumulative_elevation_gain_m} m gain
+              </span>
+              {s.time_spent_min > 0 ? <span class="text-xs text-blue-100/50">Rest {s.time_spent_min} min</span> : null}
+            </div>
+            {enabledFacilities(s).length > 0 ? (
+              <div class="mt-2 flex flex-wrap gap-1">
+                {enabledFacilities(s).map((label) => (
+                  <span class="rounded bg-white/10 px-1.5 py-0.5 text-xs text-blue-100/70">{label}</span>
+                ))}
+              </div>
+            ) : null}
+            {s.notes ? <p class="mt-2 text-xs text-blue-100/40">{s.notes}</p> : null}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</section>

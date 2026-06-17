@@ -1,0 +1,35 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import SignInForm from "@/components/auth/SignInForm";
+
+// Passwordless email-OTP sign-in (email-otp-auth / S-06). The flow is server-driven:
+// request-code redirects here with ?step=verify&email=…; verify-code redirects to /.
+const params = Astro.url.searchParams;
+const email = params.get("email") ?? "";
+const error = params.get("error");
+// Only show the code step when we actually have an email to verify against;
+// a bare ?step=verify (direct hit) falls back to the email step.
+const step: "email" | "verify" = params.get("step") === "verify" && email ? "verify" : "email";
+
+const heading = step === "verify" ? "Enter your code" : "Sign in";
+---
+
+<Layout title={heading}>
+  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
+    <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+      <h1
+        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
+      >
+        {heading}
+      </h1>
+      <SignInForm step={step} email={email} serverError={error} client:load />
+      {
+        step === "email" ? (
+          <p class="mt-4 text-center text-sm text-blue-100/60">
+            New here? Just enter your email — we'll send a one-time code, no password needed.
+          </p>
+        ) : null
+      }
+    </div>
+  </div>
+</Layout>
