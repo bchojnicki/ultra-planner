@@ -241,11 +241,11 @@ No migration. The delete RLS policy and all child-table cascades already exist f
 
 #### Automated
 
-- [x] 3.1 New e2e passes: `npx playwright test tests/plan-delete.spec.ts`
-- [x] 3.2 Full e2e suite green: `npx playwright test`
-- [x] 3.3 Integration suite green incl. new case: `npx vitest run tests/integration`
-- [x] 3.4 Linting passes: `npm run lint`
+- [x] 3.1 New e2e passes: `npx playwright test tests/plan-delete.spec.ts` — 6b562a5
+- [x] 3.2 Full e2e suite green: `npx playwright test` — 6b562a5
+- [x] 3.3 Integration suite green incl. new case: `npx vitest run tests/integration` — 6b562a5
+- [x] 3.4 Linting passes: `npm run lint` — 6b562a5
 
 #### Manual
 
-- [x] 3.5 The e2e is skipped (not failed) when `TEST_EMAIL`/`TEST_PASSWORD` are unset
+- [x] 3.5 The e2e is skipped (not failed) when `TEST_EMAIL`/`TEST_PASSWORD` are unset — 6b562a5
