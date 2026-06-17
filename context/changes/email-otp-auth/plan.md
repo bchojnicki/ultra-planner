@@ -250,29 +250,29 @@ Negligible; OTP adds one email round-trip per login. The e2e's Inbucket read add
 
 #### Automated
 
-- [x] 1.1 Type checking / build passes: `npx astro sync && npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.1 Type checking / build passes: `npx astro sync && npm run build` — 8d33e14
+- [x] 1.2 Linting passes: `npm run lint` — 8d33e14
 
 #### Manual
 
-- [x] 1.3 `request-code` sends an Inbucket email containing a 6-digit code (after local restart)
-- [x] 1.4 `verify-code` with the code redirects to `/` and sets a session cookie; wrong code redirects back with an error
-- [x] 1.5 A rapid second request surfaces a friendly rate-limit message, not a 500
+- [x] 1.3 `request-code` sends an Inbucket email containing a 6-digit code (after local restart) — 8d33e14
+- [x] 1.4 `verify-code` with the code redirects to `/` and sets a session cookie; wrong code redirects back with an error — 8d33e14
+- [x] 1.5 A rapid second request surfaces a friendly rate-limit message, not a 500 — 8d33e14
 
 ### Phase 2: Passwordless UI + remove password scaffold
 
 #### Automated
 
-- [ ] 2.1 Type checking / build passes: `npx astro sync && npm run build`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 No references to deleted paths: `grep -rE "auth/signup|confirm-email|PasswordToggle|signInWithPassword|SignUpForm" src/` returns nothing
+- [x] 2.1 Type checking / build passes: `npx astro sync && npm run build`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 No references to deleted paths: `grep -rE "auth/signup|confirm-email|PasswordToggle|signInWithPassword|SignUpForm" src/` returns nothing
 
 #### Manual
 
-- [ ] 2.4 `/auth/signin` shows an email-only form; valid email advances to the code step
-- [ ] 2.5 Inbucket code signs in and lands on the dashboard; new email creates an account on first use
-- [ ] 2.6 Wrong/expired code shows inline error; resend works after cooldown; "different email" returns to email step
-- [ ] 2.7 `/auth/signup` + `/auth/confirm-email` 404; sign-out works; unauth `/dashboard` redirects to `/auth/signin`
+- [x] 2.4 `/auth/signin` shows an email-only form; valid email advances to the code step
+- [x] 2.5 Inbucket code signs in and lands on the dashboard; new email creates an account on first use
+- [x] 2.6 Wrong/expired code shows inline error; resend works after cooldown; "different email" returns to email step
+- [x] 2.7 `/auth/signup` + `/auth/confirm-email` 404; sign-out works; unauth `/dashboard` redirects to `/auth/signin`
 
 ### Phase 3: Tests + seed reconciliation
 

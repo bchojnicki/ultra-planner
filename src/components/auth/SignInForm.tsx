@@ -1,46 +1,117 @@
-import React, { useState } from "react";
-import { Mail, Lock, LogIn } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Mail, KeyRound, LogIn, Send } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
-import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
 
+// Cooldown (seconds) before the "Resend code" control re-enables. Discourages
+// rapid re-requests that would hit Supabase's send rate limit.
+const RESEND_COOLDOWN_SECONDS = 30;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 interface Props {
+  // Driven by signin.astro from the URL: "email" (request a code) or "verify" (enter it).
+  step?: "email" | "verify";
+  email?: string;
   serverError?: string | null;
 }
 
-export default function SignInForm({ serverError }: Props) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+// Passwordless sign-in (email-otp-auth / S-06). Two states on one page:
+//   email  → POST /api/auth/request-code → server redirects to ?step=verify&email=…
+//   verify → POST /api/auth/verify-code  → server sets the session cookie, redirects to /
+// Sign-up and sign-in are the same flow (the server creates the user on first code).
+export default function SignInForm({ step = "email", email: initialEmail = "", serverError }: Props) {
+  const [email, setEmail] = useState(initialEmail);
+  const [token, setToken] = useState("");
+  const [errors, setErrors] = useState<{ email?: string; token?: string }>({});
 
-  function validate() {
-    const next: typeof errors = {};
+  // On the verify step a code was just sent, so start the resend cooldown.
+  const [cooldown, setCooldown] = useState(step === "verify" ? RESEND_COOLDOWN_SECONDS : 0);
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => {
+      setCooldown((c) => c - 1);
+    }, 1000);
+    return () => {
+      clearTimeout(t);
+    };
+  }, [cooldown]);
+
+  function handleEmailSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     if (!email.trim()) {
-      next.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      next.email = "Enter a valid email address";
-    }
-    if (!password) {
-      next.password = "Password is required";
-    }
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  }
-
-  function clearError(field: keyof typeof errors) {
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
-  }
-
-  function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
-    if (!validate()) {
+      setErrors({ email: "Email is required" });
+      e.preventDefault();
+    } else if (!EMAIL_RE.test(email)) {
+      setErrors({ email: "Enter a valid email address" });
       e.preventDefault();
     }
   }
 
+  function handleVerifySubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    if (!/^\d{6}$/.test(token.trim())) {
+      setErrors({ token: "Enter the 6-digit code from your email" });
+      e.preventDefault();
+    }
+  }
+
+  if (step === "verify") {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-blue-100/70">
+          We sent a 6-digit code to <span className="font-medium text-blue-100">{initialEmail}</span>. It expires in 1
+          hour.
+        </p>
+
+        <form
+          method="POST"
+          action="/api/auth/verify-code"
+          className="space-y-4"
+          onSubmit={handleVerifySubmit}
+          noValidate
+        >
+          <input type="hidden" name="email" value={initialEmail} />
+          <FormField
+            id="token"
+            name="token"
+            label="6-digit code"
+            type="text"
+            value={token}
+            onChange={(v) => {
+              setToken(v);
+              if (errors.token) setErrors({});
+            }}
+            placeholder="123456"
+            error={errors.token}
+            icon={<KeyRound className="size-4" />}
+          />
+          <ServerError message={serverError} />
+          <SubmitButton pendingText="Verifying..." icon={<LogIn className="size-4" />}>
+            Verify &amp; sign in
+          </SubmitButton>
+        </form>
+
+        <div className="flex items-center justify-between text-sm">
+          <form method="POST" action="/api/auth/request-code">
+            <input type="hidden" name="email" value={initialEmail} />
+            <button
+              type="submit"
+              disabled={cooldown > 0}
+              className="text-purple-300 hover:underline disabled:cursor-not-allowed disabled:text-blue-100/40 disabled:no-underline"
+            >
+              {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+            </button>
+          </form>
+          <a href="/auth/signin" className="text-blue-100/60 hover:underline">
+            Use a different email
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form method="POST" action="/api/auth/signin" className="space-y-4" onSubmit={handleSubmit} noValidate>
+    <form method="POST" action="/api/auth/request-code" className="space-y-4" onSubmit={handleEmailSubmit} noValidate>
       <FormField
         id="email"
         type="email"
@@ -48,39 +119,15 @@ export default function SignInForm({ serverError }: Props) {
         value={email}
         onChange={(v) => {
           setEmail(v);
-          clearError("email");
+          if (errors.email) setErrors({});
         }}
         placeholder="you@example.com"
         error={errors.email}
         icon={<Mail className="size-4" />}
       />
-
-      <FormField
-        id="password"
-        label="Password"
-        type={showPassword ? "text" : "password"}
-        value={password}
-        onChange={(v) => {
-          setPassword(v);
-          clearError("password");
-        }}
-        placeholder="Your password"
-        error={errors.password}
-        icon={<Lock className="size-4" />}
-        endContent={
-          <PasswordToggle
-            visible={showPassword}
-            onToggle={() => {
-              setShowPassword(!showPassword);
-            }}
-          />
-        }
-      />
-
       <ServerError message={serverError} />
-
-      <SubmitButton pendingText="Signing in..." icon={<LogIn className="size-4" />}>
-        Sign in
+      <SubmitButton pendingText="Sending code..." icon={<Send className="size-4" />}>
+        Send code
       </SubmitButton>
     </form>
   );
