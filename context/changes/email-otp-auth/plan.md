@@ -278,12 +278,12 @@ Negligible; OTP adds one email round-trip per login. The e2e's Inbucket read add
 
 #### Automated
 
-- [x] 3.1 Auth spec passes: `npx playwright test tests/auth.spec.ts`
-- [x] 3.2 Full e2e suite green: `npx playwright test`
-- [x] 3.3 Integration suite still green: `npx vitest run tests/integration`
-- [x] 3.4 Linting passes: `npm run lint`
+- [x] 3.1 Auth spec passes: `npx playwright test tests/auth.spec.ts` — 00980fb
+- [x] 3.2 Full e2e suite green: `npx playwright test` — 00980fb
+- [x] 3.3 Integration suite still green: `npx vitest run tests/integration` — 00980fb
+- [x] 3.4 Linting passes: `npm run lint` — 00980fb
 
 #### Manual
 
-- [x] 3.5 Gated specs skip (not fail) when `TEST_EMAIL` is unset
-- [x] 3.6 Inbucket-backed success path is reliable across a couple of runs
+- [x] 3.5 Gated specs skip (not fail) when `TEST_EMAIL` is unset — 00980fb
+- [x] 3.6 Inbucket-backed success path is reliable across a couple of runs — 00980fb
