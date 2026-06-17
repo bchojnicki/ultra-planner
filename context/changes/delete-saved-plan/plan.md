@@ -225,27 +225,27 @@ No migration. The delete RLS policy and all child-table cascades already exist f
 
 #### Automated
 
-- [x] 2.1 Type checking / build passes: `npx astro sync && npm run build`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Unit/integration suites still green: `npx vitest run tests/unit tests/integration`
+- [x] 2.1 Type checking / build passes: `npx astro sync && npm run build` — 2fe7a24
+- [x] 2.2 Linting passes: `npm run lint` — 2fe7a24
+- [x] 2.3 Unit/integration suites still green: `npx vitest run tests/unit tests/integration` — 2fe7a24
 
 #### Manual
 
-- [x] 2.4 Each row has a delete control; clicking opens a modal naming the plan
-- [x] 2.5 Confirming removes the row immediately (no reload); deleting the last plan reveals the empty-state
-- [x] 2.6 Cancel, Escape, and backdrop click dismiss without deleting
-- [x] 2.7 A failed delete keeps the row + shows an inline error; control disabled while in flight
-- [x] 2.8 "New plan" and sign-out still work
+- [x] 2.4 Each row has a delete control; clicking opens a modal naming the plan — 2fe7a24
+- [x] 2.5 Confirming removes the row immediately (no reload); deleting the last plan reveals the empty-state — 2fe7a24
+- [x] 2.6 Cancel, Escape, and backdrop click dismiss without deleting — 2fe7a24
+- [x] 2.7 A failed delete keeps the row + shows an inline error; control disabled while in flight — 2fe7a24
+- [x] 2.8 "New plan" and sign-out still work — 2fe7a24
 
 ### Phase 3: Tests
 
 #### Automated
 
-- [ ] 3.1 New e2e passes: `npx playwright test tests/plan-delete.spec.ts`
-- [ ] 3.2 Full e2e suite green: `npx playwright test`
-- [ ] 3.3 Integration suite green incl. new case: `npx vitest run tests/integration`
-- [ ] 3.4 Linting passes: `npm run lint`
+- [x] 3.1 New e2e passes: `npx playwright test tests/plan-delete.spec.ts`
+- [x] 3.2 Full e2e suite green: `npx playwright test`
+- [x] 3.3 Integration suite green incl. new case: `npx vitest run tests/integration`
+- [x] 3.4 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.5 The e2e is skipped (not failed) when `TEST_EMAIL`/`TEST_PASSWORD` are unset
+- [x] 3.5 The e2e is skipped (not failed) when `TEST_EMAIL`/`TEST_PASSWORD` are unset

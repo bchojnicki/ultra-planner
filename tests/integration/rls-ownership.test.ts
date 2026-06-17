@@ -221,4 +221,17 @@ describe("RLS owner isolation", () => {
     expect(stations).toHaveLength(1);
     expect(stations?.[0]?.id).toBe(aidStationAId);
   });
+
+  // Positive owner-delete (S-05): runner A can delete its own plan. Kept last so
+  // earlier assertions still see planAId. Complements the negative case above
+  // ("runner B's DELETE of runner A's plan affects no rows").
+  it("(e) runner A can delete its own plan", async () => {
+    const { data, error } = await clientA.from("plans").delete().eq("id", planAId).select();
+    expect(error).toBeNull();
+    expect(data).toHaveLength(1);
+
+    // It's gone for A on a follow-up read.
+    const { data: gone } = await clientA.from("plans").select("id").eq("id", planAId);
+    expect(gone).toEqual([]);
+  });
 });
