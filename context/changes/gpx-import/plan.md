@@ -469,26 +469,26 @@ stations. No backfill required. No rollback data loss beyond the new columns.
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly (`npx supabase db reset` / `migration up`)
-- [x] 1.2 Type checking passes (`npx astro sync && npm run build`)
-- [x] 1.3 Linting passes (`npm run lint`)
+- [x] 1.1 Migration applies cleanly (`npx supabase db reset` / `migration up`) — 1166e95
+- [x] 1.2 Type checking passes (`npx astro sync && npm run build`) — 1166e95
+- [x] 1.3 Linting passes (`npm run lint`) — 1166e95
 
 #### Manual
 
-- [x] 1.4 New columns exist with correct types/defaults in local DB
-- [x] 1.5 Existing plans/stations still load
+- [x] 1.4 New columns exist with correct types/defaults in local DB — 1166e95
+- [x] 1.5 Existing plans/stations still load — 1166e95
 
 ### Phase 2: GPX Parse + Compute Module
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass (`npx vitest run tests/unit/gpx.test.ts`)
-- [ ] 2.2 Type checking passes (`npx astro sync && npm run build`)
-- [ ] 2.3 Linting passes (`npm run lint`)
+- [x] 2.1 Unit tests pass (`npx vitest run tests/unit/gpx.test.ts`)
+- [x] 2.2 Type checking passes (`npx astro sync && npm run build`)
+- [x] 2.3 Linting passes (`npm run lint`)
 
 #### Manual
 
-- [ ] 2.4 Real sample GPX yields plausible totals + expected stations/names
+- [x] 2.4 Real sample GPX yields plausible totals + expected stations/names
 
 ### Phase 3: Import Endpoint + Service
 
