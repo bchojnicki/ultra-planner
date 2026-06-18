@@ -98,6 +98,10 @@ export default function AidStationManager({ planId, initialStations, totalDistan
   const [editError, setEditError] = useState<string | null>(null);
   const [editStatus, setEditStatus] = useState<SaveStatus>("idle");
   const editTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Last-persisted snapshot of the station being edited (seeded at beginEdit,
+  // advanced on each successful save). Used to revert the row if the editor
+  // closes with an invalid distance, so a cancelled optimistic edit can't linger.
+  const editSnapshot = useRef<AidStation | null>(null);
 
   // Cancel any pending debounced PATCH if the island tears down.
   useEffect(() => {
@@ -169,6 +173,7 @@ export default function AidStationManager({ planId, initialStations, totalDistan
 
   function beginEdit(s: AidStation) {
     setEditingId(s.id);
+    editSnapshot.current = s;
     setEditError(null);
     setEditStatus("idle");
     setDraft({
@@ -197,6 +202,8 @@ export default function AidStationManager({ planId, initialStations, totalDistan
       });
       if (!res.ok) throw new Error(`patch failed: ${res.status}`);
       setEditStatus("saved");
+      // Advance the snapshot so a later revert reflects what's actually persisted.
+      if (editSnapshot.current?.id === id) editSnapshot.current = { ...editSnapshot.current, ...patch };
     } catch {
       setEditStatus("error");
     }
@@ -231,13 +238,22 @@ export default function AidStationManager({ planId, initialStations, totalDistan
   // distance moves the row) and emit. An invalid draft is discarded — the station
   // keeps its last persisted values.
   function endEdit() {
-    if (editingId && draft && !distanceError(editingId, draft.cumulative_distance_km)) {
-      if (editTimer.current) clearTimeout(editTimer.current);
-      void savePatch(editingId, buildPatch(draft));
+    let base = stations;
+    if (editingId && draft) {
+      if (distanceError(editingId, draft.cumulative_distance_km)) {
+        // Invalid distance → discard the draft and revert the row to its last
+        // persisted snapshot, so no un-saved optimistic value is left on screen.
+        const snap = editSnapshot.current;
+        if (snap) base = stations.map((s) => (s.id === editingId ? snap : s));
+      } else {
+        if (editTimer.current) clearTimeout(editTimer.current);
+        void savePatch(editingId, buildPatch(draft));
+      }
     }
-    const sorted = sortStations(stations);
+    const sorted = sortStations(base);
     setStations(sorted);
     onStationsChange?.(sorted);
+    editSnapshot.current = null;
     setEditingId(null);
     setDraft(null);
     setEditError(null);

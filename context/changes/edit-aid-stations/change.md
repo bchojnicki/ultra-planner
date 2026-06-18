@@ -4,6 +4,7 @@ title: Edit an existing aid station (and enrich GPX-imported ones)
 status: implemented
 created: 2026-06-18
 updated: 2026-06-18
+last_review: impl-review full-plan (APPROVED; F1 optimistic-revert fixed)
 archived_at: null
 ---
 
