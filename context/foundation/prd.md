@@ -1,9 +1,9 @@
 ---
 project: "Ultra Planner"
-version: 4
+version: 5
 status: draft
 created: 2026-05-19
-updated: 2026-06-17
+updated: 2026-06-18
 context_type: greenfield
 product_type: web-app
 target_scale:
@@ -166,6 +166,20 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 - If the runner dismisses the dialog without confirming, the plan is not deleted
 - The dashboard updates immediately after a confirmed deletion
 
+### US-10: Runner edits an aid station
+
+- **Given** a logged-in runner viewing their race plan with at least one aid station
+- **When** they open an existing aid station, change any of its fields (cumulative distance, cumulative elevation gain, cumulative elevation loss, time spent, facility checkboxes, crew notes), and confirm
+- **Then** the station is updated in place, re-sorted by cumulative distance if it changed, and the plan table reflects the recalculated segments
+
+#### Acceptance Criteria
+
+- Each aid station in the list has a visible edit action that opens its current values for editing
+- Every field editable at creation is editable here, including cumulative elevation loss (added with GPX import)
+- This is the primary way to enrich the bare aid stations created by a GPX waypoint import — those arrive with distance/elevation/name only, no facilities, time, or crew notes
+- On save the station re-sorts by cumulative distance if the distance changed, and the plan table updates without the runner re-triggering generation
+- Editing is auto-saved consistent with the rest of the plan; no explicit save action beyond confirming the edit
+
 ## Functional Requirements
 
 ### Authentication
@@ -196,6 +210,9 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 
 - FR-006: Runner can delete a previously added aid station. Priority: must-have
   > Socrates: Counter-argument considered: "without edit, delete-then-re-add is the only error correction path." Resolution: kept — delete is the must-have minimum. Inline edit is a desirable companion but not blocking for MVP.
+
+- FR-007: Runner can edit any field of a previously added aid station (cumulative distance, cumulative elevation gain, cumulative elevation loss, time spent, facility checkboxes, crew notes). Edits update the station in place and re-derive the affected segments. Priority: should-have
+  > Socrates: Reactivates the inline-edit companion deferred at FR-006 ("desirable companion but not blocking for MVP"). Motivated by GPX import (change `gpx-import`, 2026-06-18): waypoint import creates aid stations with only distance/elevation/name, so edit becomes the path to add facilities, rest time, and crew notes to imported stations rather than delete-and-re-add.
 
 ### Plan Generation
 
