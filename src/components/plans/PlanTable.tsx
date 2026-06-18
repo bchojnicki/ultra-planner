@@ -2,6 +2,8 @@ import { useState, useSyncExternalStore } from "react";
 import type { GearAllocationResult, GearItem, GearSegmentSelection, PlanTableResult } from "@/types";
 import type { SaveStatus } from "@/components/hooks/useAutosave";
 import { enabledFacilities } from "@/lib/aid-station-facilities";
+import HelpTooltip from "@/components/ui/HelpTooltip";
+import { FIELD_HELP } from "@/lib/field-help";
 
 const SELECTION_STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",
@@ -229,12 +231,44 @@ export default function PlanTable({
               <th className="py-2 pr-4">Dist</th>
               <th className="py-2 pr-4">Gain</th>
               <th className="py-2 pr-4">Loss</th>
-              <th className="py-2 pr-4">Time</th>
-              <th className="py-2 pr-4">Arrival</th>
-              <th className="py-2 pr-4">Fluid</th>
-              <th className="py-2 pr-4">Carbs</th>
-              <th className="py-2 pr-4">Sodium</th>
-              {gearActive ? <th className="py-2 pr-4">Fuel</th> : null}
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Time
+                  <HelpTooltip text={FIELD_HELP.col_time} label="Time" />
+                </span>
+              </th>
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Arrival
+                  <HelpTooltip text={FIELD_HELP.col_arrival} label="Arrival" />
+                </span>
+              </th>
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Fluid
+                  <HelpTooltip text={FIELD_HELP.col_fluid} label="Fluid" />
+                </span>
+              </th>
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Carbs
+                  <HelpTooltip text={FIELD_HELP.col_carbs} label="Carbs" />
+                </span>
+              </th>
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Sodium
+                  <HelpTooltip text={FIELD_HELP.col_sodium} label="Sodium" />
+                </span>
+              </th>
+              {gearActive ? (
+                <th className="py-2 pr-4">
+                  <span className="inline-flex items-center">
+                    Fuel
+                    <HelpTooltip text={FIELD_HELP.col_fuel} label="Fuel" />
+                  </span>
+                </th>
+              ) : null}
               <th className="py-2">Aid station</th>
             </tr>
           </thead>

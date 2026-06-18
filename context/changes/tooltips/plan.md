@@ -244,30 +244,30 @@ None — additive UI only, no data or schema changes.
 
 #### Automated
 
-- [x] 2.1 Type checking passes (`npx tsc --noEmit`)
-- [x] 2.2 Linting passes (`npm run lint`)
-- [x] 2.3 Build succeeds (`npm run build`)
-- [x] 2.4 Existing Playwright suite passes (`npx playwright test`)
+- [x] 2.1 Type checking passes (`npx tsc --noEmit`) — 13a1c79
+- [x] 2.2 Linting passes (`npm run lint`) — 13a1c79
+- [x] 2.3 Build succeeds (`npm run build`) — 13a1c79
+- [x] 2.4 Existing Playwright suite passes (`npx playwright test`) — 13a1c79
 
 #### Manual
 
-- [x] 2.5 Every non-obvious field in all three forms shows correct help on hover/focus/touch
-- [x] 2.6 Skipped fields (Plan name, gear Name, Crew notes, facilities) have no "?"
-- [x] 2.7 Tab reaches each "?"; label still focuses its input
-- [x] 2.8 No regression in autosave, add/delete, and the aid-station edit panel save/validate
+- [x] 2.5 Every non-obvious field in all three forms shows correct help on hover/focus/touch — 13a1c79
+- [x] 2.6 Skipped fields (Plan name, gear Name, Crew notes, facilities) have no "?" — 13a1c79
+- [x] 2.7 Tab reaches each "?"; label still focuses its input — 13a1c79
+- [x] 2.8 No regression in autosave, add/delete, and the aid-station edit panel save/validate — 13a1c79
 
 ### Phase 3: PlanTable headers
 
 #### Automated
 
-- [ ] 3.1 Type checking passes (`npx tsc --noEmit`)
-- [ ] 3.2 Linting passes (`npm run lint`)
-- [ ] 3.3 Build succeeds (`npm run build`)
-- [ ] 3.4 Existing Playwright suite passes (`npx playwright test`)
+- [x] 3.1 Type checking passes (`npx tsc --noEmit`)
+- [x] 3.2 Linting passes (`npm run lint`)
+- [x] 3.3 Build succeeds (`npm run build`)
+- [x] 3.4 Existing Playwright suite passes (`npx playwright test`)
 
 #### Manual
 
-- [ ] 3.5 Time, Arrival, Fuel, Fluid, Carbs, Sodium headers show correct help
-- [ ] 3.6 Segment, Dist, Gain, Loss, Aid station headers have no "?"
-- [ ] 3.7 Header tooltips work in both editable and read-only table renderings
-- [ ] 3.8 Table layout / horizontal scroll not broken
+- [x] 3.5 Time, Arrival, Fuel, Fluid, Carbs, Sodium headers show correct help
+- [x] 3.6 Segment, Dist, Gain, Loss, Aid station headers have no "?"
+- [x] 3.7 Header tooltips work in both editable and read-only table renderings
+- [x] 3.8 Table layout / horizontal scroll not broken
