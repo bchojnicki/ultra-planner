@@ -70,13 +70,15 @@ export default function GpxImport({ planId, hasExistingData, onImported }: Props
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          // Raw GPX values are the calibration denominator — kept at full precision.
           gpx_distance_km,
           gpx_elevation_gain_m,
           gpx_elevation_loss_m,
-          // Corrected totals start equal to the raw GPX values; the runner edits them.
-          total_distance_km: gpx_distance_km,
-          total_elevation_gain_m: gpx_elevation_gain_m,
-          total_elevation_loss_m: gpx_elevation_loss_m,
+          // Corrected totals start from the GPX values, rounded for display: distance
+          // to 100 m (0.1 km), elevation to whole metres. The runner edits them after.
+          total_distance_km: Math.round(gpx_distance_km * 10) / 10,
+          total_elevation_gain_m: Math.round(gpx_elevation_gain_m),
+          total_elevation_loss_m: Math.round(gpx_elevation_loss_m),
           stations,
         }),
       });

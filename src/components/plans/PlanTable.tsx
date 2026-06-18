@@ -27,6 +27,16 @@ function fmtClock(iso: string): string {
   return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+// Display rounding — distance to 100 m (0.1 km), elevation to whole metres. The
+// calc keeps full float precision; rounding is a display concern (accuracy guardrail).
+function fmtKm(km: number): string {
+  return String(Math.round(km * 10) / 10);
+}
+
+function fmtM(m: number): string {
+  return String(Math.round(m));
+}
+
 function unitsOf(alloc: GearAllocationResult): Record<string, number> {
   return Object.fromEntries(alloc.units.map((u) => [u.gear_item_id, u.units]));
 }
@@ -235,9 +245,9 @@ export default function PlanTable({
                       </button>
                     ) : null}
                   </td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{r.segment_distance_km} km</td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{r.segment_elevation_gain_m} m</td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{r.segment_elevation_loss_m} m</td>
+                  <td className="py-2 pr-4 whitespace-nowrap">{fmtKm(r.segment_distance_km)} km</td>
+                  <td className="py-2 pr-4 whitespace-nowrap">{fmtM(r.segment_elevation_gain_m)} m</td>
+                  <td className="py-2 pr-4 whitespace-nowrap">{fmtM(r.segment_elevation_loss_m)} m</td>
                   <td className="py-2 pr-4 whitespace-nowrap">{fmtDuration(r.moving_minutes)}</td>
                   <td className="py-2 pr-4 whitespace-nowrap">{fmtClock(r.arrival)}</td>
                   {alloc ? (
@@ -305,9 +315,9 @@ export default function PlanTable({
           <tfoot>
             <tr data-testid="plan-totals" className="border-t-2 border-white/20 font-medium">
               <td className="py-2 pr-4">Total</td>
-              <td className="py-2 pr-4">{totals.distance_km} km</td>
-              <td className="py-2 pr-4">{totals.elevation_gain_m} m</td>
-              <td className="py-2 pr-4">{totals.elevation_loss_m} m</td>
+              <td className="py-2 pr-4">{fmtKm(totals.distance_km)} km</td>
+              <td className="py-2 pr-4">{fmtM(totals.elevation_gain_m)} m</td>
+              <td className="py-2 pr-4">{fmtM(totals.elevation_loss_m)} m</td>
               <td className="py-2 pr-4">{fmtDuration(totals.moving_minutes)}</td>
               <td className="py-2 pr-4">{fmtClock(totals.finish_arrival)}</td>
               <td className="py-2 pr-4">{Math.round(totals.fluid_ml)} ml</td>

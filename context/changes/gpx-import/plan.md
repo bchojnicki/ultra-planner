@@ -520,8 +520,8 @@ stations. No backfill required. No rollback data loss beyond the new columns.
 #### Automated
 
 - [ ] 5.1 E2E passes (`npx playwright test tests/gpx-import.spec.ts`)
-- [x] 5.2 Type checking passes (`npx astro sync && npm run build`)
-- [x] 5.3 Linting passes (`npm run lint`)
+- [x] 5.2 Type checking passes (`npx astro sync && npm run build`) — f21fe43
+- [x] 5.3 Linting passes (`npm run lint`) — f21fe43
 
 #### Manual
 

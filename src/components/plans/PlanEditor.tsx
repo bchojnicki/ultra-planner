@@ -144,7 +144,7 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
   return (
     <>
       <RaceSetupForm
-        key={importKey}
+        key={`race-${importKey}`}
         plan={params}
         onParamsChange={setParams}
         onGpxImported={onGpxImported}
@@ -152,7 +152,7 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
       />
       <GearProfileForm planId={plan.id} initialItems={initialGearItems} onItemsChange={setGearItems} />
       <AidStationManager
-        key={importKey}
+        key={`stations-${importKey}`}
         planId={plan.id}
         initialStations={stations}
         onStationsChange={onStationsChange}

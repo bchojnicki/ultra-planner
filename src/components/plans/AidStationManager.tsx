@@ -224,10 +224,10 @@ export default function AidStationManager({ planId, initialStations, onStationsC
               className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm"
             >
               <div>
-                <span className="font-medium">{s.cumulative_distance_km} km</span>
-                <span className="text-blue-100/50"> · +{s.cumulative_elevation_gain_m} m</span>
+                <span className="font-medium">{Math.round(s.cumulative_distance_km * 10) / 10} km</span>
+                <span className="text-blue-100/50"> · +{Math.round(s.cumulative_elevation_gain_m)} m</span>
                 {s.cumulative_elevation_loss_m > 0 ? (
-                  <span className="text-blue-100/50"> · −{s.cumulative_elevation_loss_m} m</span>
+                  <span className="text-blue-100/50"> · −{Math.round(s.cumulative_elevation_loss_m)} m</span>
                 ) : null}
                 {enabledFacilities(s).length > 0 ? (
                   <span className="text-blue-100/50"> · {enabledFacilities(s).join(", ")}</span>
