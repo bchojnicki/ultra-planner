@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AidStation } from "@/types";
 import { AID_STATION_FLAGS as FLAGS, enabledFacilities } from "@/lib/aid-station-facilities";
+import type { SaveStatus } from "@/components/hooks/useAutosave";
 
 const inputCls =
   "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
@@ -17,10 +18,36 @@ const EMPTY_FLAGS: Flags = {
   support_crew_allowed: false,
 };
 
+// Editor draft: every field a string/bool, seeded from a station when its row opens.
+interface EditDraft {
+  cumulative_distance_km: string;
+  cumulative_elevation_gain_m: string;
+  cumulative_elevation_loss_m: string;
+  time_spent_min: string;
+  notes: string;
+  flags: Flags;
+}
+
+const EDIT_NUM_FIELDS: { key: keyof EditDraft; label: string }[] = [
+  { key: "cumulative_distance_km", label: "Cumulative distance (km)" },
+  { key: "cumulative_elevation_gain_m", label: "Cumulative elevation gain (m)" },
+  { key: "cumulative_elevation_loss_m", label: "Cumulative elevation loss (m)" },
+  { key: "time_spent_min", label: "Time at station (min)" },
+];
+
+const STATUS_TEXT: Record<SaveStatus, string> = {
+  idle: "",
+  saving: "Saving…",
+  saved: "Saved",
+  error: "Save failed — will retry on next change",
+};
+
 interface Props {
   planId: string;
   initialStations: AidStation[];
-  // Emits the new sorted list after a successful add/delete so a parent
+  // Upper bound for edit-time distance validation (the corrected total race distance).
+  totalDistanceKm?: number;
+  // Emits the new sorted list after a successful add/delete/edit so a parent
   // (PlanEditor) can recompute the live plan table.
   onStationsChange?: (stations: AidStation[]) => void;
 }
@@ -35,7 +62,26 @@ function sortStations(list: AidStation[]): AidStation[] {
   return [...list].sort((a, b) => a.cumulative_distance_km - b.cumulative_distance_km);
 }
 
-export default function AidStationManager({ planId, initialStations, onStationsChange }: Props) {
+// Build an AidStationUpdate-shaped patch from a draft. Numeric fields are included
+// only when well-formed; flags always; notes normalized ("" → null).
+function buildPatch(draft: EditDraft) {
+  return {
+    ...(num(draft.cumulative_distance_km) !== undefined
+      ? { cumulative_distance_km: Number(draft.cumulative_distance_km) }
+      : {}),
+    ...(num(draft.cumulative_elevation_gain_m) !== undefined
+      ? { cumulative_elevation_gain_m: Number(draft.cumulative_elevation_gain_m) }
+      : {}),
+    ...(num(draft.cumulative_elevation_loss_m) !== undefined
+      ? { cumulative_elevation_loss_m: Number(draft.cumulative_elevation_loss_m) }
+      : {}),
+    ...(num(draft.time_spent_min) !== undefined ? { time_spent_min: Number(draft.time_spent_min) } : {}),
+    ...draft.flags,
+    notes: draft.notes.trim() === "" ? null : draft.notes.trim(),
+  };
+}
+
+export default function AidStationManager({ planId, initialStations, totalDistanceKm = 0, onStationsChange }: Props) {
   const [stations, setStations] = useState<AidStation[]>(() => sortStations(initialStations));
   const [dist, setDist] = useState("");
   const [gain, setGain] = useState("");
@@ -45,6 +91,20 @@ export default function AidStationManager({ planId, initialStations, onStationsC
   const [flags, setFlags] = useState<Flags>(EMPTY_FLAGS);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  // Inline edit: one station open at a time.
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<EditDraft | null>(null);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editStatus, setEditStatus] = useState<SaveStatus>("idle");
+  const editTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cancel any pending debounced PATCH if the island tears down.
+  useEffect(() => {
+    return () => {
+      if (editTimer.current) clearTimeout(editTimer.current);
+    };
+  }, []);
 
   const canAdd = num(dist) !== undefined && num(gain) !== undefined && !busy;
 
@@ -94,6 +154,94 @@ export default function AidStationManager({ planId, initialStations, onStationsC
     } else {
       setError("Couldn't delete the station. Please try again.");
     }
+  }
+
+  // Distance is invalid when ≤ 0, ≥ total race distance, or duplicating another station.
+  function distanceError(id: string, value: string): string | null {
+    const d = num(value);
+    if (d === undefined || d <= 0) return "Distance must be greater than 0.";
+    if (totalDistanceKm > 0 && d >= totalDistanceKm)
+      return `Distance must be below the total race distance (${Math.round(totalDistanceKm * 10) / 10} km).`;
+    if (stations.some((s) => s.id !== id && s.cumulative_distance_km === d))
+      return "Another station is already at this distance.";
+    return null;
+  }
+
+  function beginEdit(s: AidStation) {
+    setEditingId(s.id);
+    setEditError(null);
+    setEditStatus("idle");
+    setDraft({
+      cumulative_distance_km: String(s.cumulative_distance_km),
+      cumulative_elevation_gain_m: String(s.cumulative_elevation_gain_m),
+      cumulative_elevation_loss_m: String(s.cumulative_elevation_loss_m),
+      time_spent_min: String(s.time_spent_min),
+      notes: s.notes ?? "",
+      flags: {
+        water_only: s.water_only,
+        food_available: s.food_available,
+        warm_meal: s.warm_meal,
+        drop_bag_available: s.drop_bag_available,
+        rest_area: s.rest_area,
+        support_crew_allowed: s.support_crew_allowed,
+      },
+    });
+  }
+
+  async function savePatch(id: string, patch: ReturnType<typeof buildPatch>) {
+    try {
+      const res = await fetch(`/api/aid-stations/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) throw new Error(`patch failed: ${res.status}`);
+      setEditStatus("saved");
+    } catch {
+      setEditStatus("error");
+    }
+  }
+
+  // A draft field changed. While the distance is invalid we freeze: show the error,
+  // don't touch the persisted list, and withhold the PATCH. When valid we apply the
+  // patch optimistically (so the table tracks live, in place — no re-sort yet) and
+  // debounce the save.
+  function onDraftChange(next: EditDraft) {
+    setDraft(next);
+    if (!editingId) return;
+    const distErr = distanceError(editingId, next.cumulative_distance_km);
+    setEditError(distErr);
+    if (distErr) {
+      if (editTimer.current) clearTimeout(editTimer.current);
+      setEditStatus("idle");
+      return;
+    }
+    const patch = buildPatch(next);
+    const optimistic = stations.map((s) => (s.id === editingId ? { ...s, ...patch } : s));
+    setStations(optimistic);
+    onStationsChange?.(optimistic);
+    if (editTimer.current) clearTimeout(editTimer.current);
+    setEditStatus("saving");
+    editTimer.current = setTimeout(() => {
+      void savePatch(editingId, patch);
+    }, 500);
+  }
+
+  // Close the editor: flush a final save if valid, then re-sort (so a changed
+  // distance moves the row) and emit. An invalid draft is discarded — the station
+  // keeps its last persisted values.
+  function endEdit() {
+    if (editingId && draft && !distanceError(editingId, draft.cumulative_distance_km)) {
+      if (editTimer.current) clearTimeout(editTimer.current);
+      void savePatch(editingId, buildPatch(draft));
+    }
+    const sorted = sortStations(stations);
+    setStations(sorted);
+    onStationsChange?.(sorted);
+    setEditingId(null);
+    setDraft(null);
+    setEditError(null);
+    setEditStatus("idle");
   }
 
   return (
@@ -217,34 +365,116 @@ export default function AidStationManager({ planId, initialStations, onStationsC
         {stations.length === 0 ? (
           <li className="text-sm text-blue-100/50">No aid stations yet.</li>
         ) : (
-          stations.map((s) => (
-            <li
-              key={s.id}
-              data-testid="station-row"
-              className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm"
-            >
-              <div>
-                <span className="font-medium">{Math.round(s.cumulative_distance_km * 10) / 10} km</span>
-                <span className="text-blue-100/50"> · +{Math.round(s.cumulative_elevation_gain_m)} m</span>
-                {s.cumulative_elevation_loss_m > 0 ? (
-                  <span className="text-blue-100/50"> · −{Math.round(s.cumulative_elevation_loss_m)} m</span>
-                ) : null}
-                {enabledFacilities(s).length > 0 ? (
-                  <span className="text-blue-100/50"> · {enabledFacilities(s).join(", ")}</span>
-                ) : null}
-                {s.notes ? <span className="text-blue-100/40"> · {s.notes}</span> : null}
-              </div>
-              <button
-                type="button"
-                data-testid="as-delete"
-                aria-label={`Delete station at ${s.cumulative_distance_km} km`}
-                onClick={() => void remove(s.id)}
-                className="ml-3 rounded-md border border-white/20 px-2 py-1 text-xs text-blue-100/70 transition-colors hover:bg-white/10"
+          stations.map((s) => {
+            const isEditing = editingId === s.id;
+            return (
+              <li
+                key={s.id}
+                data-testid="station-row"
+                className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm"
               >
-                Delete
-              </button>
-            </li>
-          ))
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-medium">{Math.round(s.cumulative_distance_km * 10) / 10} km</span>
+                    <span className="text-blue-100/50"> · +{Math.round(s.cumulative_elevation_gain_m)} m</span>
+                    {s.cumulative_elevation_loss_m > 0 ? (
+                      <span className="text-blue-100/50"> · −{Math.round(s.cumulative_elevation_loss_m)} m</span>
+                    ) : null}
+                    {enabledFacilities(s).length > 0 ? (
+                      <span className="text-blue-100/50"> · {enabledFacilities(s).join(", ")}</span>
+                    ) : null}
+                    {s.notes ? <span className="text-blue-100/40"> · {s.notes}</span> : null}
+                  </div>
+                  <div className="ml-3 flex shrink-0 gap-1">
+                    <button
+                      type="button"
+                      data-testid="as-edit"
+                      aria-expanded={isEditing}
+                      aria-label={`Edit station at ${s.cumulative_distance_km} km`}
+                      onClick={() => {
+                        if (isEditing) endEdit();
+                        else beginEdit(s);
+                      }}
+                      className="rounded-md border border-white/20 px-2 py-1 text-xs text-blue-100/70 transition-colors hover:bg-white/10"
+                    >
+                      {isEditing ? "Done" : "Edit"}
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="as-delete"
+                      aria-label={`Delete station at ${s.cumulative_distance_km} km`}
+                      onClick={() => void remove(s.id)}
+                      className="rounded-md border border-white/20 px-2 py-1 text-xs text-blue-100/70 transition-colors hover:bg-white/10"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                {isEditing && draft ? (
+                  <div data-testid="as-edit-panel" className="mt-3 space-y-3 border-t border-white/10 pt-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      {EDIT_NUM_FIELDS.map(({ key, label }) => (
+                        <div key={key}>
+                          <label className="mb-1 block text-xs text-blue-100/70">{label}</label>
+                          <input
+                            data-testid={`as-edit-${key}`}
+                            type="number"
+                            min="0"
+                            step="any"
+                            className={inputCls}
+                            value={draft[key] as string}
+                            onChange={(e) => {
+                              onDraftChange({ ...draft, [key]: e.target.value });
+                            }}
+                          />
+                        </div>
+                      ))}
+                      <div className="sm:col-span-2">
+                        <label className="mb-1 block text-xs text-blue-100/70">Crew notes</label>
+                        <input
+                          data-testid="as-edit-notes"
+                          className={inputCls}
+                          value={draft.notes}
+                          onChange={(e) => {
+                            onDraftChange({ ...draft, notes: e.target.value });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <fieldset>
+                      <legend className="mb-1 text-xs text-blue-100/70">Facilities</legend>
+                      <div className="flex flex-wrap gap-x-4 gap-y-2">
+                        {FLAGS.map(([key, label]) => (
+                          <label key={key} className="flex items-center gap-1.5 text-sm text-blue-100/80">
+                            <input
+                              type="checkbox"
+                              data-testid={`as-edit-flag-${key}`}
+                              checked={draft.flags[key]}
+                              onChange={(e) => {
+                                onDraftChange({ ...draft, flags: { ...draft.flags, [key]: e.target.checked } });
+                              }}
+                            />
+                            {label}
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <div className="flex items-center justify-between">
+                      <span data-testid="as-edit-status" className="text-xs text-blue-100/60" aria-live="polite">
+                        {STATUS_TEXT[editStatus]}
+                      </span>
+                      {editError ? (
+                        <span data-testid="as-edit-error" className="text-xs text-red-300">
+                          {editError}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+              </li>
+            );
+          })
         )}
       </ul>
     </section>

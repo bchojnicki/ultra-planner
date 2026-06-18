@@ -292,25 +292,25 @@ None — no schema/DB changes. `cumulative_elevation_loss_m` already exists from
 
 #### Automated
 
-- [x] 1.1 Integration test passes (`npx vitest run tests/integration/aid-station-edit.test.ts`)
-- [x] 1.2 Type checking passes (`npx astro sync && npm run build`)
-- [x] 1.3 Linting passes (`npm run lint`)
+- [x] 1.1 Integration test passes (`npx vitest run tests/integration/aid-station-edit.test.ts`) — afb403f
+- [x] 1.2 Type checking passes (`npx astro sync && npm run build`) — afb403f
+- [x] 1.3 Linting passes (`npm run lint`) — afb403f
 
 #### Manual
 
-- [x] 1.4 PATCH with a partial body updates only those fields; non-owned id → 404
+- [x] 1.4 PATCH with a partial body updates only those fields; non-owned id → 404 — afb403f
 
 ### Phase 2: Inline-edit UI + validation
 
 #### Automated
 
-- [ ] 2.1 E2E passes (`npx playwright test tests/aid-station-edit.spec.ts`)
-- [ ] 2.2 Type checking passes (`npx astro sync && npm run build`)
-- [ ] 2.3 Linting passes (`npm run lint`)
+- [x] 2.1 E2E passes (`npx playwright test tests/aid-station-edit.spec.ts`)
+- [x] 2.2 Type checking passes (`npx astro sync && npm run build`)
+- [x] 2.3 Linting passes (`npm run lint`)
 
 #### Manual
 
-- [ ] 2.4 Edit notes/facilities → autosaves, table updates, persists on reload
-- [ ] 2.5 Editing a GPX-imported bare station adds facilities/time/notes
-- [ ] 2.6 Distance edit re-sorts the row only after the editor closes (no mid-typing jump)
-- [ ] 2.7 Distance 0 / ≥ total / duplicate shows an inline error and does not save
+- [x] 2.4 Edit notes/facilities → autosaves, table updates, persists on reload
+- [x] 2.5 Editing a GPX-imported bare station adds facilities/time/notes
+- [x] 2.6 Distance edit re-sorts the row only after the editor closes (no mid-typing jump)
+- [x] 2.7 Distance 0 / ≥ total / duplicate shows an inline error and does not save
