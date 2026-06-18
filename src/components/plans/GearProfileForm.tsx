@@ -7,6 +7,8 @@ import {
   GEAR_KIND_LABELS as KIND_LABELS,
   GEAR_KIND_ORDER as KIND_ORDER,
 } from "@/lib/gear-kinds";
+import HelpTooltip from "@/components/ui/HelpTooltip";
+import { FIELD_HELP } from "@/lib/field-help";
 
 const inputCls =
   "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
@@ -163,9 +165,12 @@ function GearItemRow({
         </div>
         {KIND_FIELDS[item.kind].map((field) => (
           <div key={field}>
-            <label htmlFor={`gear-${item.id}-${field}`} className="mb-1 block text-sm text-blue-100/80">
-              {FIELD_LABELS[field]}
-            </label>
+            <div className="mb-1 flex items-center">
+              <label htmlFor={`gear-${item.id}-${field}`} className="text-sm text-blue-100/80">
+                {FIELD_LABELS[field]}
+              </label>
+              <HelpTooltip text={FIELD_HELP[field]} label={FIELD_LABELS[field]} />
+            </div>
             <input
               id={`gear-${item.id}-${field}`}
               type="number"
@@ -252,9 +257,12 @@ export default function GearProfileForm({ planId, initialItems, onItemsChange }:
 
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div>
-          <label htmlFor="gear-add-kind" className="mb-1 block text-sm text-blue-100/80">
-            Type
-          </label>
+          <div className="mb-1 flex items-center">
+            <label htmlFor="gear-add-kind" className="text-sm text-blue-100/80">
+              Type
+            </label>
+            <HelpTooltip text={FIELD_HELP.kind} label="Type" />
+          </div>
           <select
             id="gear-add-kind"
             data-testid="gear-add-kind"
@@ -288,9 +296,12 @@ export default function GearProfileForm({ planId, initialItems, onItemsChange }:
         </div>
         {KIND_FIELDS[kind].map((field) => (
           <div key={field}>
-            <label htmlFor={`gear-add-${field}`} className="mb-1 block text-sm text-blue-100/80">
-              {FIELD_LABELS[field]}
-            </label>
+            <div className="mb-1 flex items-center">
+              <label htmlFor={`gear-add-${field}`} className="text-sm text-blue-100/80">
+                {FIELD_LABELS[field]}
+              </label>
+              <HelpTooltip text={FIELD_HELP[field]} label={FIELD_LABELS[field]} />
+            </div>
             <input
               id={`gear-add-${field}`}
               type="number"

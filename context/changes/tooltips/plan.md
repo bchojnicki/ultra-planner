@@ -230,31 +230,31 @@ None — additive UI only, no data or schema changes.
 
 #### Automated
 
-- [x] 1.1 Type checking passes (`npx tsc --noEmit` / `npm run build`)
-- [x] 1.2 Linting passes (`npm run lint`)
-- [x] 1.3 Build succeeds (`npm run build`)
-- [x] 1.4 tooltip.tsx, HelpTooltip.tsx, field-help.ts exist; `@radix-ui/react-tooltip` in package.json
+- [x] 1.1 Type checking passes (`npx tsc --noEmit` / `npm run build`) — 3be4c41
+- [x] 1.2 Linting passes (`npm run lint`) — 3be4c41
+- [x] 1.3 Build succeeds (`npm run build`) — 3be4c41
+- [x] 1.4 tooltip.tsx, HelpTooltip.tsx, field-help.ts exist; `@radix-ui/react-tooltip` in package.json — 3be4c41
 
 #### Manual
 
-- [ ] 1.5 HelpTooltip opens on hover, focus, and tap; Escape/blur dismisses
-- [ ] 1.6 Tooltip content announced via aria-describedby; temporary render removed
+- [x] 1.5 HelpTooltip opens on hover, focus, and tap; Escape/blur dismisses — 3be4c41
+- [x] 1.6 Tooltip content announced via aria-describedby; temporary render removed — 3be4c41
 
 ### Phase 2: Input forms
 
 #### Automated
 
-- [ ] 2.1 Type checking passes (`npx tsc --noEmit`)
-- [ ] 2.2 Linting passes (`npm run lint`)
-- [ ] 2.3 Build succeeds (`npm run build`)
-- [ ] 2.4 Existing Playwright suite passes (`npx playwright test`)
+- [x] 2.1 Type checking passes (`npx tsc --noEmit`)
+- [x] 2.2 Linting passes (`npm run lint`)
+- [x] 2.3 Build succeeds (`npm run build`)
+- [x] 2.4 Existing Playwright suite passes (`npx playwright test`)
 
 #### Manual
 
-- [ ] 2.5 Every non-obvious field in all three forms shows correct help on hover/focus/touch
-- [ ] 2.6 Skipped fields (Plan name, gear Name, Crew notes, facilities) have no "?"
-- [ ] 2.7 Tab reaches each "?"; label still focuses its input
-- [ ] 2.8 No regression in autosave, add/delete, and the aid-station edit panel save/validate
+- [x] 2.5 Every non-obvious field in all three forms shows correct help on hover/focus/touch
+- [x] 2.6 Skipped fields (Plan name, gear Name, Crew notes, facilities) have no "?"
+- [x] 2.7 Tab reaches each "?"; label still focuses its input
+- [x] 2.8 No regression in autosave, add/delete, and the aid-station edit panel save/validate
 
 ### Phase 3: PlanTable headers
 

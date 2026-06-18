@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import type { AidStation } from "@/types";
 import { AID_STATION_FLAGS as FLAGS, enabledFacilities } from "@/lib/aid-station-facilities";
 import type { SaveStatus } from "@/components/hooks/useAutosave";
+import HelpTooltip from "@/components/ui/HelpTooltip";
+import { FIELD_HELP, type FieldHelpKey } from "@/lib/field-help";
 
 const inputCls =
   "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
@@ -28,11 +30,11 @@ interface EditDraft {
   flags: Flags;
 }
 
-const EDIT_NUM_FIELDS: { key: keyof EditDraft; label: string }[] = [
-  { key: "cumulative_distance_km", label: "Cumulative distance (km)" },
-  { key: "cumulative_elevation_gain_m", label: "Cumulative elevation gain (m)" },
-  { key: "cumulative_elevation_loss_m", label: "Cumulative elevation loss (m)" },
-  { key: "time_spent_min", label: "Time at station (min)" },
+const EDIT_NUM_FIELDS: { key: keyof EditDraft; label: string; help: FieldHelpKey }[] = [
+  { key: "cumulative_distance_km", label: "Cumulative distance (km)", help: "cumulative_distance" },
+  { key: "cumulative_elevation_gain_m", label: "Cumulative elevation gain (m)", help: "cumulative_gain" },
+  { key: "cumulative_elevation_loss_m", label: "Cumulative elevation loss (m)", help: "cumulative_loss" },
+  { key: "time_spent_min", label: "Time at station (min)", help: "time_at_station" },
 ];
 
 const STATUS_TEXT: Record<SaveStatus, string> = {
@@ -266,9 +268,12 @@ export default function AidStationManager({ planId, initialStations, totalDistan
 
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
-          <label htmlFor="as-distance" className="mb-1 block text-sm text-blue-100/80">
-            Cumulative distance (km)
-          </label>
+          <div className="mb-1 flex items-center">
+            <label htmlFor="as-distance" className="text-sm text-blue-100/80">
+              Cumulative distance (km)
+            </label>
+            <HelpTooltip text={FIELD_HELP.cumulative_distance} label="Cumulative distance (km)" />
+          </div>
           <input
             id="as-distance"
             data-testid="as-distance"
@@ -283,9 +288,12 @@ export default function AidStationManager({ planId, initialStations, totalDistan
           />
         </div>
         <div>
-          <label htmlFor="as-gain" className="mb-1 block text-sm text-blue-100/80">
-            Cumulative elevation gain (m)
-          </label>
+          <div className="mb-1 flex items-center">
+            <label htmlFor="as-gain" className="text-sm text-blue-100/80">
+              Cumulative elevation gain (m)
+            </label>
+            <HelpTooltip text={FIELD_HELP.cumulative_gain} label="Cumulative elevation gain (m)" />
+          </div>
           <input
             id="as-gain"
             data-testid="as-gain"
@@ -300,9 +308,12 @@ export default function AidStationManager({ planId, initialStations, totalDistan
           />
         </div>
         <div>
-          <label htmlFor="as-loss" className="mb-1 block text-sm text-blue-100/80">
-            Cumulative elevation loss (m)
-          </label>
+          <div className="mb-1 flex items-center">
+            <label htmlFor="as-loss" className="text-sm text-blue-100/80">
+              Cumulative elevation loss (m)
+            </label>
+            <HelpTooltip text={FIELD_HELP.cumulative_loss} label="Cumulative elevation loss (m)" />
+          </div>
           <input
             id="as-loss"
             data-testid="as-loss"
@@ -317,9 +328,12 @@ export default function AidStationManager({ planId, initialStations, totalDistan
           />
         </div>
         <div>
-          <label htmlFor="as-time" className="mb-1 block text-sm text-blue-100/80">
-            Time at station (min)
-          </label>
+          <div className="mb-1 flex items-center">
+            <label htmlFor="as-time" className="text-sm text-blue-100/80">
+              Time at station (min)
+            </label>
+            <HelpTooltip text={FIELD_HELP.time_at_station} label="Time at station (min)" />
+          </div>
           <input
             id="as-time"
             type="number"
@@ -430,9 +444,12 @@ export default function AidStationManager({ planId, initialStations, totalDistan
                 {isEditing && draft ? (
                   <div data-testid="as-edit-panel" className="mt-3 space-y-3 border-t border-white/10 pt-3">
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      {EDIT_NUM_FIELDS.map(({ key, label }) => (
+                      {EDIT_NUM_FIELDS.map(({ key, label, help }) => (
                         <div key={key}>
-                          <label className="mb-1 block text-xs text-blue-100/70">{label}</label>
+                          <div className="mb-1 flex items-center">
+                            <label className="text-xs text-blue-100/70">{label}</label>
+                            <HelpTooltip text={FIELD_HELP[help]} label={label} />
+                          </div>
                           <input
                             data-testid={`as-edit-${key}`}
                             type="number"
