@@ -37,6 +37,23 @@ export const aidStationCreateSchema = z.strictObject({
   notes: z.string().nullable().optional(),
 });
 
+// Aid-station edit (edit-aid-stations). Every field optional so the client PATCHes
+// only what changed; mirrors aidStationCreateSchema but with the two cumulative
+// measurements optional too. plan_id / identity fields are not editable.
+export const aidStationUpdateSchema = z.strictObject({
+  cumulative_distance_km: nonNegative.optional(),
+  cumulative_elevation_gain_m: nonNegative.optional(),
+  cumulative_elevation_loss_m: nonNegative.optional(),
+  time_spent_min: nonNegative.optional(),
+  water_only: z.boolean().optional(),
+  food_available: z.boolean().optional(),
+  warm_meal: z.boolean().optional(),
+  drop_bag_available: z.boolean().optional(),
+  rest_area: z.boolean().optional(),
+  support_crew_allowed: z.boolean().optional(),
+  notes: z.string().nullable().optional(),
+});
+
 // GPX import (gpx-import). The dedicated import endpoint receives the raw
 // GPX-computed totals (the calibration delta's denominator), the corrected
 // totals to write onto the plan, and the projected waypoint stations. plan_id
@@ -101,6 +118,7 @@ export const gearSelectionUpsertSchema = z.strictObject({
 
 export type PlanUpdateInput = z.infer<typeof planUpdateSchema>;
 export type AidStationCreateInput = z.infer<typeof aidStationCreateSchema>;
+export type AidStationUpdateInput = z.infer<typeof aidStationUpdateSchema>;
 export type GpxImportInput = z.infer<typeof gpxImportSchema>;
 export type GearItemCreateInput = z.infer<typeof gearItemCreateSchema>;
 export type GearItemUpdateInput = z.infer<typeof gearItemUpdateSchema>;
