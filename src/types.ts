@@ -211,6 +211,7 @@ export type PlanTableRow = {
   label: string; // e.g. "Start → AS1", "AS1 → AS2", "AS3 → Finish"
   segment_distance_km: number;
   segment_elevation_gain_m: number;
+  segment_elevation_loss_m: number;
   moving_minutes: number;
   arrival: string; // ISO clock arrival at the end of this segment
   fluid_ml: number;
@@ -223,6 +224,7 @@ export type PlanTableRow = {
 export type PlanTableTotals = {
   distance_km: number;
   elevation_gain_m: number;
+  elevation_loss_m: number;
   moving_minutes: number;
   rest_minutes: number;
   fluid_ml: number;

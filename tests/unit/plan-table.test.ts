@@ -144,3 +144,71 @@ describe("computePlanTable — edge cases", () => {
     expect(r.totals.rest_minutes).toBe(0);
   });
 });
+
+describe("computePlanTable — elevation loss derivation (gpx-import)", () => {
+  it("derives per-segment loss from cumulative loss; finish anchors on total loss", () => {
+    // Manual plan (gpx_* null): factor = 1. Station at 40 km with cumulative
+    // loss 800; finish loss = total_elevation_loss_m = 2000.
+    const r = computePlanTable(makePlan(), [makeStation({ cumulative_elevation_loss_m: 800 })]);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.rows[0].segment_elevation_loss_m).toBe(800); // 800 − 0
+    expect(r.rows[1].segment_elevation_loss_m).toBe(1200); // 2000 − 800
+    expect(r.totals.elevation_loss_m).toBe(2000);
+  });
+
+  it("a manual plan with no GPX is unchanged plus a loss column (factor = 1)", () => {
+    // Zero stations → single Start → Finish segment carrying the whole loss.
+    const r = computePlanTable(makePlan(), []);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.rows[0].segment_elevation_loss_m).toBe(2000);
+    expect(r.totals.elevation_loss_m).toBe(2000);
+    // Gain/distance assertions from the manual-era tests still hold.
+    expect(r.totals.distance_km).toBe(100);
+    expect(r.totals.elevation_gain_m).toBe(2000);
+  });
+});
+
+describe("computePlanTable — calibration (gpx-import)", () => {
+  // GPX plan: raw 200 km / 2000 m gain / 1000 m loss; corrected 220 / 2200 / 1100.
+  // Every metric factor = 1.1. Station at GPX-cumulative 100 km / 1500 m gain /
+  // 300 m loss (asymmetric so seg1 is the steeper leg).
+  const gpxPlan = makePlan({
+    total_distance_km: 220,
+    total_elevation_gain_m: 2200,
+    total_elevation_loss_m: 1100,
+    gpx_distance_km: 200,
+    gpx_elevation_gain_m: 2000,
+    gpx_elevation_loss_m: 1000,
+  });
+  const result = computePlanTable(gpxPlan, [
+    makeStation({ cumulative_distance_km: 100, cumulative_elevation_gain_m: 1500, cumulative_elevation_loss_m: 300 }),
+  ]);
+
+  it("scales each segment's distance/gain/loss by its calibration factor", () => {
+    if (!result.ok) throw new Error("expected ok");
+    const [s1, s2] = result.rows;
+    expect(s1.segment_distance_km).toBeCloseTo(110, 6); // 1.1 · 100
+    expect(s1.segment_elevation_gain_m).toBeCloseTo(1650, 6); // 1.1 · 1500
+    expect(s1.segment_elevation_loss_m).toBeCloseTo(330, 6); // 1.1 · 300
+    expect(s2.segment_distance_km).toBeCloseTo(110, 6); // 1.1 · (200 − 100)
+    expect(s2.segment_elevation_gain_m).toBeCloseTo(550, 6); // 1.1 · (2000 − 1500)
+    expect(s2.segment_elevation_loss_m).toBeCloseTo(770, 6); // 1.1 · (1000 − 300)
+  });
+
+  it("segment totals reconcile to the corrected (user-trusted) totals", () => {
+    if (!result.ok) throw new Error("expected ok");
+    expect(result.totals.distance_km).toBeCloseTo(220, 6);
+    expect(result.totals.elevation_gain_m).toBeCloseTo(2200, 6);
+    expect(result.totals.elevation_loss_m).toBeCloseTo(1100, 6);
+  });
+
+  it("feeds calibrated gain into the Naismith weight (steeper leg gets more moving time)", () => {
+    if (!result.ok) throw new Error("expected ok");
+    // weights: s1 = 110 + 0.01·1650 = 126.5; s2 = 110 + 0.01·550 = 115.5.
+    expect(result.rows[0].moving_minutes).toBeGreaterThan(result.rows[1].moving_minutes);
+    // Moving time is conserved regardless of calibration: Σ = expected − rest.
+    expect(result.totals.moving_minutes).toBeCloseTo(600, 6);
+  });
+});

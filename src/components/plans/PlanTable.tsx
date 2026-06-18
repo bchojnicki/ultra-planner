@@ -173,8 +173,8 @@ export default function PlanTable({
   const allocs = allocations ?? [];
   const sels = selections ?? [];
   const gearActive = gearItems.length > 0 && allocs.length === rows.length;
-  // Column count: 8 base + Aid station, plus the Fuel column when gear is active.
-  const colCount = gearActive ? 10 : 9;
+  // Column count: 9 base + Aid station, plus the Fuel column when gear is active.
+  const colCount = gearActive ? 11 : 10;
 
   function toggle(idx: number) {
     setExpanded((prev) => {
@@ -202,6 +202,7 @@ export default function PlanTable({
               <th className="py-2 pr-4">Segment</th>
               <th className="py-2 pr-4">Dist</th>
               <th className="py-2 pr-4">Gain</th>
+              <th className="py-2 pr-4">Loss</th>
               <th className="py-2 pr-4">Time</th>
               <th className="py-2 pr-4">Arrival</th>
               <th className="py-2 pr-4">Fluid</th>
@@ -236,6 +237,7 @@ export default function PlanTable({
                   </td>
                   <td className="py-2 pr-4 whitespace-nowrap">{r.segment_distance_km} km</td>
                   <td className="py-2 pr-4 whitespace-nowrap">{r.segment_elevation_gain_m} m</td>
+                  <td className="py-2 pr-4 whitespace-nowrap">{r.segment_elevation_loss_m} m</td>
                   <td className="py-2 pr-4 whitespace-nowrap">{fmtDuration(r.moving_minutes)}</td>
                   <td className="py-2 pr-4 whitespace-nowrap">{fmtClock(r.arrival)}</td>
                   {alloc ? (
@@ -305,6 +307,7 @@ export default function PlanTable({
               <td className="py-2 pr-4">Total</td>
               <td className="py-2 pr-4">{totals.distance_km} km</td>
               <td className="py-2 pr-4">{totals.elevation_gain_m} m</td>
+              <td className="py-2 pr-4">{totals.elevation_loss_m} m</td>
               <td className="py-2 pr-4">{fmtDuration(totals.moving_minutes)}</td>
               <td className="py-2 pr-4">{fmtClock(totals.finish_arrival)}</td>
               <td className="py-2 pr-4">{Math.round(totals.fluid_ml)} ml</td>

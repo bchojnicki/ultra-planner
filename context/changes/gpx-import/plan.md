@@ -494,9 +494,9 @@ stations. No backfill required. No rollback data loss beyond the new columns.
 
 #### Automated
 
-- [x] 3.1 Integration test passes (`npx vitest run tests/integration/gpx-import-flow.test.ts`)
-- [x] 3.2 Type checking passes (`npx astro sync && npm run build`)
-- [x] 3.3 Linting passes (`npm run lint`)
+- [x] 3.1 Integration test passes (`npx vitest run tests/integration/gpx-import-flow.test.ts`) — a7c9628
+- [x] 3.2 Type checking passes (`npx astro sync && npm run build`) — a7c9628
+- [x] 3.3 Linting passes (`npm run lint`) — a7c9628
 
 #### Manual
 
@@ -506,14 +506,14 @@ stations. No backfill required. No rollback data loss beyond the new columns.
 
 #### Automated
 
-- [ ] 4.1 Unit tests pass (`npx vitest run tests/unit/plan-table.test.ts`)
-- [ ] 4.2 Type checking passes (`npx astro sync && npm run build`)
-- [ ] 4.3 Linting passes (`npm run lint`)
+- [x] 4.1 Unit tests pass (`npx vitest run tests/unit/plan-table.test.ts`)
+- [x] 4.2 Type checking passes (`npx astro sync && npm run build`)
+- [x] 4.3 Linting passes (`npm run lint`)
 
 #### Manual
 
-- [ ] 4.4 Table shows gain + loss per segment; totals match corrected values
-- [ ] 4.5 Manual (no-GPX) plan unchanged plus 0-loss column
+- [x] 4.4 Table shows gain + loss per segment; totals match corrected values
+- [x] 4.5 Manual (no-GPX) plan unchanged plus 0-loss column
 
 ### Phase 5: Upload UI + Integration
 
