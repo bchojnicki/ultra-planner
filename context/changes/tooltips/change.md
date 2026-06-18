@@ -1,7 +1,7 @@
 ---
 change_id: tooltips
 title: On-hover field-help tooltips across the plan forms
-status: implemented
+status: impl_reviewed
 created: 2026-06-18
 updated: 2026-06-18
 archived_at: null

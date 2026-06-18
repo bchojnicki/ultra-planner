@@ -62,7 +62,7 @@ Install the shadcn tooltip primitive, build the reusable `HelpTooltip` affordanc
 
 **Intent**: Add the Radix-backed tooltip primitive that the affordance builds on, using the project's shadcn setup so it matches the "new-york" style and existing `button.tsx` conventions.
 
-**Contract**: Run `npx shadcn@latest add tooltip`. This creates `src/components/ui/tooltip.tsx` exporting `Tooltip`, `TooltipTrigger`, `TooltipContent`, `TooltipProvider` and adds `@radix-ui/react-tooltip` to `package.json`. Do not hand-write this file; let the CLI generate it, then verify it imports `cn` from `@/lib/utils` like the other ui components.
+**Contract**: Run `npx shadcn@latest add tooltip`. This creates `src/components/ui/tooltip.tsx` exporting `Tooltip`, `TooltipTrigger`, `TooltipContent`, `TooltipProvider` and adds `radix-ui` (umbrella package) to `package.json`. Do not hand-write this file; let the CLI generate it, then verify it imports `cn` from `@/lib/utils` like the other ui components.
 
 #### 2. Reusable HelpTooltip affordance
 
@@ -87,7 +87,7 @@ Install the shadcn tooltip primitive, build the reusable `HelpTooltip` affordanc
 - Type checking passes: `npx tsc --noEmit` (or `npm run build`)
 - Linting passes: `npm run lint`
 - Build succeeds: `npm run build`
-- `src/components/ui/tooltip.tsx`, `src/components/ui/HelpTooltip.tsx`, and `src/lib/field-help.ts` exist; `@radix-ui/react-tooltip` is in `package.json`
+- `src/components/ui/tooltip.tsx`, `src/components/ui/HelpTooltip.tsx`, and `src/lib/field-help.ts` exist; `radix-ui` (umbrella package) is in `package.json`
 
 #### Manual Verification:
 
@@ -233,7 +233,7 @@ None — additive UI only, no data or schema changes.
 - [x] 1.1 Type checking passes (`npx tsc --noEmit` / `npm run build`) — 3be4c41
 - [x] 1.2 Linting passes (`npm run lint`) — 3be4c41
 - [x] 1.3 Build succeeds (`npm run build`) — 3be4c41
-- [x] 1.4 tooltip.tsx, HelpTooltip.tsx, field-help.ts exist; `@radix-ui/react-tooltip` in package.json — 3be4c41
+- [x] 1.4 tooltip.tsx, HelpTooltip.tsx, field-help.ts exist; `radix-ui` (umbrella package) in package.json — 3be4c41
 
 #### Manual
 
