@@ -506,22 +506,22 @@ stations. No backfill required. No rollback data loss beyond the new columns.
 
 #### Automated
 
-- [x] 4.1 Unit tests pass (`npx vitest run tests/unit/plan-table.test.ts`)
-- [x] 4.2 Type checking passes (`npx astro sync && npm run build`)
-- [x] 4.3 Linting passes (`npm run lint`)
+- [x] 4.1 Unit tests pass (`npx vitest run tests/unit/plan-table.test.ts`) — fc8e8c8
+- [x] 4.2 Type checking passes (`npx astro sync && npm run build`) — fc8e8c8
+- [x] 4.3 Linting passes (`npm run lint`) — fc8e8c8
 
 #### Manual
 
-- [x] 4.4 Table shows gain + loss per segment; totals match corrected values
-- [x] 4.5 Manual (no-GPX) plan unchanged plus 0-loss column
+- [x] 4.4 Table shows gain + loss per segment; totals match corrected values — fc8e8c8
+- [x] 4.5 Manual (no-GPX) plan unchanged plus 0-loss column — fc8e8c8
 
 ### Phase 5: Upload UI + Integration
 
 #### Automated
 
 - [ ] 5.1 E2E passes (`npx playwright test tests/gpx-import.spec.ts`)
-- [ ] 5.2 Type checking passes (`npx astro sync && npm run build`)
-- [ ] 5.3 Linting passes (`npm run lint`)
+- [x] 5.2 Type checking passes (`npx astro sync && npm run build`)
+- [x] 5.3 Linting passes (`npm run lint`)
 
 #### Manual
 

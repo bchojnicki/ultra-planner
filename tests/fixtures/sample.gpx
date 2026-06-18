@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="ultra-planner-test" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="0.0" lon="0.5"><ele>500</ele><name>Aid Alpha</name></wpt>
+  <wpt lat="0.0" lon="1.5"><ele>400</ele><name>Aid Bravo</name></wpt>
+  <trk>
+    <name>Test Course</name>
+    <trkseg>
+      <trkpt lat="0.0" lon="0.0"><ele>0</ele></trkpt>
+      <trkpt lat="0.0" lon="0.5"><ele>500</ele></trkpt>
+      <trkpt lat="0.0" lon="1.0"><ele>200</ele></trkpt>
+      <trkpt lat="0.0" lon="1.5"><ele>400</ele></trkpt>
+      <trkpt lat="0.0" lon="2.0"><ele>100</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>
