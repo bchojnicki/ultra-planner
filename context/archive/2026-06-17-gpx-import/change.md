@@ -1,11 +1,11 @@
 ---
 change_id: gpx-import
 title: GPX upload — auto-fill race distance/elevation and pre-create aid stations from waypoints
-status: implemented
+status: archived
 created: 2026-06-17
 updated: 2026-06-18
 last_review: impl-review full-plan (APPROVED; F1 read-only TZ + F2 e2e cold-start both fixed)
-archived_at: null
+archived_at: 2026-06-18T14:30:06Z
 ---
 
 ## Notes
