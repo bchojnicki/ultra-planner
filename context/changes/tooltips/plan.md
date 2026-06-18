@@ -260,14 +260,14 @@ None — additive UI only, no data or schema changes.
 
 #### Automated
 
-- [x] 3.1 Type checking passes (`npx tsc --noEmit`)
-- [x] 3.2 Linting passes (`npm run lint`)
-- [x] 3.3 Build succeeds (`npm run build`)
-- [x] 3.4 Existing Playwright suite passes (`npx playwright test`)
+- [x] 3.1 Type checking passes (`npx tsc --noEmit`) — 189e9e4
+- [x] 3.2 Linting passes (`npm run lint`) — 189e9e4
+- [x] 3.3 Build succeeds (`npm run build`) — 189e9e4
+- [x] 3.4 Existing Playwright suite passes (`npx playwright test`) — 189e9e4
 
 #### Manual
 
-- [x] 3.5 Time, Arrival, Fuel, Fluid, Carbs, Sodium headers show correct help
-- [x] 3.6 Segment, Dist, Gain, Loss, Aid station headers have no "?"
-- [x] 3.7 Header tooltips work in both editable and read-only table renderings
-- [x] 3.8 Table layout / horizontal scroll not broken
+- [x] 3.5 Time, Arrival, Fuel, Fluid, Carbs, Sodium headers show correct help — 189e9e4
+- [x] 3.6 Segment, Dist, Gain, Loss, Aid station headers have no "?" — 189e9e4
+- [x] 3.7 Header tooltips work in both editable and read-only table renderings — 189e9e4
+- [x] 3.8 Table layout / horizontal scroll not broken — 189e9e4
