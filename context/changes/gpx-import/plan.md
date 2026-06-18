@@ -482,21 +482,21 @@ stations. No backfill required. No rollback data loss beyond the new columns.
 
 #### Automated
 
-- [x] 2.1 Unit tests pass (`npx vitest run tests/unit/gpx.test.ts`)
-- [x] 2.2 Type checking passes (`npx astro sync && npm run build`)
-- [x] 2.3 Linting passes (`npm run lint`)
+- [x] 2.1 Unit tests pass (`npx vitest run tests/unit/gpx.test.ts`) — fc32999
+- [x] 2.2 Type checking passes (`npx astro sync && npm run build`) — fc32999
+- [x] 2.3 Linting passes (`npm run lint`) — fc32999
 
 #### Manual
 
-- [x] 2.4 Real sample GPX yields plausible totals + expected stations/names
+- [x] 2.4 Real sample GPX yields plausible totals + expected stations/names — fc32999
 
 ### Phase 3: Import Endpoint + Service
 
 #### Automated
 
-- [ ] 3.1 Integration test passes (`npx vitest run tests/integration/gpx-import-flow.test.ts`)
-- [ ] 3.2 Type checking passes (`npx astro sync && npm run build`)
-- [ ] 3.3 Linting passes (`npm run lint`)
+- [x] 3.1 Integration test passes (`npx vitest run tests/integration/gpx-import-flow.test.ts`)
+- [x] 3.2 Type checking passes (`npx astro sync && npm run build`)
+- [x] 3.3 Linting passes (`npm run lint`)
 
 #### Manual
 
