@@ -500,7 +500,7 @@ stations. No backfill required. No rollback data loss beyond the new columns.
 
 #### Manual
 
-- [ ] 3.4 Import replaces stations + sets plan values; 403/404 paths verified
+- [x] 3.4 Import replaces stations + sets plan values; 403/404 paths verified — replace-all verified in-browser; 403/404 by integration test (a7c9628)
 
 ### Phase 4: Calibration in Plan Table
 
@@ -519,12 +519,12 @@ stations. No backfill required. No rollback data loss beyond the new columns.
 
 #### Automated
 
-- [ ] 5.1 E2E passes (`npx playwright test tests/gpx-import.spec.ts`)
+- [x] 5.1 E2E passes (`npx playwright test tests/gpx-import.spec.ts`) — 3/3 browsers
 - [x] 5.2 Type checking passes (`npx astro sync && npm run build`) — f21fe43
 - [x] 5.3 Linting passes (`npm run lint`) — f21fe43
 
 #### Manual
 
-- [ ] 5.4 Upload populates details + stations; confirm-overwrite works; bad file errors
-- [ ] 5.5 Editing a total live-rescales segments
-- [ ] 5.6 Manual loss field persists and shows in the table
+- [x] 5.4 Upload populates details + stations; confirm-overwrite works; bad file errors — verified in-browser (f21fe43)
+- [x] 5.5 Editing a total live-rescales segments — verified in-browser (f21fe43)
+- [x] 5.6 Manual loss field persists and shows in the table — verified in-browser (f21fe43)

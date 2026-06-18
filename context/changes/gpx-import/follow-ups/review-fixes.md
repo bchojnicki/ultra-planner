@@ -23,18 +23,20 @@ Queued fixes/requirements surfaced during implementation reviews.
 
 ## From Phase 5 (2026-06-18)
 
-### 5.1 GPX e2e blocked by pre-existing auth-hydration failure
+### 5.1 GPX e2e — RESOLVED
 
 - **Source**: Phase 5 automated check 5.1 (`tests/gpx-import.spec.ts`).
-- **Why**: The shared OTP sign-in helper (`signInViaOtp` → `getByLabel("Email")`)
-  times out before any GPX step runs. The PRE-EXISTING `tests/auth.spec.ts:18`
-  ("renders the email-only form") fails at the identical locator — the signin form
-  is a client-only island that emits no SSR markup and does not hydrate under
-  Playwright in this local environment. Not caused by gpx-import.
-- **Impact**: The GPX e2e cannot get a green local run. In CI the spec is gated
-  behind `TEST_EMAIL` and skips, so it does not fail the pipeline. The GPX
-  parse/compute/import path is otherwise covered by unit + integration tests and
-  two real-file validations (DFBG track-only, COURSE 5-waypoint).
-- **Action**: Investigate why the auth signin island fails to hydrate under
-  Playwright (separate from gpx-import), then re-enable 5.1. Track as its own task.
+- **Original (incorrect) diagnosis**: thought the signin island wasn't hydrating
+  under Playwright. It hydrates fine.
+- **Actual causes**: (1) cold-start — the first navigation against a freshly
+  started `astro dev` server triggers on-demand route/island compilation that
+  exceeded the 30s per-test timeout (`getByLabel("Email")` timed out). Against a
+  warm dev server it signs in in ~2s. (2) An ESM bug in the spec: `__dirname` is
+  undefined under Playwright's ESM loader; switched the fixture path to
+  `fileURLToPath(new URL("./fixtures/sample.gpx", import.meta.url))`.
+- **Status**: RESOLVED — passes 3/3 browsers (chromium, firefox, webkit) with
+  `TEST_EMAIL` set and a running local Supabase/Mailpit. Gated/skipped in CI.
+- **Caveat**: from a fully cold dev server the first run can still be slow to
+  compile; run against a warm `npm run dev`, or re-run, if the first attempt is
+  sluggish.
 

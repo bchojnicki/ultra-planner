@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
-import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { signInViaOtp, uniqueTestEmail, waitHydrated } from "./helpers/otp";
+
+const SAMPLE_GPX = fileURLToPath(new URL("./fixtures/sample.gpx", import.meta.url));
 
 // End-to-end GPX import (gpx-import, Phase 5). Gated behind TEST_EMAIL (its
 // presence signals a local Supabase + Mailpit environment), like the OTP flow
@@ -22,7 +24,7 @@ test.describe("GPX import (requires TEST_EMAIL + local Supabase/Mailpit)", () =>
     await waitHydrated(page);
 
     // A fresh plan has no existing data, so the import applies without a confirm.
-    await page.getByTestId("gpx-file").setInputFiles(path.join(__dirname, "fixtures", "sample.gpx"));
+    await page.getByTestId("gpx-file").setInputFiles(SAMPLE_GPX);
 
     // Race details auto-fill from the track (elevation is an exact delta-sum:
     // +500 −300 +200 −300 → gain 700, loss 600; distance ≈ 222 km from 2° lon).
