@@ -4,7 +4,7 @@ title: GPX upload — auto-fill race distance/elevation and pre-create aid stati
 status: implemented
 created: 2026-06-17
 updated: 2026-06-18
-last_review: impl-review-phase-3 (APPROVED, 1 obs noted for p5)
+last_review: impl-review full-plan (APPROVED; F1 read-only TZ + F2 e2e cold-start both fixed)
 archived_at: null
 ---
 

@@ -15,6 +15,10 @@ test.describe("GPX import (requires TEST_EMAIL + local Supabase/Mailpit)", () =>
   test.skip(!localEnv, "Set TEST_EMAIL (and run local Supabase) to exercise the GPX import flow");
 
   test("uploading a GPX populates race details, stations, and the loss column", async ({ page }) => {
+    // Triple the timeout: the first navigation against a cold `astro dev` server
+    // compiles routes/islands on demand, which can exceed the default 30s.
+    test.slow();
+
     await signInViaOtp(page, uniqueTestEmail());
 
     // Create a fresh draft plan → lands on the editor.
