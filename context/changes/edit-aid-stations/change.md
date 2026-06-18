@@ -1,7 +1,7 @@
 ---
 change_id: edit-aid-stations
 title: Edit an existing aid station (and enrich GPX-imported ones)
-status: implementing
+status: implemented
 created: 2026-06-18
 updated: 2026-06-18
 archived_at: null

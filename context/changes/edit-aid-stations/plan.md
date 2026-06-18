@@ -304,13 +304,13 @@ None — no schema/DB changes. `cumulative_elevation_loss_m` already exists from
 
 #### Automated
 
-- [x] 2.1 E2E passes (`npx playwright test tests/aid-station-edit.spec.ts`)
-- [x] 2.2 Type checking passes (`npx astro sync && npm run build`)
-- [x] 2.3 Linting passes (`npm run lint`)
+- [x] 2.1 E2E passes (`npx playwright test tests/aid-station-edit.spec.ts`) — 8f016e0
+- [x] 2.2 Type checking passes (`npx astro sync && npm run build`) — 8f016e0
+- [x] 2.3 Linting passes (`npm run lint`) — 8f016e0
 
 #### Manual
 
-- [x] 2.4 Edit notes/facilities → autosaves, table updates, persists on reload
-- [x] 2.5 Editing a GPX-imported bare station adds facilities/time/notes
-- [x] 2.6 Distance edit re-sorts the row only after the editor closes (no mid-typing jump)
-- [x] 2.7 Distance 0 / ≥ total / duplicate shows an inline error and does not save
+- [x] 2.4 Edit notes/facilities → autosaves, table updates, persists on reload — 8f016e0
+- [x] 2.5 Editing a GPX-imported bare station adds facilities/time/notes — 8f016e0
+- [x] 2.6 Distance edit re-sorts the row only after the editor closes (no mid-typing jump) — 8f016e0
+- [x] 2.7 Distance 0 / ≥ total / duplicate shows an inline error and does not save — 8f016e0
