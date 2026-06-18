@@ -3,7 +3,7 @@ project: "Ultra Planner"
 version: 1
 status: draft
 created: 2026-06-01
-updated: 2026-06-17
+updated: 2026-06-18
 prd_version: 4
 main_goal: speed
 top_blocker: capacity
@@ -35,7 +35,7 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-03 | gear-profile-units          | build a gear catalog so the table auto-suggests per-segment fueling units, tunable per stage | S-02          | US-06, FR-004                                       | done     |
 | S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | done     |
 | S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | done     |
-| S-06 | email-otp-auth              | sign up / sign in with an emailed one-time code and reach a gated app                        | —             | US-02, US-03, FR-001, FR-002                        | ready    |
+| S-06 | email-otp-auth              | sign up / sign in with an emailed one-time code and reach a gated app                        | —             | US-02, US-03, FR-001, FR-002                        | done     |
 
 ## Streams
 
@@ -148,7 +148,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** The present scaffold is password-based, so this slice **replaces** it with the OTP flow (`signInWithOtp` → emailed 6-digit code → `verifyOtp`) rather than verifying it. Sign-up and sign-in unify into one flow (no separate signup form, no password-reset, no `confirm-email` step). The main thing to validate end-to-end is Supabase email OTP + SSR cookie handling on Cloudflare Workers (see infrastructure.md risk register).
-- **Status:** ready
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -190,3 +190,4 @@ None open. Prior questions resolved:
 - **S-03: Runner can optionally build a per-plan gear catalog (gels, carb drink, solid food, water carrier, salt caps); the plan table then auto-suggests whole-unit fueling per segment (carb-led, ratio-weighted, with fluid/sodium gap-fill) and lets the runner cap a product or pin an exact override per stage, showing achieved-vs-target with a signed delta. With no gear, the table stays in gram/ml/mg targets.** — Archived 2026-06-16 → `context/archive/2026-06-16-gear-profile-units/`. Lesson: —.
 - **S-04: Runner can see all their saved plans on a dashboard and open one in read-only view; a runner with no plans sees an empty-state prompt to create their first plan.** — Archived 2026-06-16 → `context/archive/2026-06-16-plan-dashboard-view/`. Lesson: —.
 - **S-05: Runner can permanently delete a saved plan from the dashboard after explicitly confirming in a dialog.** — Archived 2026-06-17 → `context/archive/2026-06-16-delete-saved-plan/`. Lesson: —.
+- **S-06: Runner can sign up / sign in with a 6-digit one-time code emailed to them, sign out, and is redirected to the sign-in screen when reaching a gated route unauthenticated. No password is stored.** — Archived 2026-06-18 → `context/archive/2026-06-17-email-otp-auth/`. Lesson: —.
