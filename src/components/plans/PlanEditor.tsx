@@ -143,6 +143,11 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
 
   return (
     <>
+      {/* Live plan title — reflects the name as it's edited (and after a GPX import),
+          rather than the server-rendered value that only refreshed on reload. */}
+      <h1 className="mt-2 mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+        {params.name || "Untitled plan"}
+      </h1>
       <RaceSetupForm
         key={`race-${importKey}`}
         plan={params}
