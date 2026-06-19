@@ -1,5 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { fileURLToPath } from "node:url";
 import { signInViaOtp, uniqueTestEmail, waitHydrated } from "./helpers/otp";
+
+const SAMPLE_GPX = fileURLToPath(new URL("./fixtures/sample.gpx", import.meta.url));
 
 // Collapsible plan-builder sections (collapsible-plan-sections). Gated behind
 // TEST_EMAIL (local Supabase + Mailpit) like the other flow specs. Proves the
@@ -49,5 +52,31 @@ test.describe("Collapsible sections (requires TEST_EMAIL + local Supabase/Mailpi
     await page.getByRole("button", { name: "Race parameters" }).click();
     await expect(page.locator("#rsf-name")).toBeHidden();
     await expect(page.getByTestId("save-status")).toBeVisible();
+  });
+
+  test("a GPX import preserves the collapsed state of the remounted Aid stations section", async ({ page }) => {
+    test.slow(); // first navigation cold-compiles routes on the dev server
+
+    await signInViaOtp(page, uniqueTestEmail());
+
+    await page.goto("/dashboard");
+    await page.getByRole("button", { name: "+ New plan" }).click();
+    await page.waitForURL(/\/plans\/.+\/edit/);
+    await waitHydrated(page);
+
+    // Collapse Aid stations before importing.
+    await page.getByRole("button", { name: "Aid stations" }).click();
+    await expect(page.getByRole("button", { name: "Aid stations" })).toHaveAttribute("aria-expanded", "false");
+    await expect(page.locator("#as-distance")).toBeHidden();
+
+    // Import a GPX (fresh plan → no confirm). This remounts AidStationManager via
+    // the importKey bump; the CollapsibleSection wrapper sits outside that key, so
+    // the collapsed state must survive.
+    await page.getByTestId("gpx-file").setInputFiles(SAMPLE_GPX);
+    await expect(page.getByTestId("station-row")).toHaveCount(2); // import applied
+
+    // Aid stations stays collapsed through the remount.
+    await expect(page.getByRole("button", { name: "Aid stations" })).toHaveAttribute("aria-expanded", "false");
+    await expect(page.locator("#as-distance")).toBeHidden();
   });
 });
