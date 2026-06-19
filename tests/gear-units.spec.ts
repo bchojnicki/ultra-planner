@@ -77,6 +77,14 @@ test.describe("Gear → unit-level output (requires TEST_EMAIL + local Supabase/
     await expect(panel).toBeVisible();
     await expect(panel).toContainText("suggested");
 
+    // Regression: the expanded panel renders directly under its own segment row,
+    // not collected at the bottom of the table (gear panels used to stack after
+    // the last row). The panel row must be the first segment row's next sibling.
+    await expect(page.getByTestId("plan-row").first().locator("xpath=following-sibling::tr[1]")).toHaveAttribute(
+      "data-testid",
+      "gear-panel-row",
+    );
+
     // Override the gel count to an unmistakable value for segment 1; it should win
     // immediately (optimistic), and the debounced PUT must land before we reload.
     await Promise.all([
