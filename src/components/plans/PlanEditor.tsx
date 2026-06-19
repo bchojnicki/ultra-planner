@@ -3,10 +3,20 @@ import type { AidStation, GearItem, GearSegmentSelection, Plan } from "@/types";
 import { computePlanTable } from "@/lib/plan-table";
 import { computeAllocations, staleSegmentIndexes } from "@/lib/gear-allocation";
 import type { SaveStatus } from "@/components/hooks/useAutosave";
+import CollapsibleSection from "@/components/plans/CollapsibleSection";
 import RaceSetupForm from "@/components/plans/RaceSetupForm";
 import GearProfileForm from "@/components/plans/GearProfileForm";
 import AidStationManager from "@/components/plans/AidStationManager";
 import PlanTable, { type SelectionPatch } from "@/components/plans/PlanTable";
+
+// Save-status copy for the Race-parameters header, lifted out of RaceSetupForm so
+// the indicator can live in the collapsible header (visible while collapsed).
+const RACE_STATUS_TEXT: Record<SaveStatus, string> = {
+  idle: "",
+  saving: "Saving…",
+  saved: "Saved",
+  error: "Save failed — will retry on next change",
+};
 
 interface Props {
   plan: Plan;
@@ -32,6 +42,9 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
   // Bumped on a successful GPX import to remount the child forms so they re-seed
   // from the freshly-imported plan/stations (they initialize state from props once).
   const [importKey, setImportKey] = useState(0);
+  // Race-parameters autosave status, lifted from RaceSetupForm so the collapsible
+  // header can show it even when the section body is collapsed.
+  const [raceStatus, setRaceStatus] = useState<SaveStatus>("idle");
 
   const result = useMemo(() => computePlanTable(params, stations), [params, stations]);
 
@@ -148,21 +161,37 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
       <h1 className="mt-2 mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
         {params.name || "Untitled plan"}
       </h1>
-      <RaceSetupForm
-        key={`race-${importKey}`}
-        plan={params}
-        onParamsChange={setParams}
-        onGpxImported={onGpxImported}
-        hasExistingData={hasExistingData}
-      />
-      <GearProfileForm planId={plan.id} initialItems={initialGearItems} onItemsChange={setGearItems} />
-      <AidStationManager
-        key={`stations-${importKey}`}
-        planId={plan.id}
-        initialStations={stations}
-        totalDistanceKm={params.total_distance_km}
-        onStationsChange={onStationsChange}
-      />
+      <CollapsibleSection
+        title="Race parameters"
+        storageKey={`collapse:${plan.id}:race`}
+        className="mb-6"
+        headerExtra={
+          <span data-testid="save-status" className="text-xs text-blue-100/60" aria-live="polite">
+            {RACE_STATUS_TEXT[raceStatus]}
+          </span>
+        }
+      >
+        <RaceSetupForm
+          key={`race-${importKey}`}
+          plan={params}
+          onParamsChange={setParams}
+          onGpxImported={onGpxImported}
+          hasExistingData={hasExistingData}
+          onStatusChange={setRaceStatus}
+        />
+      </CollapsibleSection>
+      <CollapsibleSection title="Gear" storageKey={`collapse:${plan.id}:gear`} className="mb-6">
+        <GearProfileForm planId={plan.id} initialItems={initialGearItems} onItemsChange={setGearItems} />
+      </CollapsibleSection>
+      <CollapsibleSection title="Aid stations" storageKey={`collapse:${plan.id}:stations`}>
+        <AidStationManager
+          key={`stations-${importKey}`}
+          planId={plan.id}
+          initialStations={stations}
+          totalDistanceKm={params.total_distance_km}
+          onStationsChange={onStationsChange}
+        />
+      </CollapsibleSection>
       <PlanTable
         result={result}
         items={gearItems}

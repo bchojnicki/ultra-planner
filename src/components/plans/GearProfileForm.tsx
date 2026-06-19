@@ -248,8 +248,7 @@ export default function GearProfileForm({ planId, initialItems, onItemsChange }:
   }
 
   return (
-    <section className="mb-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-      <h2 className="mb-1 text-lg font-semibold">Gear</h2>
+    <>
       <p className="mb-4 text-sm text-blue-100/60">
         Optional. Add your fueling items to see the plan table in unit-level quantities. Skip it to keep gram/ml
         targets.
@@ -336,6 +335,6 @@ export default function GearProfileForm({ planId, initialItems, onItemsChange }:
           items.map((item) => <GearItemRow key={item.id} item={item} onChange={onRowChange} onDelete={remove} />)
         )}
       </ul>
-    </section>
+    </>
   );
 }

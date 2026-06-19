@@ -210,16 +210,16 @@ No data migration. The new `localStorage` keys (`collapse:<plan-id>:<section>`) 
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx astro sync && npm run lint`
-- [x] 1.2 Production build succeeds: `npm run build`
+- [x] 1.1 Type checking passes: `npx astro sync && npm run lint` — 2c929ca
+- [x] 1.2 Production build succeeds: `npm run build` — 2c929ca
 
 ### Phase 2: Integrate the wrapper into the three sections
 
 #### Automated
 
-- [ ] 2.1 Type checking + lint pass: `npx astro sync && npm run lint`
-- [ ] 2.2 Production build succeeds: `npm run build`
-- [ ] 2.3 Playwright suite passes: `npx playwright test`
+- [x] 2.1 Type checking + lint pass: `npx astro sync && npm run lint`
+- [x] 2.2 Production build succeeds: `npm run build`
+- [x] 2.3 Playwright suite passes: `npx playwright test`
 
 #### Manual
 
