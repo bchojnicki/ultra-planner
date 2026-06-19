@@ -40,7 +40,7 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-08 | edit-aid-stations           | edit any field of an existing aid station inline; re-sort + recompute segments                | S-01          | US-10, FR-012 (PRD v6)                              | done     |
 | S-09 | tooltips                    | see on-hover/focus field-help on the non-obvious plan-form inputs                            | S-02          | (UX enhancement; no FR)                             | done     |
 | S-10 | public-pages-and-brand      | land on a branded public welcome / about / contact site; sign-in routes to the dashboard     | S-06          | FR-015 (PRD v6)                                     | done     |
-| S-11 | account-deletion            | permanently delete their account + all data, confirmed by an emailed link                    | S-06          | FR-014 (PRD v6, planned)                            | todo     |
+| S-11 | account-deletion            | permanently delete their account + all data, confirmed by an emailed link                    | S-06          | FR-014 (PRD v6, planned)                            | done     |
 | S-12 | excel-export                | export a plan to an Excel file                                                               | S-02          | (was §Non-Goal; un-parking)                         | todo     |
 | S-13 | collapsible-plan-sections   | collapse / expand the plan-builder sections to cut scrolling                                 | S-01          | (UX enhancement)                                   | done     |
 | S-14 | gear-total-summary          | see race-wide gear totals (units per item) in the plan-table total row                       | S-03          | (UX enhancement)                                   | done     |
@@ -200,7 +200,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **PRD refs:** FR-014 (PRD v6, planned; account lifecycle / right-to-erasure).
 - **Prerequisites:** S-06
 - **Note:** DB already cascades from `auth.users` (ON DELETE CASCADE). Open unknowns: admin/service-role delete on Workers, and the email-link mechanism. Research first.
-- **Status:** todo
+- **Status:** done
 
 ### S-12: Excel export
 
@@ -274,6 +274,7 @@ Prior questions resolved:
 - **S-08: Runner can edit any field of an existing aid station inline, with re-sort on distance change and segment recompute.** — Archived 2026-06-18 → `context/archive/2026-06-18-edit-aid-stations/`. Lesson: —.
 - **S-09: Runner sees on-hover/focus field-help on the non-obvious plan-form inputs.** — Archived 2026-06-18 → `context/archive/2026-06-18-tooltips/`. Lesson: —.
 - **S-10: Visitor lands on a branded public welcome/about/contact site; sign-in routes to the dashboard; a shared nav spans public + app pages.** — Archived 2026-06-19 → `context/archive/2026-06-19-public-pages-and-brand/`. Lesson: —.
+- **S-11: permanently delete their account + all data, confirmed by an emailed link** — Archived 2026-06-19 → `context/archive/2026-06-19-account-deletion/`. Lesson: —.
 - **S-14: The plan-table total row shows how many of each gear item is needed for the whole race (e.g. "12× gel, 4× drink, 6× salt cap").** — Archived 2026-06-19 → `context/archive/2026-06-19-gear-total-summary/`. Lesson: —.
 
 ### Maintenance / fixes (post-MVP)

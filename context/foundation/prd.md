@@ -221,6 +221,7 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
   > Socrates: Counter-argument considered: "cumulative vs. leg distance — which does the runner enter?" Resolution: runner enters cumulative distance from start; the app subtracts consecutive stations to get leg distance for the calculation. More natural for reading an official race roadbook.
 
 - FR-006: Runner can delete a previously added aid station. Priority: must-have
+
   > Socrates: Counter-argument considered: "without edit, delete-then-re-add is the only error correction path." Resolution: kept — delete is the must-have minimum. Inline edit is a desirable companion but not blocking for MVP.
 
 - FR-012: Runner can edit any field of a previously added aid station (cumulative distance, cumulative elevation gain, cumulative elevation loss, time spent, facility checkboxes, crew notes). Edits update the station in place and re-derive the affected segments. Priority: should-have
@@ -256,8 +257,8 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 
 ### Account Management
 
-- FR-014: Runner can permanently delete their account from a Settings menu. The destructive action is confirmed via an emailed link; on confirmation it removes the account and all associated data (plans, aid stations, gear, per-segment selections). Priority: should-have (planned; change `account-deletion`)
-  > Note: data removal relies on the existing DB cascade from `auth.users` (ON DELETE CASCADE from plans → aid_stations / gear_items / gear_segment_selections). Email confirmation guards the irreversible action; the auth-user delete requires a service-role admin client (open implementation question).
+- FR-014: Runner can permanently delete their account from a Settings menu. The destructive action is re-authenticated with a fresh one-time code, then confirmed via a single-use emailed link; on confirmation it removes the account and all associated data (plans, aid stations, gear, per-segment selections). Priority: shipped (change `account-deletion`)
+  > Note: data removal relies on the existing DB cascade from `auth.users` (ON DELETE CASCADE from plans → aid_stations / gear_items / gear_segment_selections); the auth-user row is hard-deleted via a service-role admin client. The emailed link is a single-use, 30-minute, hashed-at-rest token (table `account_deletion_tokens`) delivered through Resend; a cascade-surviving audit row (`account_deletion_events`, no FK to `auth.users`) records each deletion.
 
 ### Public Site
 
@@ -268,7 +269,7 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 
 - A runner perceives plan generation as instant: the plan table appears within 1 second of triggering generation for any race with up to 50 aid stations.
 - No runner's race plan data is transmitted to any third party or made accessible outside the runner's account without the runner's explicit action.
-- A runner can permanently erase their account and all associated data, with no residual plan data retained after deletion. (Planned — see FR-014.)
+- A runner can permanently erase their account and all associated data, with no residual plan data retained after deletion. (Shipped — see FR-014.)
 - The application is fully usable on the two most recent major versions of Chrome, Firefox, Safari, and Edge on both desktop and mobile form factors.
 
 ## Business Logic
@@ -297,4 +298,4 @@ User model is flat: all registered users are runners with identical capabilities
 ## Open Questions
 
 - **Reconciled to v6 (2026-06-19)** against shipped reality and `roadmap.md` v2: added GPX import (FR-013 / US-11), the public site (FR-015), and account deletion as planned (FR-014 + erasure NFR); split the duplicate FR-007 (aid-station edit is now FR-012; plan generation keeps FR-007); updated §Non-Goals for GPX (shipped) and Excel (planned). Roadmap slices S-09 (field-help tooltips), S-13 (collapsible plan sections), and S-14 (race-wide gear totals) are intentionally **UX-only with no FR** — they refine presentation, not product scope.
-- **Account deletion (FR-014) implementation question:** deleting the Supabase `auth.users` row needs a service-role admin client, and the email-confirmation link mechanism is undecided — to be resolved by the `account-deletion` change (research → plan).
+- **Account deletion (FR-014) — resolved & shipped (2026-06-19, change `account-deletion`):** the `auth.users` row is hard-deleted via a service-role admin client (`SUPABASE_SERVICE_ROLE_KEY`); the email-confirmation link is a custom single-use, 30-minute, hashed token table delivered through Resend (`RESEND_API_KEY` / `RESEND_FROM_EMAIL`), gated behind a fresh OTP re-auth. Data removal rides the existing `ON DELETE CASCADE`; a cascade-surviving audit row is written.

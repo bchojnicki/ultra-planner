@@ -116,6 +116,13 @@ export const gearSelectionUpsertSchema = z.strictObject({
   override_units: nonNegativeIntNullable.optional(),
 });
 
+// Account deletion (account-deletion). The verify step carries the OTP re-auth
+// code the user received by email; the request step needs no body (the user is
+// identified by their session).
+export const accountDeletionVerifySchema = z.strictObject({
+  code: z.string().min(1),
+});
+
 export type PlanUpdateInput = z.infer<typeof planUpdateSchema>;
 export type AidStationCreateInput = z.infer<typeof aidStationCreateSchema>;
 export type AidStationUpdateInput = z.infer<typeof aidStationUpdateSchema>;
@@ -123,3 +130,4 @@ export type GpxImportInput = z.infer<typeof gpxImportSchema>;
 export type GearItemCreateInput = z.infer<typeof gearItemCreateSchema>;
 export type GearItemUpdateInput = z.infer<typeof gearItemUpdateSchema>;
 export type GearSelectionUpsertInput = z.infer<typeof gearSelectionUpsertSchema>;
+export type AccountDeletionVerifyInput = z.infer<typeof accountDeletionVerifySchema>;
