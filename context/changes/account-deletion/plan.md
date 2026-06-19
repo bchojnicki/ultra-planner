@@ -340,24 +340,24 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Automated
 
-- [x] 1.1 Migrations apply cleanly (`npx supabase db reset`)
-- [x] 1.2 `npx astro sync` regenerates env types without error
-- [x] 1.3 Type/lint passes (`npm run lint`)
-- [x] 1.4 Build passes (`npm run build`)
-- [x] 1.5 Integration test: admin delete cascades a seeded user's data
+- [x] 1.1 Migrations apply cleanly (`npx supabase db reset`) — 436588a
+- [x] 1.2 `npx astro sync` regenerates env types without error — 436588a
+- [x] 1.3 Type/lint passes (`npm run lint`) — 436588a
+- [x] 1.4 Build passes (`npm run build`) — 436588a
+- [x] 1.5 Integration test: admin delete cascades a seeded user's data — 436588a
 
 #### Manual
 
-- [x] 1.6 `sendDeletionConfirmationEmail` lands in the test inbox with local secrets set
-- [x] 1.7 `createAdminClient()` returns a client with secrets, `null` without
+- [x] 1.6 `sendDeletionConfirmationEmail` lands in the test inbox with local secrets set — 436588a
+- [x] 1.7 `createAdminClient()` returns a client with secrets, `null` without — 436588a
 
 ### Phase 2: Deletion Request + Re-auth + Token Issuance
 
 #### Automated
 
-- [ ] 2.1 Type/lint passes (`npm run lint`)
-- [ ] 2.2 Build passes (`npm run build`)
-- [ ] 2.3 Integration test: 401 unauth, 429 throttle, 400 bad code, good code inserts one hashed ~30-min token
+- [x] 2.1 Type/lint passes (`npm run lint`)
+- [x] 2.2 Build passes (`npm run build`)
+- [x] 2.3 Integration test: 401 unauth, 429 throttle, 400 bad code, good code inserts one hashed ~30-min token
 
 #### Manual
 
