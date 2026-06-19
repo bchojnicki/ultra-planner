@@ -217,15 +217,15 @@ No data migration. The new `localStorage` keys (`collapse:<plan-id>:<section>`) 
 
 #### Automated
 
-- [x] 2.1 Type checking + lint pass: `npx astro sync && npm run lint`
-- [x] 2.2 Production build succeeds: `npm run build`
-- [x] 2.3 Playwright suite passes: `npx playwright test`
+- [x] 2.1 Type checking + lint pass: `npx astro sync && npm run lint` — 854b48b
+- [x] 2.2 Production build succeeds: `npm run build` — 854b48b
+- [x] 2.3 Playwright suite passes: `npx playwright test` — 854b48b
 
 #### Manual
 
-- [ ] 2.4 Each section collapses/expands on header click; chevron rotates
-- [ ] 2.5 Collapsed state survives a full page reload (per-section, per-plan)
-- [ ] 2.6 GPX import preserves Race + Aid collapse state (no flicker/reset)
-- [ ] 2.7 Race save-status visible and updating while its section is collapsed
-- [ ] 2.8 Keyboard focus + Enter/Space toggle; screen reader announces state
-- [ ] 2.9 No spacing regression between sections
+- [x] 2.4 Each section collapses/expands on header click; chevron rotates
+- [x] 2.5 Collapsed state survives a full page reload (per-section, per-plan)
+- [x] 2.6 GPX import preserves Race + Aid collapse state (no flicker/reset)
+- [x] 2.7 Race save-status visible and updating while its section is collapsed
+- [x] 2.8 Keyboard focus + Enter/Space toggle; screen reader announces state
+- [x] 2.9 No spacing regression between sections
