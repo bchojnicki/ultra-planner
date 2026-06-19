@@ -209,30 +209,30 @@ None — no schema, no data, no stored consent.
 
 #### Automated
 
-- [x] 1.1 Build passes (`npm run build`)
-- [x] 1.2 Linting passes (`npm run lint`)
-- [x] 1.3 `/privacy` route serves a 200
+- [x] 1.1 Build passes (`npm run build`) — 078902f
+- [x] 1.2 Linting passes (`npm run lint`) — 078902f
+- [x] 1.3 `/privacy` route serves a 200 — 078902f
 
 #### Manual
 
-- [x] 1.4 Page renders styled/readable, consistent with `/about`
-- [x] 1.5 Controller section shows real name + contact (no placeholders)
-- [x] 1.6 Data types / sub-processors match actual app behavior
-- [x] 1.7 Erasure link navigates to the account-deletion flow
+- [x] 1.4 Page renders styled/readable, consistent with `/about` — 078902f
+- [x] 1.5 Controller section shows real name + contact (no placeholders) — 078902f
+- [x] 1.6 Data types / sub-processors match actual app behavior — 078902f
+- [x] 1.7 Erasure link navigates to the account-deletion flow — 078902f
 
 ### Phase 2: Terms of Use Page
 
 #### Automated
 
-- [ ] 2.1 Build passes (`npm run build`)
-- [ ] 2.2 Linting passes (`npm run lint`)
-- [ ] 2.3 `/terms` route serves a 200
+- [x] 2.1 Build passes (`npm run build`)
+- [x] 2.2 Linting passes (`npm run lint`)
+- [x] 2.3 `/terms` route serves a 200
 
 #### Manual
 
-- [ ] 2.4 Page renders styled/readable, consistent with `/about` and `/privacy`
-- [ ] 2.5 Safety disclaimer present and visually prominent
-- [ ] 2.6 Governing-law section reads Poland/EU; deletion link resolves
+- [x] 2.4 Page renders styled/readable, consistent with `/about` and `/privacy`
+- [x] 2.5 Safety disclaimer present and visually prominent
+- [x] 2.6 Governing-law section reads Poland/EU; deletion link resolves
 
 ### Phase 3: Navigation + Acceptance Wiring
 
