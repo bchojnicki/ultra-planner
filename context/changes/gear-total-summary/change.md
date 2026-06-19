@@ -3,7 +3,7 @@ change_id: gear-total-summary
 title: Show race-wide gear totals in the plan table total row
 created: 2026-06-19
 updated: 2026-06-19
-status: new
+status: implemented
 archived_at: null
 ---
 
