@@ -223,9 +223,9 @@ No data migration. The new `localStorage` keys (`collapse:<plan-id>:<section>`) 
 
 #### Manual
 
-- [x] 2.4 Each section collapses/expands on header click; chevron rotates
-- [x] 2.5 Collapsed state survives a full page reload (per-section, per-plan)
-- [x] 2.6 GPX import preserves Race + Aid collapse state (no flicker/reset)
-- [x] 2.7 Race save-status visible and updating while its section is collapsed
-- [x] 2.8 Keyboard focus + Enter/Space toggle; screen reader announces state
-- [x] 2.9 No spacing regression between sections
+- [x] 2.4 Each section collapses/expands on header click; chevron rotates — 854b48b
+- [x] 2.5 Collapsed state survives a full page reload (per-section, per-plan) — 854b48b
+- [x] 2.6 GPX import preserves Race + Aid collapse state (no flicker/reset) — 6d69652
+- [x] 2.7 Race save-status visible and updating while its section is collapsed — 854b48b
+- [x] 2.8 Keyboard focus + Enter/Space toggle; screen reader announces state — 854b48b
+- [x] 2.9 No spacing regression between sections — 854b48b
