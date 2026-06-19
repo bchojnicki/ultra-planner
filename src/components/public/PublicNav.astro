@@ -1,5 +1,5 @@
 ---
-// Shared public top nav. Auth-aware via Astro.locals.user (same source as Topbar):
+// Shared public top nav. Auth-aware via Astro.locals.user (populated by middleware):
 // shows Sign in when logged-out, Dashboard + Sign out when logged-in.
 const { user } = Astro.locals;
 ---

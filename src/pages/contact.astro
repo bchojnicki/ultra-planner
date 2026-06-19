@@ -41,13 +41,19 @@ const email = "hello@ultra-planner.app";
   if (btn instanceof HTMLButtonElement) {
     const email = btn.dataset.email ?? "";
     btn.addEventListener("click", () => {
-      void navigator.clipboard.writeText(email).then(() => {
-        const original = btn.textContent;
-        btn.textContent = "Copied!";
-        window.setTimeout(() => {
-          btn.textContent = original;
-        }, 1500);
-      });
+      if (!navigator.clipboard) return; // unavailable on insecure origins / older browsers — address stays visible
+      void navigator.clipboard
+        .writeText(email)
+        .then(() => {
+          const original = btn.textContent;
+          btn.textContent = "Copied!";
+          window.setTimeout(() => {
+            btn.textContent = original;
+          }, 1500);
+        })
+        .catch(() => {
+          // Write denied — no-op; the email is still shown for manual copy.
+        });
     });
   }
 </script>
