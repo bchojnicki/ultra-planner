@@ -3,8 +3,8 @@ change_id: collapsible-plan-sections
 title: Collapsible (roll-up) plan-builder sections
 created: 2026-06-19
 updated: 2026-06-19
-status: new
-archived_at: null
+status: archived
+archived_at: 2026-06-19T12:25:34Z
 ---
 
 ## Notes

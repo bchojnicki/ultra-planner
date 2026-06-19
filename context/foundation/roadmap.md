@@ -42,8 +42,8 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-10 | public-pages-and-brand      | land on a branded public welcome / about / contact site; sign-in routes to the dashboard     | S-06          | FR-015 (PRD v6)                                     | done     |
 | S-11 | account-deletion            | permanently delete their account + all data, confirmed by an emailed link                    | S-06          | FR-014 (PRD v6, planned)                            | done     |
 | S-12 | excel-export                | export a plan to an Excel file                                                               | S-02          | (was §Non-Goal; un-parking)                         | todo     |
-| S-13 | collapsible-plan-sections   | collapse / expand the plan-builder sections to cut scrolling                                 | S-01          | (UX enhancement)                                   | todo     |
-| S-14 | gear-total-summary          | see race-wide gear totals (units per item) in the plan-table total row                       | S-03          | (UX enhancement)                                   | todo     |
+| S-13 | collapsible-plan-sections   | collapse / expand the plan-builder sections to cut scrolling                                 | S-01          | (UX enhancement)                                   | done     |
+| S-14 | gear-total-summary          | see race-wide gear totals (units per item) in the plan-table total row                       | S-03          | (UX enhancement)                                   | done     |
 
 > **Note (2026-06-19):** S-01–S-06 were the original MVP roadmap; S-07–S-14 were added in a `version: 2` reconciliation after several post-MVP changes shipped (some pulled forward from §Non-Goals / §Parked, some net-new). S-07–S-10 are already shipped + archived; S-11–S-14 are the current backlog. Post-MVP bug fixes are listed under `## Done → Maintenance / fixes`.
 
@@ -216,7 +216,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Change ID:** collapsible-plan-sections
 - **PRD refs:** none — UX enhancement.
 - **Prerequisites:** S-01
-- **Status:** todo
+- **Status:** done
 
 ### S-14: Race-wide gear totals
 
@@ -224,7 +224,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Change ID:** gear-total-summary
 - **PRD refs:** none — UX enhancement.
 - **Prerequisites:** S-03
-- **Status:** todo
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -264,6 +264,7 @@ Prior questions resolved:
 
 - **F-01: (foundation) plans and aid stations are stored server-side and are readable/writable only by their owning runner.** — Archived 2026-06-15 → `context/archive/2026-06-03-plan-data-and-ownership/`. Lesson: —.
 - **S-01: Runner can create a race plan (parameters) and add, list, and delete aid stations, with every change auto-saved.** — Archived 2026-06-15 → `context/archive/2026-06-15-race-setup-and-aid-stations/`. Lesson: —.
+- **S-13: Runner can collapse / expand the Race parameters, Aid stations, and Gear sections of the plan builder to cut scrolling on long plans.** — Archived 2026-06-19 → `context/archive/2026-06-19-collapsible-plan-sections/`. Lesson: —.
 - **S-02: Runner can generate a correct segment-by-segment plan table — per-segment travel time, estimated clock arrival, and fluid/carb/sodium targets, with aid-station context inline.** — Archived 2026-06-16 → `context/archive/2026-06-15-generate-plan-table/`. Lesson: —.
 - **S-03: Runner can optionally build a per-plan gear catalog (gels, carb drink, solid food, water carrier, salt caps); the plan table then auto-suggests whole-unit fueling per segment (carb-led, ratio-weighted, with fluid/sodium gap-fill) and lets the runner cap a product or pin an exact override per stage, showing achieved-vs-target with a signed delta. With no gear, the table stays in gram/ml/mg targets.** — Archived 2026-06-16 → `context/archive/2026-06-16-gear-profile-units/`. Lesson: —.
 - **S-04: Runner can see all their saved plans on a dashboard and open one in read-only view; a runner with no plans sees an empty-state prompt to create their first plan.** — Archived 2026-06-16 → `context/archive/2026-06-16-plan-dashboard-view/`. Lesson: —.
@@ -274,6 +275,7 @@ Prior questions resolved:
 - **S-09: Runner sees on-hover/focus field-help on the non-obvious plan-form inputs.** — Archived 2026-06-18 → `context/archive/2026-06-18-tooltips/`. Lesson: —.
 - **S-10: Visitor lands on a branded public welcome/about/contact site; sign-in routes to the dashboard; a shared nav spans public + app pages.** — Archived 2026-06-19 → `context/archive/2026-06-19-public-pages-and-brand/`. Lesson: —.
 - **S-11: permanently delete their account + all data, confirmed by an emailed link** — Archived 2026-06-19 → `context/archive/2026-06-19-account-deletion/`. Lesson: —.
+- **S-14: The plan-table total row shows how many of each gear item is needed for the whole race (e.g. "12× gel, 4× drink, 6× salt cap").** — Archived 2026-06-19 → `context/archive/2026-06-19-gear-total-summary/`. Lesson: —.
 
 ### Maintenance / fixes (post-MVP)
 

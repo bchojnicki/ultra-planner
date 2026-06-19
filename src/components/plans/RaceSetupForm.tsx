@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { AidStation, Plan, PlanUpdate } from "@/types";
 import { useAutosave, type SaveStatus } from "@/components/hooks/useAutosave";
 import GpxImport from "@/components/plans/GpxImport";
@@ -19,6 +19,10 @@ interface Props {
   onGpxImported?: (plan: Plan, stations: AidStation[]) => void;
   // Whether importing would overwrite real data (drives the confirm prompt).
   hasExistingData?: boolean;
+  // Lifts the autosave status to a parent so it can render the indicator in the
+  // collapsible-section header (outside the body), keeping it visible while the
+  // section is collapsed.
+  onStatusChange?: (status: SaveStatus) => void;
 }
 
 interface FormState {
@@ -101,14 +105,13 @@ function buildPatch(s: FormState): PlanUpdate {
   return patch;
 }
 
-const STATUS_TEXT: Record<SaveStatus, string> = {
-  idle: "",
-  saving: "Saving…",
-  saved: "Saved",
-  error: "Save failed — will retry on next change",
-};
-
-export default function RaceSetupForm({ plan, onParamsChange, onGpxImported, hasExistingData = false }: Props) {
+export default function RaceSetupForm({
+  plan,
+  onParamsChange,
+  onGpxImported,
+  hasExistingData = false,
+  onStatusChange,
+}: Props) {
   const [form, setForm] = useState<FormState>(() => initialState(plan));
 
   const save = useCallback(
@@ -126,6 +129,11 @@ export default function RaceSetupForm({ plan, onParamsChange, onGpxImported, has
 
   const { status, schedule } = useAutosave<PlanUpdate>(save);
 
+  // Mirror the autosave status up so the parent's collapsible header can show it.
+  useEffect(() => {
+    onStatusChange?.(status);
+  }, [status, onStatusChange]);
+
   const update = (field: keyof FormState, value: string) => {
     const next = { ...form, [field]: value };
     setForm(next);
@@ -135,14 +143,7 @@ export default function RaceSetupForm({ plan, onParamsChange, onGpxImported, has
   };
 
   return (
-    <section className="mb-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Race parameters</h2>
-        <span data-testid="save-status" className="text-xs text-blue-100/60" aria-live="polite">
-          {STATUS_TEXT[status]}
-        </span>
-      </div>
-
+    <>
       {onGpxImported ? (
         <GpxImport planId={plan.id} hasExistingData={hasExistingData} onImported={onGpxImported} />
       ) : null}
@@ -236,6 +237,6 @@ export default function RaceSetupForm({ plan, onParamsChange, onGpxImported, has
           </div>
         </div>
       </div>
-    </section>
+    </>
   );
 }
