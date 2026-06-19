@@ -141,15 +141,15 @@ None — no data or schema changes.
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npx vitest run tests/unit/gear-totals.test.ts`
-- [x] 1.2 Full unit suite passes: `npx vitest run`
-- [x] 1.3 Type checking / lint passes: `npm run lint`
-- [x] 1.4 Production build succeeds: `npm run build`
+- [x] 1.1 Unit tests pass: `npx vitest run tests/unit/gear-totals.test.ts` — 8d3664b
+- [x] 1.2 Full unit suite passes: `npx vitest run` — 8d3664b
+- [x] 1.3 Type checking / lint passes: `npm run lint` — 8d3664b
+- [x] 1.4 Production build succeeds: `npm run build` — 8d3664b
 
 #### Manual
 
-- [x] 1.5 Total row Fuel cell shows correct summed totals matching per-segment cells
-- [x] 1.6 Total reflects per-segment limit/override edits
-- [x] 1.7 Zero-units plan shows a blank cell (no `—`)
-- [x] 1.8 Total appears identically in the read-only view
-- [x] 1.9 No regression to per-segment Fuel cells or column alignment
+- [x] 1.5 Total row Fuel cell shows correct summed totals matching per-segment cells — 8d3664b
+- [x] 1.6 Total reflects per-segment limit/override edits — 8d3664b
+- [x] 1.7 Zero-units plan shows a blank cell (no `—`) — 8d3664b
+- [x] 1.8 Total appears identically in the read-only view — 8d3664b
+- [x] 1.9 No regression to per-segment Fuel cells or column alignment — 8d3664b
