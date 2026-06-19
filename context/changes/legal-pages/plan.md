@@ -224,25 +224,25 @@ None — no schema, no data, no stored consent.
 
 #### Automated
 
-- [x] 2.1 Build passes (`npm run build`)
-- [x] 2.2 Linting passes (`npm run lint`)
-- [x] 2.3 `/terms` route serves a 200
+- [x] 2.1 Build passes (`npm run build`) — e9c67d4
+- [x] 2.2 Linting passes (`npm run lint`) — e9c67d4
+- [x] 2.3 `/terms` route serves a 200 — e9c67d4
 
 #### Manual
 
-- [x] 2.4 Page renders styled/readable, consistent with `/about` and `/privacy`
-- [x] 2.5 Safety disclaimer present and visually prominent
-- [x] 2.6 Governing-law section reads Poland/EU; deletion link resolves
+- [x] 2.4 Page renders styled/readable, consistent with `/about` and `/privacy` — e9c67d4
+- [x] 2.5 Safety disclaimer present and visually prominent — e9c67d4
+- [x] 2.6 Governing-law section reads Poland/EU; deletion link resolves — e9c67d4
 
 ### Phase 3: Navigation + Acceptance Wiring
 
 #### Automated
 
-- [ ] 3.1 Build passes (`npm run build`)
-- [ ] 3.2 Linting passes (`npm run lint`)
+- [x] 3.1 Build passes (`npm run build`)
+- [x] 3.2 Linting passes (`npm run lint`)
 
 #### Manual
 
-- [ ] 3.3 Footer (and nav if added) show Privacy + Terms; links resolve
-- [ ] 3.4 Sign-in page shows the acceptance line with both links working
-- [ ] 3.5 No footer/nav/sign-in layout regression on mobile + desktop
+- [x] 3.3 Footer (and nav if added) show Privacy + Terms; links resolve
+- [x] 3.4 Sign-in page shows the acceptance line with both links working
+- [x] 3.5 No footer/nav/sign-in layout regression on mobile + desktop
