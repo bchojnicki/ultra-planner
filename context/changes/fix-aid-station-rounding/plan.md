@@ -198,14 +198,14 @@ None — no data or schema changes. Stored values are untouched; rounding is dis
 
 #### Automated
 
-- [x] 2.1 Type checking passes (`npx astro check`)
-- [x] 2.2 Linting passes (`npm run lint`)
-- [x] 2.3 Build succeeds (`npm run build`)
-- [x] 2.4 Existing Playwright suite passes (`npx playwright test`)
+- [x] 2.1 Type checking passes (`npx astro check`) — fe1a374
+- [x] 2.2 Linting passes (`npm run lint`) — fe1a374
+- [x] 2.3 Build succeeds (`npm run build`) — fe1a374
+- [x] 2.4 Existing Playwright suite passes (`npx playwright test`) — fe1a374
 
 #### Manual
 
-- [x] 2.5 Edit panel inputs show rounded distance/elevation
-- [x] 2.6 Editing only a flag/notes and closing does NOT change stored distance/elevation
-- [x] 2.7 Editing a distance/elevation value still saves correctly and re-sorts
-- [x] 2.8 Distance validation + autosave/optimistic update unaffected
+- [x] 2.5 Edit panel inputs show rounded distance/elevation — fe1a374
+- [x] 2.6 Editing only a flag/notes and closing does NOT change stored distance/elevation — fe1a374
+- [x] 2.7 Editing a distance/elevation value still saves correctly and re-sorts — fe1a374
+- [x] 2.8 Distance validation + autosave/optimistic update unaffected — fe1a374

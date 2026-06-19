@@ -3,7 +3,7 @@ change_id: fix-aid-station-rounding
 title: Fix unrounded aid-station distance/elevation in the editor
 created: 2026-06-19
 updated: 2026-06-19
-status: implementing
+status: implemented
 archived_at: null
 ---
 
