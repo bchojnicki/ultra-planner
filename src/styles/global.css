@@ -110,6 +110,22 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* Public-pages brand tokens — "Summit at first light".
+   Additive: used only on the public marketing pages (see PublicLayout.astro).
+   The authenticated app does not reference these. */
+@theme {
+  --color-summit-night: #0b1120;
+  --color-ridge: #151e2e;
+  --color-haze: #9fb0cc;
+  --color-snowcap: #eef4ff;
+  --color-alpenglow: #ff8a5b;
+  --color-trail-violet: #a78bfa;
+
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono-data: "Space Mono", ui-monospace, monospace;
+}
+
 @utility bg-cosmic {
   background-image: linear-gradient(to bottom, #0a0e1a, #0f1529, #0a0e1a);
 }

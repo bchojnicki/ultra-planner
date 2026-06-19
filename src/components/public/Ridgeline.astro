@@ -1,0 +1,173 @@
+---
+// The signature element: an elevation-profile ridgeline — the mountain outline IS
+// the product's data. Two variants:
+//   - "hero": full profile with a rising sun, aid-station markers + baked sample
+//     nutrition annotations, and mono axis labels. Draws on load.
+//   - "divider": a thin, muted line used between sections. No markers, no animation.
+// The hero draw animation is gated behind prefers-reduced-motion.
+interface Props {
+  variant?: "hero" | "divider";
+}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- astro-eslint parser mis-types Astro.props as an error type here; astro check / tsc resolve it correctly (0 errors)
+const { variant = "hero" } = Astro.props;
+
+// Shared ridge geometry (viewBox 0 0 1200 320). Top line of the range, left→summit→finish.
+const ridge =
+  "M0,280 L90,250 L170,268 L250,210 L330,236 L430,150 L520,186 L620,96 L700,60 L780,120 L880,104 L980,166 L1080,142 L1160,202 L1200,186";
+// Closed area for the filled mountain body.
+const fill = `${ridge} L1200,320 L0,320 Z`;
+
+// Baked, illustrative aid-station annotations (static — not computed live).
+const markers = [
+  { x: 430, y: 150, km: "KM 42", note: "+38g · 500ml" },
+  { x: 880, y: 104, km: "KM 71", note: "+52g · 750ml" },
+];
+---
+
+{
+  variant === "hero" ? (
+    <div class="ridgeline ridgeline--hero">
+      <svg
+        viewBox="0 0 1200 320"
+        role="img"
+        aria-label="Race elevation profile with per-segment fueling"
+        preserveAspectRatio="xMidYMax meet"
+      >
+        <defs>
+          <linearGradient id="ridge-body" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="var(--color-trail-violet)" stop-opacity="0.18" />
+            <stop offset="100%" stop-color="var(--color-summit-night)" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+
+        {/* Sun rising behind the summit */}
+        <circle class="ridge-sun" cx="700" cy="78" r="46" fill="var(--color-alpenglow)" opacity="0.9" />
+
+        {/* Mountain body + animated ridge stroke */}
+        <path d={fill} fill="url(#ridge-body)" />
+        <path
+          class="ridge-line"
+          d={ridge}
+          fill="none"
+          stroke="var(--color-snowcap)"
+          stroke-width="2.5"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+        />
+
+        {/* Aid-station markers + baked nutrition annotations */}
+        {markers.map((m) => (
+          <g class="ridge-marker">
+            <line x1={m.x} y1={m.y} x2={m.x} y2={m.y - 40} stroke="var(--color-trail-violet)" stroke-width="1.5" />
+            <circle
+              cx={m.x}
+              cy={m.y}
+              r="5"
+              fill="var(--color-trail-violet)"
+              stroke="var(--color-summit-night)"
+              stroke-width="2"
+            />
+            <text x={m.x} y={m.y - 48} text-anchor="middle" class="ridge-km">
+              {m.km}
+            </text>
+            <text x={m.x} y={m.y - 64} text-anchor="middle" class="ridge-note">
+              {m.note}
+            </text>
+          </g>
+        ))}
+
+        {/* Axis labels */}
+        <text x="6" y="312" class="ridge-axis">
+          KM 0
+        </text>
+        <text x="1194" y="312" text-anchor="end" class="ridge-axis">
+          FINISH
+        </text>
+      </svg>
+    </div>
+  ) : (
+    <div class="ridgeline ridgeline--divider">
+      <svg viewBox="0 0 1200 320" role="presentation" aria-hidden="true" preserveAspectRatio="none">
+        <path
+          d={ridge}
+          fill="none"
+          stroke="var(--color-haze)"
+          stroke-width="2"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+          opacity="0.35"
+        />
+      </svg>
+    </div>
+  )
+}
+
+<style>
+  .ridgeline {
+    width: 100%;
+  }
+  .ridgeline--hero svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  /* Divider: thin band, the line scrubbing across the page. */
+  .ridgeline--divider svg {
+    width: 100%;
+    height: 48px;
+    display: block;
+  }
+
+  .ridge-km {
+    fill: var(--color-haze);
+    font-family: var(--font-mono-data);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+  }
+  .ridge-note {
+    fill: var(--color-snowcap);
+    font-family: var(--font-mono-data);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .ridge-axis {
+    fill: var(--color-haze);
+    font-family: var(--font-mono-data);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+
+  /* One orchestrated load moment: the ridge draws, the sun rises, markers fade in. */
+  @media (prefers-reduced-motion: no-preference) {
+    .ridge-line {
+      stroke-dasharray: 2600;
+      stroke-dashoffset: 2600;
+      animation: ridge-draw 1900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .ridge-sun {
+      transform: translateY(38px);
+      opacity: 0;
+      animation: sun-rise 1400ms ease-out 700ms forwards;
+    }
+    .ridge-marker {
+      opacity: 0;
+      animation: marker-in 600ms ease-out 1700ms forwards;
+    }
+    @keyframes ridge-draw {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+    @keyframes sun-rise {
+      to {
+        transform: translateY(0);
+        opacity: 0.9;
+      }
+    }
+    @keyframes marker-in {
+      to {
+        opacity: 1;
+      }
+    }
+  }
+</style>

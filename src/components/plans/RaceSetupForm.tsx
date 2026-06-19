@@ -2,6 +2,8 @@ import { useCallback, useState } from "react";
 import type { AidStation, Plan, PlanUpdate } from "@/types";
 import { useAutosave, type SaveStatus } from "@/components/hooks/useAutosave";
 import GpxImport from "@/components/plans/GpxImport";
+import HelpTooltip from "@/components/ui/HelpTooltip";
+import { FIELD_HELP, type FieldHelpKey } from "@/lib/field-help";
 
 const inputCls =
   "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
@@ -32,13 +34,13 @@ interface FormState {
   hourly_sodium_mg: string;
 }
 
-const NUMERIC_FIELDS: { key: keyof FormState; label: string }[] = [
-  { key: "total_distance_km", label: "Total distance (km)" },
-  { key: "total_elevation_gain_m", label: "Elevation gain (m)" },
-  { key: "total_elevation_loss_m", label: "Elevation loss (m)" },
-  { key: "hourly_fluid_ml", label: "Hourly fluid (ml)" },
-  { key: "hourly_carb_g", label: "Hourly carbs (g)" },
-  { key: "hourly_sodium_mg", label: "Hourly sodium (mg)" },
+const NUMERIC_FIELDS: { key: keyof FormState; label: string; help: FieldHelpKey }[] = [
+  { key: "total_distance_km", label: "Total distance (km)", help: "total_distance" },
+  { key: "total_elevation_gain_m", label: "Elevation gain (m)", help: "elevation_gain" },
+  { key: "total_elevation_loss_m", label: "Elevation loss (m)", help: "elevation_loss" },
+  { key: "hourly_fluid_ml", label: "Hourly fluid (ml)", help: "hourly_fluid" },
+  { key: "hourly_carb_g", label: "Hourly carbs (g)", help: "hourly_carbs" },
+  { key: "hourly_sodium_mg", label: "Hourly sodium (mg)", help: "hourly_sodium" },
 ];
 
 function isoToLocal(iso: string): string {
@@ -160,11 +162,14 @@ export default function RaceSetupForm({ plan, onParamsChange, onGpxImported, has
           />
         </div>
 
-        {NUMERIC_FIELDS.map(({ key, label }) => (
+        {NUMERIC_FIELDS.map(({ key, label, help }) => (
           <div key={key}>
-            <label htmlFor={`rsf-${key}`} className="mb-1 block text-sm text-blue-100/80">
-              {label}
-            </label>
+            <div className="mb-1 flex items-center">
+              <label htmlFor={`rsf-${key}`} className="text-sm text-blue-100/80">
+                {label}
+              </label>
+              <HelpTooltip text={FIELD_HELP[help]} label={label} />
+            </div>
             <input
               id={`rsf-${key}`}
               type="number"
@@ -180,9 +185,12 @@ export default function RaceSetupForm({ plan, onParamsChange, onGpxImported, has
         ))}
 
         <div>
-          <label htmlFor="rsf-start" className="mb-1 block text-sm text-blue-100/80">
-            Start time
-          </label>
+          <div className="mb-1 flex items-center">
+            <label htmlFor="rsf-start" className="text-sm text-blue-100/80">
+              Start time
+            </label>
+            <HelpTooltip text={FIELD_HELP.start_time} label="Start time" />
+          </div>
           <input
             id="rsf-start"
             type="datetime-local"
@@ -195,7 +203,10 @@ export default function RaceSetupForm({ plan, onParamsChange, onGpxImported, has
         </div>
 
         <div>
-          <span className="mb-1 block text-sm text-blue-100/80">Expected finish</span>
+          <div className="mb-1 flex items-center">
+            <span className="text-sm text-blue-100/80">Expected finish</span>
+            <HelpTooltip text={FIELD_HELP.expected_finish} label="Expected finish" />
+          </div>
           <div className="flex items-center gap-2">
             <input
               aria-label="Expected finish hours"

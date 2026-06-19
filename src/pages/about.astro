@@ -1,0 +1,52 @@
+---
+import PublicLayout from "@/layouts/PublicLayout.astro";
+import Ridgeline from "@/components/public/Ridgeline.astro";
+import { planCta } from "@/lib/cta";
+
+const { href: ctaHref, label: ctaLabel } = planCta(!!Astro.locals.user);
+---
+
+<PublicLayout title="About — Ultra Planner">
+  <section class="mx-auto max-w-3xl px-4 py-16 sm:px-8 sm:py-24">
+    <p class="font-mono-data text-haze/70 text-xs tracking-[0.2em]">THE WEDGE</p>
+    <h1 class="font-display text-snowcap mt-4 text-4xl leading-tight font-bold sm:text-5xl">
+      Fuel the effort,<br />not the distance.
+    </h1>
+
+    <div class="text-haze mt-8 space-y-5 leading-relaxed">
+      <p>
+        Most race plans spread fuel evenly across the kilometres: a fixed number of grams and millilitres per hour, or
+        per checkpoint. That works on a track. It falls apart in the mountains.
+      </p>
+      <p>
+        A runnable 5&nbsp;km on rolling ground and a 5&nbsp;km grind up 1,000&nbsp;m of vert are not the same effort —
+        one might take 30 minutes, the other two hours. Your body burns and sweats by <span class="text-snowcap"
+          >time on feet</span
+        >, not by distance covered. Plan by distance and you'll under-fuel the climbs and over-carry on the descents.
+      </p>
+      <p>
+        Ultra Planner estimates the time you'll spend on every segment between aid stations — weighting distance by
+        elevation — and allocates fluid, carbs, and sodium against that. Steep, slow segments get more; fast, flat ones
+        get less. The result is a per-segment plan that matches what your body actually does out there.
+      </p>
+      <p>
+        Add your gear and it goes one step further: whole-unit suggestions per leg — how many gels, how much drink mix,
+        which salt caps — with the achieved-vs-target gap shown so you can tune before race day, not during it.
+      </p>
+    </div>
+  </section>
+
+  <Ridgeline variant="divider" />
+
+  <section class="mx-auto max-w-3xl px-4 py-16 text-center sm:px-8">
+    <h2 class="font-display text-snowcap text-2xl font-bold sm:text-3xl">Plan the climb before you're on it.</h2>
+    <div class="mt-8">
+      <a
+        href={ctaHref}
+        class="bg-trail-violet/20 text-snowcap hover:bg-trail-violet/30 focus-visible:ring-trail-violet inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-base font-medium transition-colors focus:outline-none focus-visible:ring-2"
+      >
+        {ctaLabel}
+      </a>
+    </div>
+  </section>
+</PublicLayout>

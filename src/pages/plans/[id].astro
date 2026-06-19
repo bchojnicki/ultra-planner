@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import PublicNav from "@/components/public/PublicNav.astro";
 import { createClient } from "@/lib/supabase";
 import { loadPlanBundle } from "@/lib/services/plan-bundle";
 import { computePlanTable } from "@/lib/plan-table";
@@ -27,6 +28,7 @@ const allocations = computeAllocations(result, gearItems, gearSelections);
 ---
 
 <Layout title={plan.name}>
+  <PublicNav />
   <div class="bg-cosmic min-h-screen p-4">
     <div class="mx-auto max-w-5xl text-white">
       <a href="/dashboard" class="text-sm text-purple-300 hover:underline">← Back to plans</a>

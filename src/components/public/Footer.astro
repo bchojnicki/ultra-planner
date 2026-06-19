@@ -1,0 +1,24 @@
+---
+// Minimal public footer: copyright + secondary links.
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-summit-night border-t border-white/10">
+  <div
+    class="text-haze mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm sm:flex-row sm:px-8"
+  >
+    <span class="font-mono-data text-haze/70 text-xs tracking-wide">© {year} Ultra Planner</span>
+    <nav class="flex items-center gap-5">
+      <a href="/about" class="hover:text-snowcap transition-colors">About</a>
+      <a href="/contact" class="hover:text-snowcap transition-colors">Contact</a>
+      <a
+        href="https://github.com/bchojnicki/ultra-planner"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-snowcap transition-colors"
+      >
+        GitHub
+      </a>
+    </nav>
+  </div>
+</footer>

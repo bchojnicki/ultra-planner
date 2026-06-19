@@ -160,6 +160,7 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
         key={`stations-${importKey}`}
         planId={plan.id}
         initialStations={stations}
+        totalDistanceKm={params.total_distance_km}
         onStationsChange={onStationsChange}
       />
       <PlanTable

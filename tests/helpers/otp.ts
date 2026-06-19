@@ -49,7 +49,7 @@ async function waitForOtpCode(email: string): Promise<string> {
   throw new Error(`No OTP email for "${email}" in Mailpit within timeout`);
 }
 
-// Full sign-in: email step → request code → read it from Mailpit → verify → land on "/".
+// Full sign-in: email step → request code → read it from Mailpit → verify → land on "/dashboard".
 export async function signInViaOtp(page: Page, email: string): Promise<void> {
   await page.goto("/auth/signin");
   await waitHydrated(page);
@@ -61,5 +61,5 @@ export async function signInViaOtp(page: Page, email: string): Promise<void> {
   const code = await waitForOtpCode(email);
   await page.getByLabel("6-digit code").fill(code);
   await page.getByRole("button", { name: /Verify/ }).click();
-  await page.waitForURL("/");
+  await page.waitForURL("/dashboard");
 }

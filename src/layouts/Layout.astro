@@ -1,5 +1,14 @@
 ---
 import "../styles/global.css";
+// Brand fonts loaded site-wide so the shared public nav (used on both public and
+// app pages) renders its Space Grotesk wordmark everywhere. App body text stays
+// system default — only elements with the brand font utilities pick these up.
+import "@fontsource/space-grotesk/500.css";
+import "@fontsource/space-grotesk/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/space-mono/400.css";
+import "@fontsource/space-mono/700.css";
 import Banner from "@/components/Banner.astro";
 import { getMissingConfigs } from "@/lib/config-status";
 const missingConfigs = getMissingConfigs();

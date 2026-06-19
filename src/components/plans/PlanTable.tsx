@@ -1,7 +1,10 @@
-import { useState, useSyncExternalStore } from "react";
+import { Fragment, useState, useSyncExternalStore } from "react";
 import type { GearAllocationResult, GearItem, GearSegmentSelection, PlanTableResult } from "@/types";
 import type { SaveStatus } from "@/components/hooks/useAutosave";
 import { enabledFacilities } from "@/lib/aid-station-facilities";
+import HelpTooltip from "@/components/ui/HelpTooltip";
+import { FIELD_HELP } from "@/lib/field-help";
+import { fmtKm, fmtM } from "@/lib/format";
 
 const SELECTION_STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",
@@ -33,16 +36,6 @@ function fmtClock(iso: string, local: boolean): string {
     minute: "2-digit",
     ...(local ? {} : { timeZone: "UTC" }),
   });
-}
-
-// Display rounding — distance to 100 m (0.1 km), elevation to whole metres. The
-// calc keeps full float precision; rounding is a display concern (accuracy guardrail).
-function fmtKm(km: number): string {
-  return String(Math.round(km * 10) / 10);
-}
-
-function fmtM(m: number): string {
-  return String(Math.round(m));
 }
 
 function unitsOf(alloc: GearAllocationResult): Record<string, number> {
@@ -229,12 +222,44 @@ export default function PlanTable({
               <th className="py-2 pr-4">Dist</th>
               <th className="py-2 pr-4">Gain</th>
               <th className="py-2 pr-4">Loss</th>
-              <th className="py-2 pr-4">Time</th>
-              <th className="py-2 pr-4">Arrival</th>
-              <th className="py-2 pr-4">Fluid</th>
-              <th className="py-2 pr-4">Carbs</th>
-              <th className="py-2 pr-4">Sodium</th>
-              {gearActive ? <th className="py-2 pr-4">Fuel</th> : null}
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Time
+                  <HelpTooltip text={FIELD_HELP.col_time} label="Time" />
+                </span>
+              </th>
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Arrival
+                  <HelpTooltip text={FIELD_HELP.col_arrival} label="Arrival" />
+                </span>
+              </th>
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Fluid
+                  <HelpTooltip text={FIELD_HELP.col_fluid} label="Fluid" />
+                </span>
+              </th>
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Carbs
+                  <HelpTooltip text={FIELD_HELP.col_carbs} label="Carbs" />
+                </span>
+              </th>
+              <th className="py-2 pr-4">
+                <span className="inline-flex items-center">
+                  Sodium
+                  <HelpTooltip text={FIELD_HELP.col_sodium} label="Sodium" />
+                </span>
+              </th>
+              {gearActive ? (
+                <th className="py-2 pr-4">
+                  <span className="inline-flex items-center">
+                    Fuel
+                    <HelpTooltip text={FIELD_HELP.col_fuel} label="Fuel" />
+                  </span>
+                </th>
+              ) : null}
               <th className="py-2">Aid station</th>
             </tr>
           </thead>
@@ -244,76 +269,73 @@ export default function PlanTable({
               const alloc = gearActive ? allocs[idx] : null;
               const units = alloc ? unitsOf(alloc) : {};
               return (
-                <tr key={r.label} data-testid="plan-row" className="border-t border-white/10 align-top">
-                  <td className="py-2 pr-4 font-medium whitespace-nowrap">
-                    {r.label}
-                    {gearActive && !readOnly ? (
-                      <button
-                        type="button"
-                        data-testid="gear-toggle"
-                        aria-expanded={expanded.has(idx)}
-                        onClick={() => {
-                          toggle(idx);
-                        }}
-                        className="mt-1 block rounded-md border border-white/20 px-2 py-0.5 text-xs text-blue-100/70 transition-colors hover:bg-white/10"
-                      >
-                        {expanded.has(idx) ? "▾ gear" : "▸ gear"}
-                      </button>
-                    ) : null}
-                  </td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{fmtKm(r.segment_distance_km)} km</td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{fmtM(r.segment_elevation_gain_m)} m</td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{fmtM(r.segment_elevation_loss_m)} m</td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{fmtDuration(r.moving_minutes)}</td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{fmtClock(r.arrival, mounted)}</td>
-                  {alloc ? (
-                    <>
-                      <td data-testid="fluid-cell" className="py-2 pr-4 whitespace-nowrap">
-                        <NutrientSecondary achieved={alloc.achieved.fluid_ml} target={r.fluid_ml} unit="ml" />
-                      </td>
-                      <td data-testid="carbs-cell" className="py-2 pr-4 whitespace-nowrap">
-                        <NutrientSecondary achieved={alloc.achieved.carb_g} target={r.carb_g} unit="g" />
-                      </td>
-                      <td data-testid="sodium-cell" className="py-2 pr-4 whitespace-nowrap">
-                        <NutrientSecondary achieved={alloc.achieved.sodium_mg} target={r.sodium_mg} unit="mg" />
-                      </td>
-                      <td data-testid="fuel-cell" className="py-2 pr-4 whitespace-normal">
-                        {fuelBreakdown(gearItems, units) || "—"}
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="py-2 pr-4 whitespace-nowrap">{Math.round(r.fluid_ml)} ml</td>
-                      <td className="py-2 pr-4 whitespace-nowrap">{Math.round(r.carb_g)} g</td>
-                      <td className="py-2 pr-4 whitespace-nowrap">{Math.round(r.sodium_mg)} mg</td>
-                    </>
-                  )}
-                  <td className="py-2 whitespace-normal">
-                    {station ? (
-                      <div className="space-y-1">
-                        <div className="flex flex-wrap gap-1">
-                          {enabledFacilities(station).map((label) => (
-                            <span key={label} className="rounded bg-white/10 px-1.5 py-0.5 text-xs text-blue-100/70">
-                              {label}
-                            </span>
-                          ))}
-                        </div>
-                        {station.time_spent_min > 0 ? (
-                          <div className="text-xs text-blue-100/50">Rest {station.time_spent_min} min</div>
-                        ) : null}
-                        {station.notes ? <div className="text-xs text-blue-100/40">{station.notes}</div> : null}
-                      </div>
+                <Fragment key={r.label}>
+                  <tr data-testid="plan-row" className="border-t border-white/10 align-top">
+                    <td className="py-2 pr-4 font-medium whitespace-nowrap">
+                      {r.label}
+                      {gearActive && !readOnly ? (
+                        <button
+                          type="button"
+                          data-testid="gear-toggle"
+                          aria-expanded={expanded.has(idx)}
+                          onClick={() => {
+                            toggle(idx);
+                          }}
+                          className="mt-1 block rounded-md border border-white/20 px-2 py-0.5 text-xs text-blue-100/70 transition-colors hover:bg-white/10"
+                        >
+                          {expanded.has(idx) ? "▾ gear" : "▸ gear"}
+                        </button>
+                      ) : null}
+                    </td>
+                    <td className="py-2 pr-4 whitespace-nowrap">{fmtKm(r.segment_distance_km)} km</td>
+                    <td className="py-2 pr-4 whitespace-nowrap">{fmtM(r.segment_elevation_gain_m)} m</td>
+                    <td className="py-2 pr-4 whitespace-nowrap">{fmtM(r.segment_elevation_loss_m)} m</td>
+                    <td className="py-2 pr-4 whitespace-nowrap">{fmtDuration(r.moving_minutes)}</td>
+                    <td className="py-2 pr-4 whitespace-nowrap">{fmtClock(r.arrival, mounted)}</td>
+                    {alloc ? (
+                      <>
+                        <td data-testid="fluid-cell" className="py-2 pr-4 whitespace-nowrap">
+                          <NutrientSecondary achieved={alloc.achieved.fluid_ml} target={r.fluid_ml} unit="ml" />
+                        </td>
+                        <td data-testid="carbs-cell" className="py-2 pr-4 whitespace-nowrap">
+                          <NutrientSecondary achieved={alloc.achieved.carb_g} target={r.carb_g} unit="g" />
+                        </td>
+                        <td data-testid="sodium-cell" className="py-2 pr-4 whitespace-nowrap">
+                          <NutrientSecondary achieved={alloc.achieved.sodium_mg} target={r.sodium_mg} unit="mg" />
+                        </td>
+                        <td data-testid="fuel-cell" className="py-2 pr-4 whitespace-normal">
+                          {fuelBreakdown(gearItems, units) || "—"}
+                        </td>
+                      </>
                     ) : (
-                      <span className="text-blue-100/40">Finish</span>
+                      <>
+                        <td className="py-2 pr-4 whitespace-nowrap">{Math.round(r.fluid_ml)} ml</td>
+                        <td className="py-2 pr-4 whitespace-nowrap">{Math.round(r.carb_g)} g</td>
+                        <td className="py-2 pr-4 whitespace-nowrap">{Math.round(r.sodium_mg)} mg</td>
+                      </>
                     )}
-                  </td>
-                </tr>
-              );
-            })}
-            {gearActive && onSelectionChange
-              ? rows.map((r, idx) =>
-                  expanded.has(idx) ? (
-                    <tr key={`${r.label}-panel`} className="border-t border-white/5">
+                    <td className="py-2 whitespace-normal">
+                      {station ? (
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap gap-1">
+                            {enabledFacilities(station).map((label) => (
+                              <span key={label} className="rounded bg-white/10 px-1.5 py-0.5 text-xs text-blue-100/70">
+                                {label}
+                              </span>
+                            ))}
+                          </div>
+                          {station.time_spent_min > 0 ? (
+                            <div className="text-xs text-blue-100/50">Rest {station.time_spent_min} min</div>
+                          ) : null}
+                          {station.notes ? <div className="text-xs text-blue-100/40">{station.notes}</div> : null}
+                        </div>
+                      ) : (
+                        <span className="text-blue-100/40">Finish</span>
+                      )}
+                    </td>
+                  </tr>
+                  {gearActive && onSelectionChange && expanded.has(idx) ? (
+                    <tr data-testid="gear-panel-row" className="border-t border-white/5">
                       <td colSpan={colCount} className="py-2">
                         <GearPanel
                           segmentIndex={idx}
@@ -324,9 +346,10 @@ export default function PlanTable({
                         />
                       </td>
                     </tr>
-                  ) : null,
-                )
-              : null}
+                  ) : null}
+                </Fragment>
+              );
+            })}
           </tbody>
           <tfoot>
             <tr data-testid="plan-totals" className="border-t-2 border-white/20 font-medium">

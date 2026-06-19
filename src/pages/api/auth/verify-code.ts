@@ -28,5 +28,5 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(verifyStep("That code is invalid or expired. Request a new one."));
   }
 
-  return context.redirect("/");
+  return context.redirect("/dashboard");
 };

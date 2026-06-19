@@ -1,6 +1,7 @@
 ---
 import type { AidStation } from "@/types";
 import { enabledFacilities } from "@/lib/aid-station-facilities";
+import { fmtKm, fmtM } from "@/lib/format";
 
 // Read-only aid-station list (S-04). Sorted by cumulative distance; facility
 // badges, rest time, and crew notes shown as static content — no add/delete.
@@ -23,7 +24,7 @@ const sorted = [...stations].sort((a, b) => a.cumulative_distance_km - b.cumulat
           <li class="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
             <div class="flex flex-wrap items-baseline justify-between gap-2">
               <span class="font-medium">
-                {s.cumulative_distance_km} km · {s.cumulative_elevation_gain_m} m gain
+                {fmtKm(s.cumulative_distance_km)} km · {fmtM(s.cumulative_elevation_gain_m)} m gain
               </span>
               {s.time_spent_min > 0 ? <span class="text-xs text-blue-100/50">Rest {s.time_spent_min} min</span> : null}
             </div>
