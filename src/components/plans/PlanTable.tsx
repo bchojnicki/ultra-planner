@@ -158,6 +158,7 @@ export default function PlanTable({
 }: Props) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState(false);
   // false during SSR + the first hydration render (matches the server), true once
   // hydrated — flips arrival times from UTC (SSR-stable) to the viewer's local time
   // without a hydration mismatch and without setState-in-effect.
@@ -200,6 +201,7 @@ export default function PlanTable({
   // bundle, build the workbook from the already-computed data, and download it.
   async function handleExport() {
     if (!plan || exporting) return;
+    setExportError(false);
     setExporting(true);
     try {
       const { buildPlanWorkbook, planExportFilename } = await import("@/lib/plan-export");
@@ -215,6 +217,10 @@ export default function PlanTable({
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+    } catch {
+      // The lazy SheetJS chunk failed to load or the build threw — surface it
+      // to the runner instead of failing silently (mirrors GpxImport's handling).
+      setExportError(true);
     } finally {
       setExporting(false);
     }
@@ -231,15 +237,22 @@ export default function PlanTable({
             </span>
           ) : null}
           {readOnly && plan ? (
-            <button
-              type="button"
-              data-testid="export-excel"
-              onClick={() => void handleExport()}
-              disabled={exporting}
-              className="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-white/20 disabled:opacity-50"
-            >
-              {exporting ? "Exporting…" : "Export to Excel"}
-            </button>
+            <>
+              {exportError ? (
+                <span data-testid="export-error" className="text-xs text-red-300" aria-live="polite">
+                  Export failed — please try again.
+                </span>
+              ) : null}
+              <button
+                type="button"
+                data-testid="export-excel"
+                onClick={() => void handleExport()}
+                disabled={exporting}
+                className="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-white/20 disabled:opacity-50"
+              >
+                {exporting ? "Exporting…" : "Export to Excel"}
+              </button>
+            </>
           ) : null}
         </div>
       </div>

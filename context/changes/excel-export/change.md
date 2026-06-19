@@ -3,7 +3,7 @@ change_id: excel-export
 title: Export a plan to an Excel file
 created: 2026-06-19
 updated: 2026-06-19
-status: implemented
+status: impl_reviewed
 archived_at: null
 ---
 

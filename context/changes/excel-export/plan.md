@@ -73,6 +73,8 @@ Add SheetJS and a pure builder that turns the computed plan data into `.xlsx` by
 
 **Contract**: Export e.g. `buildPlanWorkbook(input: { plan: Plan; result: PlanTableResult; items: GearItem[]; allocations: GearAllocationResult[] }): Uint8Array` and a filename helper `planExportFilename(plan: Plan): string` (→ `"<sanitized plan name>.xlsx"`). Uses `XLSX.utils.aoa_to_sheet`, `book_new`, `book_append_sheet`, `write({ type: "array", bookType: "xlsx" })`. Numeric cells carry display-rounded numbers (reuse `fmtKm`/`fmtM` rounding logic and the lifted `fmtDuration`/`fuelBreakdown` helpers); arrival columns carry `HH:MM` strings. Caller guarantees `result.ok === true` (builder may assert/return empty otherwise).
 
+> **Addendum (impl, 2026-06-19):** the implemented sheet splits the aid-station data into two columns — **Aid station** (facilities + rest) and a separate **Notes** (free text) — rather than one combined cell, at the user's request during Phase 1. Builder returns `ArrayBuffer` (the `write({ type: "array" })` shape the browser wraps in a Blob).
+
 #### 3. Lift shared formatting helpers
 
 **File**: `src/components/plans/PlanTable.tsx` → shared location (e.g. `src/lib/format.ts` or a small `src/lib/plan-format.ts`)
