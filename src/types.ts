@@ -173,6 +173,49 @@ export type GearSegmentSelectionUpdate = Partial<
 >;
 
 // ---------------------------------------------------------------------------
+// Account deletion (account-deletion). Server-only tables touched exclusively by
+// the service-role admin client (src/lib/supabaseAdmin.ts); RLS-enabled with no
+// policies. Mirrors supabase/migrations/20260619120000 + 20260619120001.
+// ---------------------------------------------------------------------------
+
+// Single-use, expiring confirmation token. Stores the SHA-256 of the emailed raw
+// token (token_hash is the primary key). used_at marks consumption; the row
+// cascades away with the user on a successful deletion.
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- must be a type alias (see Plan note)
+export type AccountDeletionToken = {
+  token_hash: string;
+  user_id: string;
+  requested_ip: string | null;
+  expires_at: string;
+  used_at: string | null;
+  created_at: string;
+};
+
+// Insert: created_at is server-managed; used_at/requested_ip are nullable (optional here).
+export type AccountDeletionTokenInsert = Omit<AccountDeletionToken, "created_at" | "used_at" | "requested_ip"> &
+  Partial<Pick<AccountDeletionToken, "used_at" | "requested_ip">>;
+
+// Update: only used_at is mutated in practice; keys/timestamps are not editable.
+export type AccountDeletionTokenUpdate = Partial<Omit<AccountDeletionToken, "token_hash" | "user_id" | "created_at">>;
+
+// Audit row: a deletion happened. user_id is a plain uuid (NO FK) so it survives the
+// cascade; email_hash keeps PII out of the trail.
+// eslint-disable-next-line @typescript-eslint/consistent-type-definitions -- must be a type alias (see Plan note)
+export type AccountDeletionEvent = {
+  id: string;
+  user_id: string;
+  email_hash: string;
+  requested_ip: string | null;
+  deleted_at: string;
+};
+
+// Insert: id/deleted_at are server-managed; requested_ip is nullable (optional here).
+export type AccountDeletionEventInsert = Omit<AccountDeletionEvent, "id" | "deleted_at" | "requested_ip"> &
+  Partial<Pick<AccountDeletionEvent, "requested_ip">>;
+
+export type AccountDeletionEventUpdate = Partial<Omit<AccountDeletionEvent, "id">>;
+
+// ---------------------------------------------------------------------------
 // Gear allocation result (S-03). Pure, derived per segment by
 // src/lib/gear-allocation.ts — never persisted. Converts a segment's gram/ml
 // targets into whole-unit suggestions per gear item, and reports what those
@@ -266,6 +309,18 @@ export interface Database {
         Row: GearSegmentSelection;
         Insert: GearSegmentSelectionInsert;
         Update: GearSegmentSelectionUpdate;
+        Relationships: [];
+      };
+      account_deletion_tokens: {
+        Row: AccountDeletionToken;
+        Insert: AccountDeletionTokenInsert;
+        Update: AccountDeletionTokenUpdate;
+        Relationships: [];
+      };
+      account_deletion_events: {
+        Row: AccountDeletionEvent;
+        Insert: AccountDeletionEventInsert;
+        Update: AccountDeletionEventUpdate;
         Relationships: [];
       };
     };
