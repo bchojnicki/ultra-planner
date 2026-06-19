@@ -43,7 +43,7 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-11 | account-deletion            | permanently delete their account + all data, confirmed by an emailed link                    | S-06          | FR-014 (PRD v6, planned)                            | todo     |
 | S-12 | excel-export                | export a plan to an Excel file                                                               | S-02          | (was §Non-Goal; un-parking)                         | todo     |
 | S-13 | collapsible-plan-sections   | collapse / expand the plan-builder sections to cut scrolling                                 | S-01          | (UX enhancement)                                   | done     |
-| S-14 | gear-total-summary          | see race-wide gear totals (units per item) in the plan-table total row                       | S-03          | (UX enhancement)                                   | todo     |
+| S-14 | gear-total-summary          | see race-wide gear totals (units per item) in the plan-table total row                       | S-03          | (UX enhancement)                                   | done     |
 
 > **Note (2026-06-19):** S-01–S-06 were the original MVP roadmap; S-07–S-14 were added in a `version: 2` reconciliation after several post-MVP changes shipped (some pulled forward from §Non-Goals / §Parked, some net-new). S-07–S-10 are already shipped + archived; S-11–S-14 are the current backlog. Post-MVP bug fixes are listed under `## Done → Maintenance / fixes`.
 
@@ -224,7 +224,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Change ID:** gear-total-summary
 - **PRD refs:** none — UX enhancement.
 - **Prerequisites:** S-03
-- **Status:** todo
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -274,6 +274,7 @@ Prior questions resolved:
 - **S-08: Runner can edit any field of an existing aid station inline, with re-sort on distance change and segment recompute.** — Archived 2026-06-18 → `context/archive/2026-06-18-edit-aid-stations/`. Lesson: —.
 - **S-09: Runner sees on-hover/focus field-help on the non-obvious plan-form inputs.** — Archived 2026-06-18 → `context/archive/2026-06-18-tooltips/`. Lesson: —.
 - **S-10: Visitor lands on a branded public welcome/about/contact site; sign-in routes to the dashboard; a shared nav spans public + app pages.** — Archived 2026-06-19 → `context/archive/2026-06-19-public-pages-and-brand/`. Lesson: —.
+- **S-14: The plan-table total row shows how many of each gear item is needed for the whole race (e.g. "12× gel, 4× drink, 6× salt cap").** — Archived 2026-06-19 → `context/archive/2026-06-19-gear-total-summary/`. Lesson: —.
 
 ### Maintenance / fixes (post-MVP)
 

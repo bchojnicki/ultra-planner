@@ -1,9 +1,15 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
 
 // Node-side integration tests, kept separate from the Playwright e2e suite.
 // `include` is scoped to tests/integration/**/*.test.ts so Playwright's
 // tests/*.spec.ts files are never collected by Vitest (and vice versa).
 export default defineConfig({
+  // Mirror the tsconfig `@/*` → `src/*` path alias so component tests can import
+  // modules that use the alias internally (e.g. PlanTable's `@/lib/...` imports).
+  resolve: {
+    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+  },
   test: {
     environment: "node",
     include: ["tests/integration/**/*.test.ts", "tests/unit/**/*.test.ts"],

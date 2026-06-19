@@ -93,6 +93,15 @@ test.describe("Gear → unit-level output (requires TEST_EMAIL + local Supabase/
     ]);
     await expect(page.getByTestId("fuel-cell").first()).toContainText("3× SIS gel", { timeout: 5000 });
 
+    // The totals row shows the race-wide gear sum: segment 1's 3 gels plus segment 2's
+    // suggested gels, so the total gel count is ≥ 3 (robust to segment 2's auto-suggestion).
+    const totalCell = page.getByTestId("fuel-total-cell");
+    await expect(totalCell).toContainText("SIS gel");
+    const totalText = (await totalCell.textContent()) ?? "";
+    const gelMatch = /(\d+)× SIS gel/.exec(totalText);
+    expect(gelMatch).not.toBeNull();
+    expect(Number(gelMatch?.[1])).toBeGreaterThanOrEqual(3);
+
     // Reload — the override persists.
     await page.reload();
     await waitHydrated(page);
