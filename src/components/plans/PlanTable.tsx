@@ -364,6 +364,8 @@ export default function PlanTable({
               <td className="py-2 pr-4">{Math.round(totals.carb_g)} g</td>
               <td className="py-2 pr-4">{Math.round(totals.sodium_mg)} mg</td>
               {gearActive ? (
+                // Race-wide gear total. Unlike the per-segment fuel-cell, this omits the
+                // `|| "—"` fallback on purpose — an all-zero plan leaves the total blank.
                 <td data-testid="fuel-total-cell" className="py-2 pr-4 whitespace-normal">
                   {fuelBreakdown(gearItems, sumAllocationUnits(allocs))}
                 </td>
