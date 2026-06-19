@@ -1,6 +1,8 @@
 ---
 // Shared public top nav. Auth-aware via Astro.locals.user (populated by middleware):
-// shows Sign in when logged-out, Dashboard + Sign out when logged-in.
+// shows Sign in when logged-out, Dashboard + a Settings menu (Log out / Remove
+// account) when logged-in.
+import SettingsMenu from "@/components/public/SettingsMenu";
 const { user } = Astro.locals;
 ---
 
@@ -21,14 +23,7 @@ const { user } = Astro.locals;
             <a href="/dashboard" class="text-trail-violet hover:text-snowcap transition-colors">
               Dashboard
             </a>
-            <form method="POST" action="/api/auth/signout">
-              <button
-                type="submit"
-                class="text-haze hover:text-snowcap focus-visible:ring-trail-violet transition-colors focus:outline-none focus-visible:ring-2"
-              >
-                Sign out
-              </button>
-            </form>
+            <SettingsMenu client:load />
           </>
         ) : (
           <a

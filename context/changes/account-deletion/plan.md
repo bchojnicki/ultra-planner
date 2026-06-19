@@ -368,9 +368,9 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Automated
 
-- [x] 3.1 Type/lint passes (`npm run lint`)
-- [x] 3.2 Build passes (`npm run build`)
-- [x] 3.3 End-to-end test: token → hard delete → cascade gone + audit row present + replay rejected
+- [x] 3.1 Type/lint passes (`npm run lint`) — c0c3197
+- [x] 3.2 Build passes (`npm run build`) — c0c3197
+- [x] 3.3 End-to-end test: token → hard delete → cascade gone + audit row present + replay rejected — c0c3197
 
 #### Manual
 
@@ -382,9 +382,9 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Automated
 
-- [ ] 4.1 Type/lint passes (`npm run lint`)
-- [ ] 4.2 Build passes (`npm run build`)
-- [ ] 4.3 Existing Playwright auth suite passes (`npx playwright test`)
+- [x] 4.1 Type/lint passes (`npm run lint`)
+- [x] 4.2 Build passes (`npm run build`)
+- [x] 4.3 Existing Playwright auth suite passes (`npx playwright test`)
 
 #### Manual
 
