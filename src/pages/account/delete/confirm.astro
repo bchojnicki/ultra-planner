@@ -1,0 +1,70 @@
+---
+import PublicLayout from "@/layouts/PublicLayout.astro";
+import { createAdminClient } from "@/lib/supabaseAdmin";
+import { findValidDeletionToken } from "@/lib/services/account-deletion";
+
+// Confirm page for the emailed deletion link (account-deletion). READ-ONLY — it never
+// deletes; it validates the token and renders one of three states. Public route (NOT in
+// PROTECTED_ROUTES): the link may be opened on a device that isn't logged in, and the
+// token is the credential. Deletion happens only on the explicit POST to the execute
+// endpoint (guards against email-prefetch / CSRF auto-deletion on a bare GET).
+const token = Astro.url.searchParams.get("token") ?? "";
+
+const admin = createAdminClient();
+let state: "valid" | "invalid" | "error";
+if (!admin) {
+  state = "error";
+} else if (!token) {
+  state = "invalid";
+} else {
+  const row = await findValidDeletionToken(admin, token);
+  state = row ? "valid" : "invalid";
+}
+---
+
+<PublicLayout title="Confirm account deletion">
+  <div class="mx-auto flex min-h-[60vh] max-w-md flex-col justify-center px-4 py-16">
+    {
+      state === "valid" ? (
+        <div class="space-y-6">
+          <h1 class="text-2xl font-bold">Delete your account?</h1>
+          <p class="text-haze/80">
+            This permanently deletes your account and <strong>all</strong> of your data — every plan, aid station, and
+            gear item. This cannot be undone.
+          </p>
+          <form method="POST" action="/api/account/deletion/execute">
+            <input type="hidden" name="token" value={token} />
+            <button
+              type="submit"
+              class="w-full rounded-lg bg-red-600 px-4 py-3 font-semibold text-white transition hover:bg-red-700"
+            >
+              Permanently delete my account
+            </button>
+          </form>
+          <a href="/" class="text-haze/60 hover:text-haze block text-center text-sm">
+            Cancel — keep my account
+          </a>
+        </div>
+      ) : state === "invalid" ? (
+        <div class="space-y-4 text-center">
+          <h1 class="text-2xl font-bold">Link invalid or expired</h1>
+          <p class="text-haze/80">
+            This deletion link is invalid, has already been used, or has expired (links are valid for 30 minutes). Your
+            account has not been changed.
+          </p>
+          <a href="/" class="text-haze/60 hover:text-haze inline-block text-sm">
+            Back to home
+          </a>
+        </div>
+      ) : (
+        <div class="space-y-4 text-center">
+          <h1 class="text-2xl font-bold">Something went wrong</h1>
+          <p class="text-haze/80">Account deletion is temporarily unavailable. Please try again later.</p>
+          <a href="/" class="text-haze/60 hover:text-haze inline-block text-sm">
+            Back to home
+          </a>
+        </div>
+      )
+    }
+  </div>
+</PublicLayout>

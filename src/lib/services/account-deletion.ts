@@ -8,7 +8,7 @@
 // read can't reconstruct a usable link. Tokens are single-use (used_at) and
 // short-lived (TOKEN_TTL_MINUTES).
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types";
+import type { AccountDeletionToken, Database } from "@/types";
 
 type Admin = SupabaseClient<Database>;
 
@@ -61,6 +61,48 @@ export async function issueDeletionToken(admin: Admin, userId: string, requested
   if (error) throw error;
 
   return raw;
+}
+
+// Look up the live token row for a raw token: matches the stored hash, still
+// unused, not expired. Returns null otherwise. Used by both the confirm page
+// (read-only state check) and the execute endpoint (consumption).
+export async function findValidDeletionToken(admin: Admin, rawToken: string): Promise<AccountDeletionToken | null> {
+  const tokenHash = await sha256Hex(rawToken);
+  const { data, error } = await admin
+    .from("account_deletion_tokens")
+    .select("*")
+    .eq("token_hash", tokenHash)
+    .is("used_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+// Mark a token consumed. Called BEFORE the user delete so the token can't be
+// replayed even if the subsequent delete errors midway (the row is also cascade-
+// removed when the user is deleted, so this is belt-and-suspenders).
+export async function markTokenUsed(admin: Admin, tokenHash: string): Promise<void> {
+  const { error } = await admin
+    .from("account_deletion_tokens")
+    .update({ used_at: new Date().toISOString() })
+    .eq("token_hash", tokenHash);
+  if (error) throw error;
+}
+
+// Write the cascade-surviving audit row (account_deletion_events has no FK to
+// auth.users). email_hash keeps PII out of the trail. Written BEFORE the delete
+// so a mid-operation failure still leaves a trace.
+export async function recordDeletionEvent(
+  admin: Admin,
+  params: { userId: string; emailHash: string; requestedIp: string | null },
+): Promise<void> {
+  const { error } = await admin.from("account_deletion_events").insert({
+    user_id: params.userId,
+    email_hash: params.emailHash,
+    requested_ip: params.requestedIp,
+  });
+  if (error) throw error;
 }
 
 // Best-effort client IP from Cloudflare's header, falling back to XFF. Stored

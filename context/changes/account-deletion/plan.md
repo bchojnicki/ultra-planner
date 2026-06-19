@@ -355,9 +355,9 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Automated
 
-- [x] 2.1 Type/lint passes (`npm run lint`)
-- [x] 2.2 Build passes (`npm run build`)
-- [x] 2.3 Integration test: 401 unauth, 429 throttle, 400 bad code, good code inserts one hashed ~30-min token
+- [x] 2.1 Type/lint passes (`npm run lint`) — ae69d15
+- [x] 2.2 Build passes (`npm run build`) — ae69d15
+- [x] 2.3 Integration test: 401 unauth, 429 throttle, 400 bad code, good code inserts one hashed ~30-min token — ae69d15
 
 #### Manual
 
@@ -368,9 +368,9 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Automated
 
-- [ ] 3.1 Type/lint passes (`npm run lint`)
-- [ ] 3.2 Build passes (`npm run build`)
-- [ ] 3.3 End-to-end test: token → hard delete → cascade gone + audit row present + replay rejected
+- [x] 3.1 Type/lint passes (`npm run lint`)
+- [x] 3.2 Build passes (`npm run build`)
+- [x] 3.3 End-to-end test: token → hard delete → cascade gone + audit row present + replay rejected
 
 #### Manual
 
