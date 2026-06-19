@@ -1,0 +1,53 @@
+---
+import PublicLayout from "@/layouts/PublicLayout.astro";
+
+// TODO: replace with the real contact address before launch.
+const email = "hello@ultra-planner.app";
+---
+
+<PublicLayout title="Contact — Ultra Planner">
+  <section class="mx-auto max-w-2xl px-4 py-16 sm:px-8 sm:py-24">
+    <p class="font-mono-data text-haze/70 text-xs tracking-[0.2em]">SAY HELLO</p>
+    <h1 class="font-display text-snowcap mt-4 text-4xl leading-tight font-bold sm:text-5xl">Get in touch</h1>
+    <p class="text-haze mt-4">
+      Questions, bug reports, or a feature you wish existed? Drop a line — feedback from real ultra runners shapes what
+      gets built next.
+    </p>
+
+    <div class="bg-ridge mt-8 rounded-2xl border border-white/10 p-6">
+      <p class="font-mono-data text-haze/60 text-xs tracking-widest">EMAIL</p>
+      <div class="mt-2 flex flex-wrap items-center gap-3">
+        <a
+          href={`mailto:${email}`}
+          class="font-mono-data text-trail-violet hover:text-snowcap focus-visible:ring-trail-violet text-lg transition-colors focus:outline-none focus-visible:ring-2"
+        >
+          {email}
+        </a>
+        <button
+          id="copy-email"
+          type="button"
+          data-email={email}
+          class="text-haze hover:text-snowcap focus-visible:ring-trail-violet rounded-lg border border-white/20 px-3 py-1.5 text-sm transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring-2"
+        >
+          Copy
+        </button>
+      </div>
+    </div>
+  </section>
+</PublicLayout>
+
+<script>
+  const btn = document.getElementById("copy-email");
+  if (btn instanceof HTMLButtonElement) {
+    const email = btn.dataset.email ?? "";
+    btn.addEventListener("click", () => {
+      void navigator.clipboard.writeText(email).then(() => {
+        const original = btn.textContent;
+        btn.textContent = "Copied!";
+        window.setTimeout(() => {
+          btn.textContent = original;
+        }, 1500);
+      });
+    });
+  }
+</script>

@@ -266,29 +266,29 @@ None — no data or schema. `Welcome.astro` is retired (no longer imported).
 
 #### Automated
 
-- [x] 2.1 Type checking passes (`npx astro check`)
-- [x] 2.2 Linting passes (`npm run lint`)
-- [x] 2.3 Build succeeds (`npm run build`)
-- [x] 2.4 Playwright suite passes (`npx playwright test`)
+- [x] 2.1 Type checking passes (`npx astro check`) — 6c48892
+- [x] 2.2 Linting passes (`npm run lint`) — 6c48892
+- [x] 2.3 Build succeeds (`npm run build`) — 6c48892
+- [x] 2.4 Playwright suite passes (`npx playwright test`) — 6c48892
 
 #### Manual
 
-- [x] 2.5 Landing shows hero + wedge + 3-step + CTA; load animation plays (suppressed under reduced-motion)
-- [x] 2.6 Hero legible/laid-out on mobile
-- [x] 2.7 OTP login lands on /dashboard
-- [x] 2.8 CTA routes to sign-in; nav/footer present
+- [x] 2.5 Landing shows hero + wedge + 3-step + CTA; load animation plays (suppressed under reduced-motion) — 6c48892
+- [x] 2.6 Hero legible/laid-out on mobile — 6c48892
+- [x] 2.7 OTP login lands on /dashboard — 6c48892
+- [x] 2.8 CTA routes to sign-in; nav/footer present — 6c48892
 
 ### Phase 3: About + Contact pages
 
 #### Automated
 
-- [ ] 3.1 Type checking passes (`npx astro check`)
-- [ ] 3.2 Linting passes (`npm run lint`)
-- [ ] 3.3 Build succeeds (`npm run build`)
-- [ ] 3.4 Playwright suite passes (`npx playwright test`)
+- [x] 3.1 Type checking passes (`npx astro check`)
+- [x] 3.2 Linting passes (`npm run lint`)
+- [x] 3.3 Build succeeds (`npm run build`)
+- [x] 3.4 Playwright suite passes (`npx playwright test`)
 
 #### Manual
 
-- [ ] 3.5 /about and /contact load logged-out (no sign-in redirect) on shared chrome
-- [ ] 3.6 Contact mailto opens mail client; copy-to-clipboard works with feedback
-- [ ] 3.7 Both pages responsive and consistent with the landing
+- [x] 3.5 /about and /contact load logged-out (no sign-in redirect) on shared chrome
+- [x] 3.6 Contact mailto opens mail client; copy-to-clipboard works with feedback
+- [x] 3.7 Both pages responsive and consistent with the landing
