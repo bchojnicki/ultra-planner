@@ -256,25 +256,25 @@ None — no schema, no data migration, no persisted state.
 
 #### Automated
 
-- [x] 2.1 Type checking passes (`npm run build` / `npx astro check`)
-- [x] 2.2 Linting passes (`npm run lint`)
-- [x] 2.3 Build succeeds and the SheetJS chunk is code-split (dynamic import), not in the island entry chunk
+- [x] 2.1 Type checking passes (`npm run build` / `npx astro check`) — e99ee4e
+- [x] 2.2 Linting passes (`npm run lint`) — e99ee4e
+- [x] 2.3 Build succeeds and the SheetJS chunk is code-split (dynamic import), not in the island entry chunk — e99ee4e
 
 #### Manual
 
-- [x] 2.4 Button appears on a generated plan, absent when params are missing
-- [x] 2.5 Clicking downloads `<plan-name>.xlsx` matching the screen
-- [x] 2.6 No console errors or hydration warnings on the view page
+- [x] 2.4 Button appears on a generated plan, absent when params are missing — e99ee4e
+- [x] 2.5 Clicking downloads `<plan-name>.xlsx` matching the screen — e99ee4e
+- [x] 2.6 No console errors or hydration warnings on the view page — e99ee4e
 
 ### Phase 3: Tests + Doc Un-parking
 
 #### Automated
 
-- [ ] 3.1 Playwright passes (`npx playwright test tests/excel-export.spec.ts`)
-- [ ] 3.2 Full suite still green (`npx playwright test`)
-- [ ] 3.3 Lint/build pass (`npm run lint` && `npm run build`)
+- [x] 3.1 Playwright passes (`npx playwright test tests/excel-export.spec.ts`)
+- [x] 3.2 Full suite still green (`npx playwright test`)
+- [x] 3.3 Lint/build pass (`npm run lint` && `npm run build`)
 
 #### Manual
 
-- [ ] 3.4 PRD §Non-Goals and roadmap S-12 read as shipped and are internally consistent
-- [ ] 3.5 Exported file verified end-to-end in a real spreadsheet app
+- [x] 3.4 PRD §Non-Goals and roadmap S-12 read as shipped and are internally consistent
+- [x] 3.5 Exported file verified end-to-end in a real spreadsheet app
