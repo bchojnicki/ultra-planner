@@ -4,6 +4,7 @@ import { AID_STATION_FLAGS as FLAGS, enabledFacilities } from "@/lib/aid-station
 import type { SaveStatus } from "@/components/hooks/useAutosave";
 import HelpTooltip from "@/components/ui/HelpTooltip";
 import { FIELD_HELP, type FieldHelpKey } from "@/lib/field-help";
+import { fmtKm, fmtM } from "@/lib/format";
 
 const inputCls =
   "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
@@ -405,10 +406,10 @@ export default function AidStationManager({ planId, initialStations, totalDistan
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-medium">{Math.round(s.cumulative_distance_km * 10) / 10} km</span>
-                    <span className="text-blue-100/50"> · +{Math.round(s.cumulative_elevation_gain_m)} m</span>
+                    <span className="font-medium">{fmtKm(s.cumulative_distance_km)} km</span>
+                    <span className="text-blue-100/50"> · +{fmtM(s.cumulative_elevation_gain_m)} m</span>
                     {s.cumulative_elevation_loss_m > 0 ? (
-                      <span className="text-blue-100/50"> · −{Math.round(s.cumulative_elevation_loss_m)} m</span>
+                      <span className="text-blue-100/50"> · −{fmtM(s.cumulative_elevation_loss_m)} m</span>
                     ) : null}
                     {enabledFacilities(s).length > 0 ? (
                       <span className="text-blue-100/50"> · {enabledFacilities(s).join(", ")}</span>

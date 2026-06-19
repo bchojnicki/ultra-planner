@@ -4,6 +4,7 @@ import type { SaveStatus } from "@/components/hooks/useAutosave";
 import { enabledFacilities } from "@/lib/aid-station-facilities";
 import HelpTooltip from "@/components/ui/HelpTooltip";
 import { FIELD_HELP } from "@/lib/field-help";
+import { fmtKm, fmtM } from "@/lib/format";
 
 const SELECTION_STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",
@@ -35,16 +36,6 @@ function fmtClock(iso: string, local: boolean): string {
     minute: "2-digit",
     ...(local ? {} : { timeZone: "UTC" }),
   });
-}
-
-// Display rounding — distance to 100 m (0.1 km), elevation to whole metres. The
-// calc keeps full float precision; rounding is a display concern (accuracy guardrail).
-function fmtKm(km: number): string {
-  return String(Math.round(km * 10) / 10);
-}
-
-function fmtM(m: number): string {
-  return String(Math.round(m));
 }
 
 function unitsOf(alloc: GearAllocationResult): Record<string, number> {
