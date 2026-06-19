@@ -3,7 +3,7 @@ change_id: public-pages-and-brand
 title: Custom welcome + about/contact pages with mountain-outline branding
 created: 2026-06-19
 updated: 2026-06-19
-status: implementing
+status: implemented
 archived_at: null
 ---
 

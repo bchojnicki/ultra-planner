@@ -282,13 +282,13 @@ None — no data or schema. `Welcome.astro` is retired (no longer imported).
 
 #### Automated
 
-- [x] 3.1 Type checking passes (`npx astro check`)
-- [x] 3.2 Linting passes (`npm run lint`)
-- [x] 3.3 Build succeeds (`npm run build`)
-- [x] 3.4 Playwright suite passes (`npx playwright test`)
+- [x] 3.1 Type checking passes (`npx astro check`) — a8ded5d
+- [x] 3.2 Linting passes (`npm run lint`) — a8ded5d
+- [x] 3.3 Build succeeds (`npm run build`) — a8ded5d
+- [x] 3.4 Playwright suite passes (`npx playwright test`) — a8ded5d
 
 #### Manual
 
-- [x] 3.5 /about and /contact load logged-out (no sign-in redirect) on shared chrome
-- [x] 3.6 Contact mailto opens mail client; copy-to-clipboard works with feedback
-- [x] 3.7 Both pages responsive and consistent with the landing
+- [x] 3.5 /about and /contact load logged-out (no sign-in redirect) on shared chrome — a8ded5d
+- [x] 3.6 Contact mailto opens mail client; copy-to-clipboard works with feedback — a8ded5d
+- [x] 3.7 Both pages responsive and consistent with the landing — a8ded5d
