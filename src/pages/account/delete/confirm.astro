@@ -17,8 +17,14 @@ if (!admin) {
 } else if (!token) {
   state = "invalid";
 } else {
-  const row = await findValidDeletionToken(admin, token);
-  state = row ? "valid" : "invalid";
+  try {
+    const row = await findValidDeletionToken(admin, token);
+    state = row ? "valid" : "invalid";
+  } catch {
+    // Transient DB error during the read-only lookup → show the error state rather than a
+    // raw 500. Deletion never happens here regardless (this page only renders).
+    state = "error";
+  }
 }
 ---
 

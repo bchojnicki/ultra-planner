@@ -37,16 +37,22 @@ export const POST: APIRoute = async (context) => {
     return json({ error: "That code is invalid or expired. Request a new one." }, 400);
   }
 
-  // Mint + persist the token (hash only), then email the raw confirm link.
-  const rawToken = await issueDeletionToken(admin, user.id, clientIpFrom(context.request.headers));
-  const confirmUrl = new URL(
-    `/account/delete/confirm?token=${encodeURIComponent(rawToken)}`,
-    context.url.origin,
-  ).toString();
+  // Mint + persist the token (hash only), then email the raw confirm link. A transient
+  // DB error from issueDeletionToken throws — catch it and return the generic 502 rather
+  // than leaking a raw 500 (mirrors the error-mapping discipline in aid-stations/[id].ts).
+  try {
+    const rawToken = await issueDeletionToken(admin, user.id, clientIpFrom(context.request.headers));
+    const confirmUrl = new URL(
+      `/account/delete/confirm?token=${encodeURIComponent(rawToken)}`,
+      context.url.origin,
+    ).toString();
 
-  const sent = await sendDeletionConfirmationEmail({ to: user.email, confirmUrl });
-  if (!sent.ok) {
-    return json({ error: "Couldn't send the confirmation email. Please try again." }, 502);
+    const sent = await sendDeletionConfirmationEmail({ to: user.email, confirmUrl });
+    if (!sent.ok) {
+      return json({ error: "Couldn't send the confirmation email. Please try again." }, 502);
+    }
+  } catch {
+    return json({ error: "Couldn't start account deletion. Please try again." }, 502);
   }
 
   return json({ ok: true }, 200);
