@@ -238,11 +238,11 @@ None — no schema, no data, no stored consent.
 
 #### Automated
 
-- [x] 3.1 Build passes (`npm run build`)
-- [x] 3.2 Linting passes (`npm run lint`)
+- [x] 3.1 Build passes (`npm run build`) — f8d2fa0
+- [x] 3.2 Linting passes (`npm run lint`) — f8d2fa0
 
 #### Manual
 
-- [x] 3.3 Footer (and nav if added) show Privacy + Terms; links resolve
-- [x] 3.4 Sign-in page shows the acceptance line with both links working
-- [x] 3.5 No footer/nav/sign-in layout regression on mobile + desktop
+- [x] 3.3 Footer (and nav if added) show Privacy + Terms; links resolve — f8d2fa0
+- [x] 3.4 Sign-in page shows the acceptance line with both links working — f8d2fa0
+- [x] 3.5 No footer/nav/sign-in layout regression on mobile + desktop — f8d2fa0
