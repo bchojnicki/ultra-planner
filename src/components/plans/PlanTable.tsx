@@ -6,6 +6,7 @@ import { sumAllocationUnits } from "@/lib/gear-totals";
 import HelpTooltip from "@/components/ui/HelpTooltip";
 import { FIELD_HELP } from "@/lib/field-help";
 import { fmtKm, fmtM } from "@/lib/format";
+import { fmtDuration, fuelBreakdown } from "@/lib/plan-format";
 
 const SELECTION_STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",
@@ -19,12 +20,6 @@ const SELECTION_STATUS_TEXT: Record<SaveStatus, string> = {
 export interface SelectionPatch {
   limit_units: number | null;
   override_units: number | null;
-}
-
-// Display-only rounding — the calc keeps full float precision (accuracy guardrail).
-function fmtDuration(min: number): string {
-  const total = Math.round(min);
-  return `${Math.floor(total / 60)}h ${String(total % 60).padStart(2, "0")}m`;
 }
 
 // Arrival clock. The server runs on Cloudflare workerd (always UTC) while the
@@ -41,16 +36,6 @@ function fmtClock(iso: string, local: boolean): string {
 
 function unitsOf(alloc: GearAllocationResult): Record<string, number> {
   return Object.fromEntries(alloc.units.map((u) => [u.gear_item_id, u.units]));
-}
-
-// "1× Tailwind, 2× SIS gel" — every item to carry for the stage, listed once
-// (a drink contributes to both fluid and carbs, but appears here a single time).
-function fuelBreakdown(items: GearItem[], units: Record<string, number>): string {
-  return items
-    .map((it) => ({ it, u: units[it.id] ?? 0 }))
-    .filter((x) => x.u > 0)
-    .map((x) => `${x.u}× ${x.it.name}`)
-    .join(", ");
 }
 
 function parseUnit(v: string): number | null {
