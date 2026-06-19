@@ -276,6 +276,7 @@ Prior questions resolved:
 - **S-10: Visitor lands on a branded public welcome/about/contact site; sign-in routes to the dashboard; a shared nav spans public + app pages.** — Archived 2026-06-19 → `context/archive/2026-06-19-public-pages-and-brand/`. Lesson: —.
 - **S-11: permanently delete their account + all data, confirmed by an emailed link** — Archived 2026-06-19 → `context/archive/2026-06-19-account-deletion/`. Lesson: —.
 - **S-14: The plan-table total row shows how many of each gear item is needed for the whole race (e.g. "12× gel, 4× drink, 6× salt cap").** — Archived 2026-06-19 → `context/archive/2026-06-19-gear-total-summary/`. Lesson: —.
+- **S-12: Runner can export a plan (the generated segment-by-segment table) to an Excel file.** — Archived 2026-06-19 → `context/archive/2026-06-19-excel-export/`. Lesson: —.
 
 ### Maintenance / fixes (post-MVP)
 
