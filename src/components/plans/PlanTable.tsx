@@ -1,5 +1,5 @@
 import { Fragment, useState, useSyncExternalStore } from "react";
-import type { GearAllocationResult, GearItem, GearSegmentSelection, PlanTableResult } from "@/types";
+import type { GearAllocationResult, GearItem, GearSegmentSelection, Plan, PlanTableResult } from "@/types";
 import type { SaveStatus } from "@/components/hooks/useAutosave";
 import { enabledFacilities } from "@/lib/aid-station-facilities";
 import { sumAllocationUnits } from "@/lib/gear-totals";
@@ -59,6 +59,10 @@ interface Props {
   // totals) but suppress the editing affordances — the per-row gear expand toggle
   // and the save-status line. The expand panels already require onSelectionChange.
   readOnly?: boolean;
+  // The owning plan — only the read-only view (/plans/[id]) passes it, which is what
+  // gates the Excel export button to that surface (excel-export). Needed for the
+  // params block and the download filename.
+  plan?: Plan;
 }
 
 // A signed-delta secondary line: "392/400 g (−8)". Under-target is amber, on/over is muted.
@@ -150,8 +154,10 @@ export default function PlanTable({
   onSelectionChange,
   selectionStatus = "idle",
   readOnly = false,
+  plan,
 }: Props) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [exporting, setExporting] = useState(false);
   // false during SSR + the first hydration render (matches the server), true once
   // hydrated — flips arrival times from UTC (SSR-stable) to the viewer's local time
   // without a hydration mismatch and without setState-in-effect.
@@ -190,15 +196,52 @@ export default function PlanTable({
     });
   }
 
+  // Lazy-load SheetJS only on click so it never enters the island's client:load
+  // bundle, build the workbook from the already-computed data, and download it.
+  async function handleExport() {
+    if (!plan || exporting) return;
+    setExporting(true);
+    try {
+      const { buildPlanWorkbook, planExportFilename } = await import("@/lib/plan-export");
+      const bytes = buildPlanWorkbook({ plan, result, items: gearItems, allocations: allocs });
+      const blob = new Blob([bytes], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = planExportFilename(plan);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <section className="mt-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Plan table</h2>
-        {gearActive && !readOnly ? (
-          <span data-testid="gear-save-status" className="text-xs text-blue-100/60" aria-live="polite">
-            {SELECTION_STATUS_TEXT[selectionStatus]}
-          </span>
-        ) : null}
+        <div className="flex items-center gap-3">
+          {gearActive && !readOnly ? (
+            <span data-testid="gear-save-status" className="text-xs text-blue-100/60" aria-live="polite">
+              {SELECTION_STATUS_TEXT[selectionStatus]}
+            </span>
+          ) : null}
+          {readOnly && plan ? (
+            <button
+              type="button"
+              data-testid="export-excel"
+              onClick={() => void handleExport()}
+              disabled={exporting}
+              className="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-white/20 disabled:opacity-50"
+            >
+              {exporting ? "Exporting…" : "Export to Excel"}
+            </button>
+          ) : null}
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table data-testid="plan-table" className="w-full border-collapse text-left text-sm">

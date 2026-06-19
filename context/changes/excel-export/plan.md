@@ -243,28 +243,28 @@ None — no schema, no data migration, no persisted state.
 
 #### Automated
 
-- [x] 1.1 Type checking passes (`npm run build` / `npx astro check`)
-- [x] 1.2 Linting passes (`npm run lint`)
-- [x] 1.3 Unit test: `buildPlanWorkbook` returns non-empty bytes and cell values match expected rounded numbers
+- [x] 1.1 Type checking passes (`npm run build` / `npx astro check`) — 8ebce01
+- [x] 1.2 Linting passes (`npm run lint`) — 8ebce01
+- [x] 1.3 Unit test: `buildPlanWorkbook` returns non-empty bytes and cell values match expected rounded numbers — 8ebce01
 
 #### Manual
 
-- [x] 1.4 Generated `.xlsx` opens without a repair prompt in Excel / Numbers / Google Sheets
-- [x] 1.5 Params block, segment rows, totals, and Fuel column match the on-screen plan
+- [x] 1.4 Generated `.xlsx` opens without a repair prompt in Excel / Numbers / Google Sheets — 8ebce01
+- [x] 1.5 Params block, segment rows, totals, and Fuel column match the on-screen plan — 8ebce01
 
 ### Phase 2: Export UI in the Plan View Island
 
 #### Automated
 
-- [ ] 2.1 Type checking passes (`npm run build` / `npx astro check`)
-- [ ] 2.2 Linting passes (`npm run lint`)
-- [ ] 2.3 Build succeeds and the SheetJS chunk is code-split (dynamic import), not in the island entry chunk
+- [x] 2.1 Type checking passes (`npm run build` / `npx astro check`)
+- [x] 2.2 Linting passes (`npm run lint`)
+- [x] 2.3 Build succeeds and the SheetJS chunk is code-split (dynamic import), not in the island entry chunk
 
 #### Manual
 
-- [ ] 2.4 Button appears on a generated plan, absent when params are missing
-- [ ] 2.5 Clicking downloads `<plan-name>.xlsx` matching the screen
-- [ ] 2.6 No console errors or hydration warnings on the view page
+- [x] 2.4 Button appears on a generated plan, absent when params are missing
+- [x] 2.5 Clicking downloads `<plan-name>.xlsx` matching the screen
+- [x] 2.6 No console errors or hydration warnings on the view page
 
 ### Phase 3: Tests + Doc Un-parking
 
