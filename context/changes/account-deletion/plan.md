@@ -82,7 +82,7 @@ Add the service-role and Resend secrets, a server-only admin client, a Resend em
 
 **Intent**: Single-use, expiring, user-scoped confirmation tokens; only the service-role path touches the table.
 
-**Contract**: Table `account_deletion_tokens(token_hash text primary key, user_id uuid not null references auth.users(id) on delete cascade, requested_ip inet, expires_at timestamptz not null, used_at timestamptz, created_at timestamptz not null default now())`; index on `user_id`. `enable row level security` with **no** policies for `authenticated`/`anon` (service_role bypasses RLS). Header comment follows the `20260603132423_*` convention.
+**Contract**: Table `account_deletion_tokens(token_hash text primary key, user_id uuid not null references auth.users(id) on delete cascade, requested_ip inet, expires_at timestamptz not null, used_at timestamptz, created_at timestamptz not null default now())`; index on `user_id`. `enable row level security` with **no** policies for `authenticated`/`anon` (service*role bypasses RLS). Header comment follows the `20260603132423*\*` convention.
 
 #### 5. Migration: deletion audit events
 
@@ -361,8 +361,8 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Manual
 
-- [ ] 2.4 OTP email then Resend confirmation-link email delivered
-- [ ] 2.5 Stored token row contains a hash, not the raw token
+- [x] 2.4 OTP email then Resend confirmation-link email delivered
+- [x] 2.5 Stored token row contains a hash, not the raw token
 
 ### Phase 3: Confirm Page + Execute
 
@@ -374,31 +374,31 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Manual
 
-- [ ] 3.4 Link → confirm page → Confirm → goodbye; data and session gone
-- [ ] 3.5 Expired/used/garbage token shows correct non-destructive message
-- [ ] 3.6 Previously-logged-in browser is signed out after deletion
+- [x] 3.4 Link → confirm page → Confirm → goodbye; data and session gone
+- [x] 3.5 Expired/used/garbage token shows correct non-destructive message
+- [x] 3.6 Previously-logged-in browser is signed out after deletion
 
 ### Phase 4: Settings UI
 
 #### Automated
 
-- [x] 4.1 Type/lint passes (`npm run lint`)
-- [x] 4.2 Build passes (`npm run build`)
-- [x] 4.3 Existing Playwright auth suite passes (`npx playwright test`)
+- [x] 4.1 Type/lint passes (`npm run lint`) — fcebf79
+- [x] 4.2 Build passes (`npm run build`) — fcebf79
+- [x] 4.3 Existing Playwright auth suite passes (`npx playwright test`) — fcebf79
 
 #### Manual
 
-- [ ] 4.4 Logged-in users see Settings (Logout + red Remove account); logged-out nav unchanged
-- [ ] 4.5 Logout still works
-- [ ] 4.6 Remove account runs OTP → email flow with error states for throttle/bad code
+- [x] 4.4 Logged-in users see Settings (Logout + red Remove account); logged-out nav unchanged
+- [x] 4.5 Logout still works
+- [x] 4.6 Remove account runs OTP → email flow with error states for throttle/bad code
 
 ### Phase 5: Docs & PRD
 
 #### Automated
 
-- [ ] 5.1 Formatting passes (`npm run format`)
+- [x] 5.1 Formatting passes (`npm run format`)
 
 #### Manual
 
-- [ ] 5.2 Fresh-env walkthrough confirms documented secrets suffice
-- [ ] 5.3 PRD reads coherently with the new right-to-erasure FR
+- [x] 5.2 Fresh-env walkthrough confirms documented secrets suffice
+- [x] 5.3 PRD reads coherently with the new right-to-erasure FR

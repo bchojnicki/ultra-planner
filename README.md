@@ -127,6 +127,22 @@ SUPABASE_URL=https://<project-ref>.supabase.co
 SUPABASE_KEY=<anon-key>
 ```
 
+### Account deletion secrets
+
+Self-service account deletion (FR-014) needs three extra server-only secrets beyond the Supabase pair. They are declared in `astro.config.mjs` and read via `astro:env/server`; all are optional — without them the rest of the app runs normally and only the deletion flow is disabled.
+
+| Variable                    | Description                                                                                                                                                                                                       |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase **service-role / secret** key (dashboard → Settings → API, or `npx supabase status` → "Secret" locally). Authorizes the admin delete + token-table access. **Server-only — never expose to the client.** |
+| `RESEND_API_KEY`            | [Resend](https://resend.com/) API key used to send the deletion-confirmation link.                                                                                                                                |
+| `RESEND_FROM_EMAIL`         | Sender address for that email. **Must be a verified sender/domain in Resend** before sends succeed (use `onboarding@resend.dev` for local smoke tests).                                                           |
+
+```
+SUPABASE_SERVICE_ROLE_KEY=<service-role / secret key>
+RESEND_API_KEY=re_...
+RESEND_FROM_EMAIL=no-reply@yourdomain.com
+```
+
 ### Email confirmation in local development
 
 By default Supabase requires email confirmation before a user can sign in. To skip this during local development:
@@ -164,11 +180,11 @@ npm run build
 npx wrangler deploy
 ```
 
-Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`.
+Set `SUPABASE_URL` and `SUPABASE_KEY` as secrets in your Cloudflare dashboard or via `npx wrangler secret put`. For account deletion, also set `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, and `RESEND_FROM_EMAIL` (see [Account deletion secrets](#account-deletion-secrets)).
 
 ## CI
 
-GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step.
+GitHub Actions runs lint + build on every push and PR to `master`. Configure `SUPABASE_URL` and `SUPABASE_KEY` as repository secrets in GitHub for the build step. The account-deletion secrets (`SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `RESEND_FROM_EMAIL`) are optional for build but required at runtime for the deletion flow.
 
 ## License
 
