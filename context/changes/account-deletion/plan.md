@@ -361,8 +361,8 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Manual
 
-- [x] 2.4 OTP email then Resend confirmation-link email delivered
-- [x] 2.5 Stored token row contains a hash, not the raw token
+- [x] 2.4 OTP email then Resend confirmation-link email delivered — 34d86a7
+- [x] 2.5 Stored token row contains a hash, not the raw token — 34d86a7
 
 ### Phase 3: Confirm Page + Execute
 
@@ -374,9 +374,9 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Manual
 
-- [x] 3.4 Link → confirm page → Confirm → goodbye; data and session gone
-- [x] 3.5 Expired/used/garbage token shows correct non-destructive message
-- [x] 3.6 Previously-logged-in browser is signed out after deletion
+- [x] 3.4 Link → confirm page → Confirm → goodbye; data and session gone — 34d86a7
+- [x] 3.5 Expired/used/garbage token shows correct non-destructive message — 34d86a7
+- [x] 3.6 Previously-logged-in browser is signed out after deletion — 34d86a7
 
 ### Phase 4: Settings UI
 
@@ -388,17 +388,17 @@ Two additive migrations create new tables only; no changes to existing tables or
 
 #### Manual
 
-- [x] 4.4 Logged-in users see Settings (Logout + red Remove account); logged-out nav unchanged
-- [x] 4.5 Logout still works
-- [x] 4.6 Remove account runs OTP → email flow with error states for throttle/bad code
+- [x] 4.4 Logged-in users see Settings (Logout + red Remove account); logged-out nav unchanged — 34d86a7
+- [x] 4.5 Logout still works — 34d86a7
+- [x] 4.6 Remove account runs OTP → email flow with error states for throttle/bad code — 34d86a7
 
 ### Phase 5: Docs & PRD
 
 #### Automated
 
-- [x] 5.1 Formatting passes (`npm run format`)
+- [x] 5.1 Formatting passes (`npm run format`) — 34d86a7
 
 #### Manual
 
-- [x] 5.2 Fresh-env walkthrough confirms documented secrets suffice
-- [x] 5.3 PRD reads coherently with the new right-to-erasure FR
+- [x] 5.2 Fresh-env walkthrough confirms documented secrets suffice — 34d86a7
+- [x] 5.3 PRD reads coherently with the new right-to-erasure FR — 34d86a7
