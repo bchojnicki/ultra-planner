@@ -1,9 +1,9 @@
 ---
 project: "Ultra Planner"
-version: 5
+version: 6
 status: draft
 created: 2026-05-19
-updated: 2026-06-18
+updated: 2026-06-19
 context_type: greenfield
 product_type: web-app
 target_scale:
@@ -180,6 +180,18 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 - On save the station re-sorts by cumulative distance if the distance changed, and the plan table updates without the runner re-triggering generation
 - Editing is auto-saved consistent with the rest of the plan; no explicit save action beyond confirming the edit
 
+### US-11: Runner imports a route from GPX
+
+- **Given** a logged-in runner editing a plan
+- **When** they upload a GPX route file
+- **Then** the app fills in total distance and elevation gain/loss from the track and pre-creates an aid station for each waypoint, which the runner can then enrich via edit (US-10)
+
+#### Acceptance Criteria
+
+- Total distance and total elevation gain/loss are computed from the track points and saved in the background as editable race details
+- Every waypoint in the file becomes an aid station with its cumulative distance/elevation; a file with no waypoints leaves manual entry as the path
+- Imported aid stations carry distance/elevation/name only — facilities, time, and crew notes are added afterward via aid-station edit (US-10)
+
 ## Functional Requirements
 
 ### Authentication
@@ -204,15 +216,21 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 
 ### Aid Stations
 
-- FR-005: Runner can add an aid station to their plan specifying cumulative distance from the race start, cumulative elevation gain from the start, planned time spent at the station, plus checkboxes (water only, food available, warm meal, drop bag available, rest area, support crew allowed) and free-text notes for the support crew. The app derives segment distance and segment elevation gain internally. Priority: must-have
+- FR-005: Runner can add an aid station to their plan specifying cumulative distance from the race start, cumulative elevation gain and loss from the start, planned time spent at the station, plus checkboxes (water only, food available, warm meal, drop bag available, rest area, support crew allowed) and free-text notes for the support crew. The app derives segment distance and segment elevation gain internally. Priority: must-have
 
   > Socrates: Counter-argument considered: "cumulative vs. leg distance — which does the runner enter?" Resolution: runner enters cumulative distance from start; the app subtracts consecutive stations to get leg distance for the calculation. More natural for reading an official race roadbook.
 
 - FR-006: Runner can delete a previously added aid station. Priority: must-have
   > Socrates: Counter-argument considered: "without edit, delete-then-re-add is the only error correction path." Resolution: kept — delete is the must-have minimum. Inline edit is a desirable companion but not blocking for MVP.
 
-- FR-007: Runner can edit any field of a previously added aid station (cumulative distance, cumulative elevation gain, cumulative elevation loss, time spent, facility checkboxes, crew notes). Edits update the station in place and re-derive the affected segments. Priority: should-have
+- FR-012: Runner can edit any field of a previously added aid station (cumulative distance, cumulative elevation gain, cumulative elevation loss, time spent, facility checkboxes, crew notes). Edits update the station in place and re-derive the affected segments. Priority: should-have
   > Socrates: Reactivates the inline-edit companion deferred at FR-006 ("desirable companion but not blocking for MVP"). Motivated by GPX import (change `gpx-import`, 2026-06-18): waypoint import creates aid stations with only distance/elevation/name, so edit becomes the path to add facilities, rest time, and crew notes to imported stations rather than delete-and-re-add.
+  > Renumber (v6): was mistakenly labelled FR-007 in v5, colliding with the plan-generation FR-007 below; renumbered to FR-012.
+
+### GPX Import
+
+- FR-013: Runner can upload a GPX route file to auto-fill total distance and total elevation gain/loss, and to pre-create an aid station from each waypoint in the file (cumulative distance/elevation from the start). When the file has no waypoints, manual aid-station entry remains the path. Computed totals save in the background and remain editable race details. Priority: shipped (pulled forward from v2; change `gpx-import`, 2026-06-18)
+  > Note: reverses the original §Non-Goal "No GPX import". Cumulative elevation **loss** as a stored field arrived with this feature; aid stations created from waypoints are bare (distance/elevation/name only) and enriched via FR-012/US-10.
 
 ### Plan Generation
 
@@ -236,10 +254,21 @@ An athlete preparing for an ultra marathon — any distance from 50 km upward. T
 - FR-011: Runner can delete a saved plan (with confirmation dialog before permanent removal). Priority: must-have
   > Socrates: Counter-argument considered: "a misclick permanently destroys work." Resolution: kept — hard delete with confirmation dialog is the standard pattern. Confirmation handles accidental-delete risk. Undo is v2.
 
+### Account Management
+
+- FR-014: Runner can permanently delete their account from a Settings menu. The destructive action is confirmed via an emailed link; on confirmation it removes the account and all associated data (plans, aid stations, gear, per-segment selections). Priority: should-have (planned; change `account-deletion`)
+  > Note: data removal relies on the existing DB cascade from `auth.users` (ON DELETE CASCADE from plans → aid_stations / gear_items / gear_segment_selections). Email confirmation guards the irreversible action; the auth-user delete requires a service-role admin client (open implementation question).
+
+### Public Site
+
+- FR-015: A logged-out visitor can reach a branded public welcome page and read public About and Contact pages without signing in; signing in routes to the dashboard. Priority: shipped (change `public-pages-and-brand`)
+  > Note: marketing/presentation surface, not a runner capability — included for parity with roadmap slice S-10. Contact uses a mailto affordance (no backend).
+
 ## Non-Functional Requirements
 
 - A runner perceives plan generation as instant: the plan table appears within 1 second of triggering generation for any race with up to 50 aid stations.
 - No runner's race plan data is transmitted to any third party or made accessible outside the runner's account without the runner's explicit action.
+- A runner can permanently erase their account and all associated data, with no residual plan data retained after deletion. (Planned — see FR-014.)
 - The application is fully usable on the two most recent major versions of Chrome, Firefox, Safari, and Edge on both desktop and mobile form factors.
 
 ## Business Logic
@@ -260,11 +289,12 @@ User model is flat: all registered users are runners with identical capabilities
 
 ## Non-Goals
 
-- **No GPX import**: all race data (distance, elevation) is entered manually by the runner. GPX-based route loading, automatic elevation extraction, and historical-run pace profiling are explicitly v2+. Rationale: GPX parsing and profile analysis are the primary drivers of MVP complexity; deferring them keeps the v1 build achievable in 3 weeks.
-- **No XLS / Excel export**: the plan table is viewable and usable only within the web app. No spreadsheet download. Rationale: the app is the plan; format conversion adds surface area without improving planning quality.
+- ~~**No GPX import**~~ — **Shipped** (FR-013 / US-11, change `gpx-import`, 2026-06-18); pulled forward from v2. GPX route loading and automatic elevation extraction are now supported; historical-run pace profiling remains out of scope. The original MVP-complexity rationale no longer applies.
+- **XLS / Excel export** — **Planned, not yet shipped** (roadmap S-12, change `excel-export`); was a Non-Goal. The plan table is currently viewable only within the web app; spreadsheet export is being un-parked.
 - **No shared or collaborative plans**: plans are private to the runner who created them. No sharing link, no coach/crew portal, no team workspace. Rationale: primary persona is the individual runner; collaboration is a secondary persona concern explicitly deferred.
 - **No offline mode**: an internet connection is required. The app provides no service worker, no local-first storage, and no offline fallback. Rationale: the auto-save and multi-device access goals require a backend; offline adds a third storage layer that outweighs the benefit for a planning tool used at home before race day.
 
 ## Open Questions
 
-No open questions.
+- **Reconciled to v6 (2026-06-19)** against shipped reality and `roadmap.md` v2: added GPX import (FR-013 / US-11), the public site (FR-015), and account deletion as planned (FR-014 + erasure NFR); split the duplicate FR-007 (aid-station edit is now FR-012; plan generation keeps FR-007); updated §Non-Goals for GPX (shipped) and Excel (planned). Roadmap slices S-09 (field-help tooltips), S-13 (collapsible plan sections), and S-14 (race-wide gear totals) are intentionally **UX-only with no FR** — they refine presentation, not product scope.
+- **Account deletion (FR-014) implementation question:** deleting the Supabase `auth.users` row needs a service-role admin client, and the email-confirmation link mechanism is undecided — to be resolved by the `account-deletion` change (research → plan).

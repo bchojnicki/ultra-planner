@@ -4,7 +4,7 @@ version: 2
 status: draft
 created: 2026-06-01
 updated: 2026-06-19
-prd_version: 5
+prd_version: 6
 main_goal: speed
 top_blocker: capacity
 ---
@@ -36,11 +36,11 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | done     |
 | S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | done     |
 | S-06 | email-otp-auth              | sign up / sign in with an emailed one-time code and reach a gated app                        | —             | US-02, US-03, FR-001, FR-002                        | done     |
-| S-07 | gpx-import                  | import a GPX route to auto-fill distance/elevation and pre-create aid stations from waypoints | S-01          | (was §Non-Goal; pulled forward to v2)               | done     |
-| S-08 | edit-aid-stations           | edit any field of an existing aid station inline; re-sort + recompute segments                | S-01          | US-10, FR-007 (PRD v5)                              | done     |
-| S-09 | tooltips                    | see on-hover/focus field-help on the non-obvious plan-form inputs                            | S-02          | (UX enhancement; no PRD change)                     | done     |
-| S-10 | public-pages-and-brand      | land on a branded public welcome / about / contact site; sign-in routes to the dashboard     | S-06          | (marketing/UX; no PRD change)                       | done     |
-| S-11 | account-deletion            | permanently delete their account + all data, confirmed by an emailed link                    | S-06          | PRD FR TBD (right-to-erasure)                       | todo     |
+| S-07 | gpx-import                  | import a GPX route to auto-fill distance/elevation and pre-create aid stations from waypoints | S-01          | FR-013, US-11 (PRD v6; was §Non-Goal)               | done     |
+| S-08 | edit-aid-stations           | edit any field of an existing aid station inline; re-sort + recompute segments                | S-01          | US-10, FR-012 (PRD v6)                              | done     |
+| S-09 | tooltips                    | see on-hover/focus field-help on the non-obvious plan-form inputs                            | S-02          | (UX enhancement; no FR)                             | done     |
+| S-10 | public-pages-and-brand      | land on a branded public welcome / about / contact site; sign-in routes to the dashboard     | S-06          | FR-015 (PRD v6)                                     | done     |
+| S-11 | account-deletion            | permanently delete their account + all data, confirmed by an emailed link                    | S-06          | FR-014 (PRD v6, planned)                            | todo     |
 | S-12 | excel-export                | export a plan to an Excel file                                                               | S-02          | (was §Non-Goal; un-parking)                         | todo     |
 | S-13 | collapsible-plan-sections   | collapse / expand the plan-builder sections to cut scrolling                                 | S-01          | (UX enhancement)                                   | todo     |
 | S-14 | gear-total-summary          | see race-wide gear totals (units per item) in the plan-table total row                       | S-03          | (UX enhancement)                                   | todo     |
@@ -164,7 +164,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 - **Outcome:** Runner can upload a GPX route to auto-fill total distance and elevation gain/loss, and pre-create an aid station from every waypoint in the file (manual entry still available when there are no waypoints).
 - **Change ID:** gpx-import
-- **PRD refs:** was §Non-Goals ("GPX parsing is the primary MVP-complexity driver, deferred to v2+") — pulled forward and shipped.
+- **PRD refs:** FR-013, US-11 (PRD v6) — pulled forward from §Non-Goals ("GPX parsing is the primary MVP-complexity driver, deferred to v2+").
 - **Prerequisites:** S-01
 - **Status:** done
 
@@ -172,7 +172,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 - **Outcome:** Runner can edit any field of a saved aid station inline (cumulative distance/elevation, time, facilities, crew notes), re-sorted if distance changed and with affected segments recomputed.
 - **Change ID:** edit-aid-stations
-- **PRD refs:** US-10, FR-007 (added PRD v5, 2026-06-18)
+- **PRD refs:** US-10, FR-012 (PRD v6; the v5 edit FR was renumbered from a duplicate FR-007)
 - **Prerequisites:** S-01
 - **Note:** Motivated by S-07 — waypoint import creates bare stations (distance/elevation/name only), so edit is the path to enrich them.
 - **Status:** done
@@ -189,7 +189,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 - **Outcome:** A visitor lands on a custom branded welcome page (mountain-outline "Summit at first light" direction) with public About + Contact pages; sign-in routes to the dashboard, and a shared auth-aware nav spans public and app pages.
 - **Change ID:** public-pages-and-brand
-- **PRD refs:** none — marketing/UX.
+- **PRD refs:** FR-015 (PRD v6).
 - **Prerequisites:** S-06
 - **Status:** done
 
@@ -197,7 +197,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 - **Outcome:** A logged-in runner can permanently delete their account from a Settings menu; the destructive action is confirmed by an emailed link, and deletion cascades to all their plans, aid stations, gear, and selections.
 - **Change ID:** account-deletion
-- **PRD refs:** TBD — likely a new FR (account lifecycle / right-to-erasure); resolve during planning.
+- **PRD refs:** FR-014 (PRD v6, planned; account lifecycle / right-to-erasure).
 - **Prerequisites:** S-06
 - **Note:** DB already cascades from `auth.users` (ON DELETE CASCADE). Open unknowns: admin/service-role delete on Workers, and the email-link mechanism. Research first.
 - **Status:** todo
@@ -240,7 +240,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Open Roadmap Questions
 
-**Pending (2026-06-19):** the **PRD is not yet reconciled** with shipped reality — GPX import (S-07) and public pages (S-10) lack FRs, the §Non-Goals entries for GPX import and XLS/Excel export are stale, and account-deletion (S-11) needs a right-to-erasure FR. Roadmap was reconciled in `version: 2`; PRD update is the next doc task.
+~~**Pending (2026-06-19):** the PRD is not yet reconciled with shipped reality.~~ **Resolved (2026-06-19):** PRD reconciled to **v6** — GPX import (FR-013/US-11), public site (FR-015), account deletion (FR-014, planned) added; duplicate FR-007 split (aid-station edit → FR-012); §Non-Goals updated for GPX (shipped) and Excel (planned). Roadmap (v2) and PRD (v6) now match.
 
 Prior questions resolved:
 
