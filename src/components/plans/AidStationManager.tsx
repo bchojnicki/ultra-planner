@@ -39,6 +39,7 @@ export default function AidStationManager({ planId, initialStations, onStationsC
   const [stations, setStations] = useState<AidStation[]>(() => sortStations(initialStations));
   const [dist, setDist] = useState("");
   const [gain, setGain] = useState("");
+  const [loss, setLoss] = useState("");
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
   const [flags, setFlags] = useState<Flags>(EMPTY_FLAGS);
@@ -55,6 +56,7 @@ export default function AidStationManager({ planId, initialStations, onStationsC
       const body = {
         cumulative_distance_km: Number(dist),
         cumulative_elevation_gain_m: Number(gain),
+        ...(num(loss) !== undefined ? { cumulative_elevation_loss_m: Number(loss) } : {}),
         ...(time.trim() !== "" ? { time_spent_min: Number(time) } : {}),
         ...flags,
         ...(notes.trim() !== "" ? { notes: notes.trim() } : {}),
@@ -71,6 +73,7 @@ export default function AidStationManager({ planId, initialStations, onStationsC
       onStationsChange?.(next);
       setDist("");
       setGain("");
+      setLoss("");
       setTime("");
       setNotes("");
       setFlags(EMPTY_FLAGS);
@@ -129,6 +132,23 @@ export default function AidStationManager({ planId, initialStations, onStationsC
             value={gain}
             onChange={(e) => {
               setGain(e.target.value);
+            }}
+          />
+        </div>
+        <div>
+          <label htmlFor="as-loss" className="mb-1 block text-sm text-blue-100/80">
+            Cumulative elevation loss (m)
+          </label>
+          <input
+            id="as-loss"
+            data-testid="as-loss"
+            type="number"
+            min="0"
+            step="any"
+            className={inputCls}
+            value={loss}
+            onChange={(e) => {
+              setLoss(e.target.value);
             }}
           />
         </div>
@@ -204,8 +224,11 @@ export default function AidStationManager({ planId, initialStations, onStationsC
               className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm"
             >
               <div>
-                <span className="font-medium">{s.cumulative_distance_km} km</span>
-                <span className="text-blue-100/50"> · +{s.cumulative_elevation_gain_m} m</span>
+                <span className="font-medium">{Math.round(s.cumulative_distance_km * 10) / 10} km</span>
+                <span className="text-blue-100/50"> · +{Math.round(s.cumulative_elevation_gain_m)} m</span>
+                {s.cumulative_elevation_loss_m > 0 ? (
+                  <span className="text-blue-100/50"> · −{Math.round(s.cumulative_elevation_loss_m)} m</span>
+                ) : null}
                 {enabledFacilities(s).length > 0 ? (
                   <span className="text-blue-100/50"> · {enabledFacilities(s).join(", ")}</span>
                 ) : null}

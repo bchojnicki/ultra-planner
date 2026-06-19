@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
-import type { Plan, PlanUpdate } from "@/types";
+import type { AidStation, Plan, PlanUpdate } from "@/types";
 import { useAutosave, type SaveStatus } from "@/components/hooks/useAutosave";
+import GpxImport from "@/components/plans/GpxImport";
 
 const inputCls =
   "w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
@@ -10,6 +11,12 @@ interface Props {
   // Emits the current parsed Plan on every edit so a parent (PlanEditor) can
   // recompute the live plan table. Autosave is unaffected.
   onParamsChange?: (plan: Plan) => void;
+  // When provided, renders the GPX upload control. The parent remounts this form
+  // after a successful import (via a key bump), so the fields re-seed from the
+  // imported plan; this callback hands the imported plan + stations upward.
+  onGpxImported?: (plan: Plan, stations: AidStation[]) => void;
+  // Whether importing would overwrite real data (drives the confirm prompt).
+  hasExistingData?: boolean;
 }
 
 interface FormState {
@@ -99,7 +106,7 @@ const STATUS_TEXT: Record<SaveStatus, string> = {
   error: "Save failed — will retry on next change",
 };
 
-export default function RaceSetupForm({ plan, onParamsChange }: Props) {
+export default function RaceSetupForm({ plan, onParamsChange, onGpxImported, hasExistingData = false }: Props) {
   const [form, setForm] = useState<FormState>(() => initialState(plan));
 
   const save = useCallback(
@@ -133,6 +140,10 @@ export default function RaceSetupForm({ plan, onParamsChange }: Props) {
           {STATUS_TEXT[status]}
         </span>
       </div>
+
+      {onGpxImported ? (
+        <GpxImport planId={plan.id} hasExistingData={hasExistingData} onImported={onGpxImported} />
+      ) : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { GearAllocationResult, GearItem, GearSegmentSelection, PlanTableResult } from "@/types";
 import type { SaveStatus } from "@/components/hooks/useAutosave";
 import { enabledFacilities } from "@/lib/aid-station-facilities";
@@ -23,8 +23,26 @@ function fmtDuration(min: number): string {
   return `${Math.floor(total / 60)}h ${String(total % 60).padStart(2, "0")}m`;
 }
 
-function fmtClock(iso: string): string {
-  return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+// Arrival clock. The server runs on Cloudflare workerd (always UTC) while the
+// browser is in the viewer's timezone, so formatting in local time during SSR
+// would mismatch on hydration. We format in UTC for SSR + the first client render
+// (identical text → no mismatch), then reformat in local time once mounted.
+function fmtClock(iso: string, local: boolean): string {
+  return new Date(iso).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    ...(local ? {} : { timeZone: "UTC" }),
+  });
+}
+
+// Display rounding — distance to 100 m (0.1 km), elevation to whole metres. The
+// calc keeps full float precision; rounding is a display concern (accuracy guardrail).
+function fmtKm(km: number): string {
+  return String(Math.round(km * 10) / 10);
+}
+
+function fmtM(m: number): string {
+  return String(Math.round(m));
 }
 
 function unitsOf(alloc: GearAllocationResult): Record<string, number> {
@@ -155,6 +173,14 @@ export default function PlanTable({
   readOnly = false,
 }: Props) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  // false during SSR + the first hydration render (matches the server), true once
+  // hydrated — flips arrival times from UTC (SSR-stable) to the viewer's local time
+  // without a hydration mismatch and without setState-in-effect.
+  const mounted = useSyncExternalStore(
+    () => () => undefined,
+    () => true,
+    () => false,
+  );
 
   if (!result.ok) {
     return (
@@ -173,8 +199,8 @@ export default function PlanTable({
   const allocs = allocations ?? [];
   const sels = selections ?? [];
   const gearActive = gearItems.length > 0 && allocs.length === rows.length;
-  // Column count: 8 base + Aid station, plus the Fuel column when gear is active.
-  const colCount = gearActive ? 10 : 9;
+  // Column count: 9 base + Aid station, plus the Fuel column when gear is active.
+  const colCount = gearActive ? 11 : 10;
 
   function toggle(idx: number) {
     setExpanded((prev) => {
@@ -202,6 +228,7 @@ export default function PlanTable({
               <th className="py-2 pr-4">Segment</th>
               <th className="py-2 pr-4">Dist</th>
               <th className="py-2 pr-4">Gain</th>
+              <th className="py-2 pr-4">Loss</th>
               <th className="py-2 pr-4">Time</th>
               <th className="py-2 pr-4">Arrival</th>
               <th className="py-2 pr-4">Fluid</th>
@@ -234,10 +261,11 @@ export default function PlanTable({
                       </button>
                     ) : null}
                   </td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{r.segment_distance_km} km</td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{r.segment_elevation_gain_m} m</td>
+                  <td className="py-2 pr-4 whitespace-nowrap">{fmtKm(r.segment_distance_km)} km</td>
+                  <td className="py-2 pr-4 whitespace-nowrap">{fmtM(r.segment_elevation_gain_m)} m</td>
+                  <td className="py-2 pr-4 whitespace-nowrap">{fmtM(r.segment_elevation_loss_m)} m</td>
                   <td className="py-2 pr-4 whitespace-nowrap">{fmtDuration(r.moving_minutes)}</td>
-                  <td className="py-2 pr-4 whitespace-nowrap">{fmtClock(r.arrival)}</td>
+                  <td className="py-2 pr-4 whitespace-nowrap">{fmtClock(r.arrival, mounted)}</td>
                   {alloc ? (
                     <>
                       <td data-testid="fluid-cell" className="py-2 pr-4 whitespace-nowrap">
@@ -303,10 +331,11 @@ export default function PlanTable({
           <tfoot>
             <tr data-testid="plan-totals" className="border-t-2 border-white/20 font-medium">
               <td className="py-2 pr-4">Total</td>
-              <td className="py-2 pr-4">{totals.distance_km} km</td>
-              <td className="py-2 pr-4">{totals.elevation_gain_m} m</td>
+              <td className="py-2 pr-4">{fmtKm(totals.distance_km)} km</td>
+              <td className="py-2 pr-4">{fmtM(totals.elevation_gain_m)} m</td>
+              <td className="py-2 pr-4">{fmtM(totals.elevation_loss_m)} m</td>
               <td className="py-2 pr-4">{fmtDuration(totals.moving_minutes)}</td>
-              <td className="py-2 pr-4">{fmtClock(totals.finish_arrival)}</td>
+              <td className="py-2 pr-4">{fmtClock(totals.finish_arrival, mounted)}</td>
               <td className="py-2 pr-4">{Math.round(totals.fluid_ml)} ml</td>
               <td className="py-2 pr-4">{Math.round(totals.carb_g)} g</td>
               <td className="py-2 pr-4">{Math.round(totals.sodium_mg)} mg</td>

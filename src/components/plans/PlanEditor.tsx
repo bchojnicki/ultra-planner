@@ -29,6 +29,9 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
   // in the plan table. Mirrors RaceSetupForm's passive indicator; a failed write keeps the
   // optimistic local value and is superseded by the next edit (retry-on-next-change).
   const [selectionStatus, setSelectionStatus] = useState<SaveStatus>("idle");
+  // Bumped on a successful GPX import to remount the child forms so they re-seed
+  // from the freshly-imported plan/stations (they initialize state from props once).
+  const [importKey, setImportKey] = useState(0);
 
   const result = useMemo(() => computePlanTable(params, stations), [params, stations]);
 
@@ -119,11 +122,46 @@ export default function PlanEditor({ plan, initialStations, initialGearItems, in
     [params, result, selections, putSelection],
   );
 
+  // On a successful GPX import, adopt the imported plan + stations and remount the
+  // child forms. Routing the stations through onStationsChange reuses the stale-gear
+  // pruning so selections that no longer map to a real leg are dropped.
+  const onGpxImported = useCallback(
+    (nextPlan: Plan, nextStations: AidStation[]) => {
+      setParams(nextPlan);
+      onStationsChange(nextStations);
+      setImportKey((k) => k + 1);
+    },
+    [onStationsChange],
+  );
+
+  // Importing overwrites real data once the plan has any race details or stations.
+  const hasExistingData =
+    stations.length > 0 ||
+    params.total_distance_km > 0 ||
+    params.total_elevation_gain_m > 0 ||
+    params.total_elevation_loss_m > 0;
+
   return (
     <>
-      <RaceSetupForm plan={plan} onParamsChange={setParams} />
+      {/* Live plan title — reflects the name as it's edited (and after a GPX import),
+          rather than the server-rendered value that only refreshed on reload. */}
+      <h1 className="mt-2 mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+        {params.name || "Untitled plan"}
+      </h1>
+      <RaceSetupForm
+        key={`race-${importKey}`}
+        plan={params}
+        onParamsChange={setParams}
+        onGpxImported={onGpxImported}
+        hasExistingData={hasExistingData}
+      />
       <GearProfileForm planId={plan.id} initialItems={initialGearItems} onItemsChange={setGearItems} />
-      <AidStationManager planId={plan.id} initialStations={initialStations} onStationsChange={onStationsChange} />
+      <AidStationManager
+        key={`stations-${importKey}`}
+        planId={plan.id}
+        initialStations={stations}
+        onStationsChange={onStationsChange}
+      />
       <PlanTable
         result={result}
         items={gearItems}

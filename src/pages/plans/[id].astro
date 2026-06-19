@@ -45,7 +45,7 @@ const allocations = computeAllocations(result, gearItems, gearSelections);
       <PlanSummary plan={plan} />
       <AidStationList stations={stations} />
       <GearList items={gearItems} />
-      <PlanTable result={result} items={gearItems} allocations={allocations} readOnly />
+      <PlanTable result={result} items={gearItems} allocations={allocations} readOnly client:load />
     </div>
   </div>
 </Layout>

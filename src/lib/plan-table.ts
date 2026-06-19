@@ -9,6 +9,7 @@ export const SEGMENT_ELEVATION_WEIGHT_K = 0.01;
 interface Point {
   distance_km: number;
   elevation_gain_m: number;
+  elevation_loss_m: number;
   station: AidStation | null; // null for the race start and finish
   label: string;
 }
@@ -18,7 +19,20 @@ interface Segment {
   to: Point;
   distance: number;
   gain: number;
+  loss: number;
   weight: number;
+}
+
+// Per-metric calibration (gpx-import, Phase 4). When a raw GPX total exists
+// (non-null, > 0) the segments are differenced from GPX-derived cumulative
+// station values, so the Finish anchors on that RAW gpx total and every segment
+// scales by factor = corrected / gpx; the calibrated segment sum then reconciles
+// to the corrected total exactly (factor · gpx = total). With no GPX (gpx_*
+// null/0) the Finish anchors on the corrected total and factor = 1 — manual plans
+// are unchanged.
+function metricCalibration(total: number, gpx: number | null): { finish: number; factor: number } {
+  if (gpx !== null && gpx > 0) return { finish: gpx, factor: total / gpx };
+  return { finish: total, factor: 1 };
 }
 
 export function computePlanTable(plan: Plan, stations: AidStation[]): PlanTableResult {
@@ -31,9 +45,17 @@ export function computePlanTable(plan: Plan, stations: AidStation[]): PlanTableR
     };
   }
 
-  // Only stations strictly inside the course form boundaries; sort by distance.
+  // Per-metric calibration factors + Finish anchors (see metricCalibration).
+  const distCal = metricCalibration(plan.total_distance_km, plan.gpx_distance_km);
+  const gainCal = metricCalibration(plan.total_elevation_gain_m, plan.gpx_elevation_gain_m);
+  const lossCal = metricCalibration(plan.total_elevation_loss_m, plan.gpx_elevation_loss_m);
+
+  // Only stations strictly inside the course boundaries; sort by distance. The
+  // upper bound is the Finish distance anchor (the raw gpx distance when GPX was
+  // imported, else the corrected total) so stations sitting in the sliver between
+  // a corrected and a raw distance total are not dropped.
   const inside = stations
-    .filter((s) => s.cumulative_distance_km > 0 && s.cumulative_distance_km < plan.total_distance_km)
+    .filter((s) => s.cumulative_distance_km > 0 && s.cumulative_distance_km < distCal.finish)
     .slice()
     .sort((a, b) => a.cumulative_distance_km - b.cumulative_distance_km);
 
@@ -50,31 +72,44 @@ export function computePlanTable(plan: Plan, stations: AidStation[]): PlanTableR
   }
 
   const points: Point[] = [
-    { distance_km: 0, elevation_gain_m: 0, station: null, label: "Start" },
+    { distance_km: 0, elevation_gain_m: 0, elevation_loss_m: 0, station: null, label: "Start" },
     ...inside.map((s, i) => ({
       distance_km: s.cumulative_distance_km,
       elevation_gain_m: s.cumulative_elevation_gain_m,
+      elevation_loss_m: s.cumulative_elevation_loss_m,
       station: s,
       label: `AS${i + 1}`,
     })),
     {
-      distance_km: plan.total_distance_km,
-      elevation_gain_m: plan.total_elevation_gain_m,
+      distance_km: distCal.finish,
+      elevation_gain_m: gainCal.finish,
+      elevation_loss_m: lossCal.finish,
       station: null,
       label: "Finish",
     },
   ];
 
   // Pair consecutive points into segments, skipping zero/negative-length legs
-  // (a station exactly at the finish, or duplicate cumulative distances).
+  // (a station exactly at the finish, or duplicate cumulative distances). Each
+  // metric's raw difference is scaled by its calibration factor; the gain fed
+  // into the Naismith weight is the calibrated gain.
   const segments: Segment[] = [];
   let prev: Point | null = null;
   for (const pt of points) {
     if (prev !== null) {
-      const distance = pt.distance_km - prev.distance_km;
-      if (distance > 0) {
-        const gain = Math.max(0, pt.elevation_gain_m - prev.elevation_gain_m);
-        segments.push({ from: prev, to: pt, distance, gain, weight: distance + SEGMENT_ELEVATION_WEIGHT_K * gain });
+      const rawDistance = pt.distance_km - prev.distance_km;
+      if (rawDistance > 0) {
+        const distance = distCal.factor * rawDistance;
+        const gain = gainCal.factor * Math.max(0, pt.elevation_gain_m - prev.elevation_gain_m);
+        const loss = lossCal.factor * Math.max(0, pt.elevation_loss_m - prev.elevation_loss_m);
+        segments.push({
+          from: prev,
+          to: pt,
+          distance,
+          gain,
+          loss,
+          weight: distance + SEGMENT_ELEVATION_WEIGHT_K * gain,
+        });
       }
     }
     prev = pt;
@@ -98,6 +133,7 @@ export function computePlanTable(plan: Plan, stations: AidStation[]): PlanTableR
       label: `${seg.from.label} → ${seg.to.label}`,
       segment_distance_km: seg.distance,
       segment_elevation_gain_m: seg.gain,
+      segment_elevation_loss_m: seg.loss,
       moving_minutes: moving,
       arrival,
       fluid_ml: plan.hourly_fluid_ml * hours,
@@ -110,6 +146,7 @@ export function computePlanTable(plan: Plan, stations: AidStation[]): PlanTableR
   const totals: PlanTableTotals = {
     distance_km: rows.reduce((s, r) => s + r.segment_distance_km, 0),
     elevation_gain_m: rows.reduce((s, r) => s + r.segment_elevation_gain_m, 0),
+    elevation_loss_m: rows.reduce((s, r) => s + r.segment_elevation_loss_m, 0),
     moving_minutes: rows.reduce((s, r) => s + r.moving_minutes, 0),
     rest_minutes,
     fluid_ml: rows.reduce((s, r) => s + r.fluid_ml, 0),

@@ -19,11 +19,6 @@ const { plan, stations, gearItems, gearSelections } = bundle;
   <div class="bg-cosmic min-h-screen p-4">
     <div class="mx-auto max-w-5xl text-white">
       <a href={`/plans/${id}`} class="text-sm text-purple-300 hover:underline">← Back to plan</a>
-      <h1
-        class="mt-2 mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent"
-      >
-        {plan.name}
-      </h1>
 
       <PlanEditor
         plan={plan}
