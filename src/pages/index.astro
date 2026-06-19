@@ -1,8 +1,88 @@
 ---
-import Welcome from "@/components/Welcome.astro";
-import Layout from "@/layouts/Layout.astro";
+import PublicLayout from "@/layouts/PublicLayout.astro";
+import Ridgeline from "@/components/public/Ridgeline.astro";
+
+// Auth-aware CTA: signed-in runners go straight to their plans, not the sign-in screen.
+const { user } = Astro.locals;
+const ctaHref = user ? "/dashboard" : "/auth/signin";
+const ctaLabel = user ? "Go to your plans" : "Plan your race";
+
+const steps = [
+  {
+    n: "01",
+    title: "Enter your race",
+    body: "Distance, elevation gain and loss, start time, and your goal finish. Import a GPX and the route fills it in for you.",
+  },
+  {
+    n: "02",
+    title: "Add your aid stations",
+    body: "Cumulative distance and elevation for each stop — plus drop bags, crew access, food, and rest time.",
+  },
+  {
+    n: "03",
+    title: "Get your plan",
+    body: "A segment-by-segment table: per-leg fluid, carbs, sodium, arrival clock times, and the exact gear to carry.",
+  },
+];
 ---
 
-<Layout>
-  <Welcome />
-</Layout>
+<PublicLayout title="Ultra Planner — fuel every climb, not every kilometre">
+  <!-- Hero -->
+  <section class="mx-auto max-w-6xl px-4 pt-16 pb-6 sm:px-8 sm:pt-24">
+    <p class="font-mono-data text-haze/70 text-xs tracking-[0.2em]">KM 0 — THE START</p>
+    <h1 class="font-display text-snowcap mt-4 max-w-3xl text-4xl leading-[1.05] font-bold sm:text-6xl lg:text-7xl">
+      Fuel every climb,<br />not every kilometre.
+    </h1>
+    <p class="text-haze mt-6 max-w-xl text-lg">
+      Ultra Planner computes your fluid, carbs, and sodium <span class="text-snowcap">per segment</span> — weighted by time
+      on feet, not flat distance — so a steep 5&nbsp;km and a runnable 5&nbsp;km never get the same plan.
+    </p>
+    <div class="mt-8">
+      <a
+        href={ctaHref}
+        class="bg-trail-violet/20 text-snowcap hover:bg-trail-violet/30 focus-visible:ring-trail-violet inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-base font-medium transition-colors focus:outline-none focus-visible:ring-2"
+      >
+        {ctaLabel}
+      </a>
+    </div>
+  </section>
+
+  <!-- Hero ridgeline: the elevation profile is the mountain outline -->
+  <section class="mx-auto max-w-6xl px-4 pb-12 sm:px-8">
+    <Ridgeline variant="hero" />
+  </section>
+
+  <!-- How it works — a real 3-step sequence -->
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-8">
+    <h2 class="font-display text-snowcap text-2xl font-bold sm:text-3xl">How it works</h2>
+    <ol class="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-3">
+      {
+        steps.map((s) => (
+          <li>
+            <p class="font-mono-data text-alpenglow text-sm tracking-widest">{s.n}</p>
+            <h3 class="font-display text-snowcap mt-2 text-lg font-semibold">{s.title}</h3>
+            <p class="text-haze mt-2 text-sm leading-relaxed">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <Ridgeline variant="divider" />
+
+  <!-- Closing CTA -->
+  <section class="mx-auto max-w-6xl px-4 py-20 text-center sm:px-8">
+    <h2 class="font-display text-snowcap text-2xl font-bold sm:text-3xl">Ready for the climb?</h2>
+    <p class="text-haze mx-auto mt-3 max-w-md">
+      Build your first race plan in a few minutes — no spreadsheet required.
+    </p>
+    <div class="mt-8">
+      <a
+        href={ctaHref}
+        class="bg-trail-violet/20 text-snowcap hover:bg-trail-violet/30 focus-visible:ring-trail-violet inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-base font-medium transition-colors focus:outline-none focus-visible:ring-2"
+      >
+        {ctaLabel}
+      </a>
+    </div>
+  </section>
+</PublicLayout>

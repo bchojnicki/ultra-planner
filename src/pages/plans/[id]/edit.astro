@@ -1,5 +1,6 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import PublicNav from "@/components/public/PublicNav.astro";
 import { createClient } from "@/lib/supabase";
 import { loadPlanBundle } from "@/lib/services/plan-bundle";
 import PlanEditor from "@/components/plans/PlanEditor";
@@ -16,6 +17,7 @@ const { plan, stations, gearItems, gearSelections } = bundle;
 ---
 
 <Layout title={plan.name}>
+  <PublicNav />
   <div class="bg-cosmic min-h-screen p-4">
     <div class="mx-auto max-w-5xl text-white">
       <a href={`/plans/${id}`} class="text-sm text-purple-300 hover:underline">← Back to plan</a>

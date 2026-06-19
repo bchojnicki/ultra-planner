@@ -250,33 +250,33 @@ None — no data or schema. `Welcome.astro` is retired (no longer imported).
 
 #### Automated
 
-- [x] 1.1 Type checking passes (`npx astro check`)
-- [x] 1.2 Linting passes (`npm run lint`)
-- [x] 1.3 Build succeeds (`npm run build`)
-- [x] 1.4 Playwright suite passes (`npx playwright test`)
+- [x] 1.1 Type checking passes (`npx astro check`) — 9599a10
+- [x] 1.2 Linting passes (`npm run lint`) — 9599a10
+- [x] 1.3 Build succeeds (`npm run build`) — 9599a10
+- [x] 1.4 Playwright suite passes (`npx playwright test`) — 9599a10
 
 #### Manual
 
-- [x] 1.5 PublicLayout renders with brand background, fonts, nav, footer
-- [x] 1.6 Nav shows Sign in (logged-out) / Dashboard (logged-in)
-- [x] 1.7 Ridgeline renders; reduced-motion suppresses animation
-- [x] 1.8 Authenticated app pages visually unchanged (no font/token leak)
+- [x] 1.5 PublicLayout renders with brand background, fonts, nav, footer — 9599a10
+- [x] 1.6 Nav shows Sign in (logged-out) / Dashboard (logged-in) — 9599a10
+- [x] 1.7 Ridgeline renders; reduced-motion suppresses animation — 9599a10
+- [x] 1.8 Authenticated app pages visually unchanged (no font/token leak) — 9599a10
 
 ### Phase 2: Landing page + post-login redirect
 
 #### Automated
 
-- [ ] 2.1 Type checking passes (`npx astro check`)
-- [ ] 2.2 Linting passes (`npm run lint`)
-- [ ] 2.3 Build succeeds (`npm run build`)
-- [ ] 2.4 Playwright suite passes (`npx playwright test`)
+- [x] 2.1 Type checking passes (`npx astro check`)
+- [x] 2.2 Linting passes (`npm run lint`)
+- [x] 2.3 Build succeeds (`npm run build`)
+- [x] 2.4 Playwright suite passes (`npx playwright test`)
 
 #### Manual
 
-- [ ] 2.5 Landing shows hero + wedge + 3-step + CTA; load animation plays (suppressed under reduced-motion)
-- [ ] 2.6 Hero legible/laid-out on mobile
-- [ ] 2.7 OTP login lands on /dashboard
-- [ ] 2.8 CTA routes to sign-in; nav/footer present
+- [x] 2.5 Landing shows hero + wedge + 3-step + CTA; load animation plays (suppressed under reduced-motion)
+- [x] 2.6 Hero legible/laid-out on mobile
+- [x] 2.7 OTP login lands on /dashboard
+- [x] 2.8 CTA routes to sign-in; nav/footer present
 
 ### Phase 3: About + Contact pages
 
