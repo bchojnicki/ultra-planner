@@ -270,11 +270,11 @@ None — no schema, no data migration, no persisted state.
 
 #### Automated
 
-- [x] 3.1 Playwright passes (`npx playwright test tests/excel-export.spec.ts`)
-- [x] 3.2 Full suite still green (`npx playwright test`)
-- [x] 3.3 Lint/build pass (`npm run lint` && `npm run build`)
+- [x] 3.1 Playwright passes (`npx playwright test tests/excel-export.spec.ts`) — 5d6825d
+- [x] 3.2 Full suite still green (`npx playwright test`) — 5d6825d
+- [x] 3.3 Lint/build pass (`npm run lint` && `npm run build`) — 5d6825d
 
 #### Manual
 
-- [x] 3.4 PRD §Non-Goals and roadmap S-12 read as shipped and are internally consistent
-- [x] 3.5 Exported file verified end-to-end in a real spreadsheet app
+- [x] 3.4 PRD §Non-Goals and roadmap S-12 read as shipped and are internally consistent — 5d6825d
+- [x] 3.5 Exported file verified end-to-end in a real spreadsheet app — 5d6825d
