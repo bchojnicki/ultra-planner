@@ -110,15 +110,15 @@ None — UI render-only change.
 
 #### Automated
 
-- [x] 1.1 Type checking passes (`npx astro check`)
-- [x] 1.2 Linting passes (`npm run lint`)
-- [x] 1.3 Build succeeds (`npm run build`)
-- [x] 1.4 Playwright suite passes (`npx playwright test`)
+- [x] 1.1 Type checking passes (`npx astro check`) — 6130022
+- [x] 1.2 Linting passes (`npm run lint`) — 6130022
+- [x] 1.3 Build succeeds (`npm run build`) — 6130022
+- [x] 1.4 Playwright suite passes (`npx playwright test`) — 6130022
 
 #### Manual
 
-- [x] 1.5 Expanding a middle segment shows the panel directly below it, not at the table bottom
-- [x] 1.6 Multiple open panels each sit under their own row
-- [x] 1.7 Collapse removes only that panel; toggle state correct
-- [x] 1.8 Limit/override editing + persistence still work from the repositioned panel
-- [x] 1.9 Totals footer and non-gear rendering unaffected
+- [x] 1.5 Expanding a middle segment shows the panel directly below it, not at the table bottom — 6130022
+- [x] 1.6 Multiple open panels each sit under their own row — 6130022
+- [x] 1.7 Collapse removes only that panel; toggle state correct — 6130022
+- [x] 1.8 Limit/override editing + persistence still work from the repositioned panel — 6130022
+- [x] 1.9 Totals footer and non-gear rendering unaffected — 6130022

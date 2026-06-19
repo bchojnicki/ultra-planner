@@ -3,7 +3,7 @@ change_id: fix-gear-panel-position
 title: Fix gear edit panel rendering under the wrong segment in the plan table
 created: 2026-06-19
 updated: 2026-06-19
-status: implementing
+status: implemented
 archived_at: null
 ---
 
