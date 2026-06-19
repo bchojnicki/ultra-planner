@@ -3,8 +3,8 @@ change_id: excel-export
 title: Export a plan to an Excel file
 created: 2026-06-19
 updated: 2026-06-19
-status: new
-archived_at: null
+status: archived
+archived_at: 2026-06-19T15:07:14Z
 ---
 
 ## Notes

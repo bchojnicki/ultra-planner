@@ -1,0 +1,163 @@
+---
+import PublicLayout from "@/layouts/PublicLayout.astro";
+
+// Privacy Policy (legal-pages). Plain-language but complete GDPR/RODO information,
+// accurate to what the app actually processes: email (auth), plan data, and
+// strictly-necessary session cookies, via Supabase / Resend / Cloudflare. The
+// erasure right links the live account-deletion flow.
+const controller = "Bartosz Chojnicki";
+const contactEmail = "hello@ultra-planner.app";
+const lastUpdated = "June 19, 2026";
+---
+
+<PublicLayout title="Privacy Policy — Ultra Planner">
+  <section class="mx-auto max-w-3xl px-4 py-16 sm:px-8 sm:py-24">
+    <p class="font-mono-data text-haze/70 text-xs tracking-[0.2em]">PRIVACY</p>
+    <h1 class="font-display text-snowcap mt-4 text-4xl leading-tight font-bold sm:text-5xl">Privacy Policy</h1>
+    <p class="font-mono-data text-haze/60 mt-3 text-xs tracking-wide">Last updated: {lastUpdated}</p>
+
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        This policy explains what personal data Ultra Planner collects, why, who processes it, and the rights you have
+        over it. It is written to be read — not to bury the details. We only describe data we actually collect.
+      </p>
+    </div>
+
+    <h2 class="font-display text-snowcap mt-10 text-2xl font-bold">Who is responsible (data controller)</h2>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        The data controller is <span class="text-snowcap">{controller}</span>, operating Ultra Planner as an individual.
+        For any privacy question or to exercise your rights, contact
+        <a
+          class="text-trail-violet hover:text-snowcap underline underline-offset-2 transition-colors"
+          href={`mailto:${contactEmail}`}>{contactEmail}</a
+        >.
+      </p>
+    </div>
+
+    <h2 class="font-display text-snowcap mt-10 text-2xl font-bold">What we collect</h2>
+    <ul class="text-haze mt-4 list-disc space-y-2 pl-5 leading-relaxed">
+      <li>
+        <span class="text-snowcap">Your email address</span> — used to sign you in. Ultra Planner uses passwordless sign-in:
+        you receive a one-time code by email, so we never store a password.
+      </li>
+      <li>
+        <span class="text-snowcap">Plan data you enter</span> — race parameters, aid stations, and gear you add to build a
+        plan. This is the content of the service and is tied to your account.
+      </li>
+      <li>
+        <span class="text-snowcap">Session cookies</span> — strictly-necessary cookies that keep you signed in as you move
+        between pages. See <a
+          class="text-trail-violet hover:text-snowcap underline underline-offset-2 transition-colors"
+          href="#cookies">Cookies</a
+        > below.
+      </li>
+    </ul>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        We do not collect analytics, advertising, or tracking data, and we do not build profiles about you or sell your
+        data to anyone.
+      </p>
+    </div>
+
+    <h2 class="font-display text-snowcap mt-10 text-2xl font-bold">Why we process it (legal basis)</h2>
+    <ul class="text-haze mt-4 list-disc space-y-2 pl-5 leading-relaxed">
+      <li>
+        <span class="text-snowcap">To provide the service</span> — creating your account and storing and displaying your plans
+        is performance of our agreement with you (GDPR Art. 6(1)(b)).
+      </li>
+      <li>
+        <span class="text-snowcap">To keep the service secure and working</span> — basic operational and abuse-prevention
+        measures rest on our legitimate interest in running a safe service (GDPR Art. 6(1)(f)).
+      </li>
+    </ul>
+
+    <h2 class="font-display text-snowcap mt-10 text-2xl font-bold">Who processes it for us (sub-processors)</h2>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        We rely on a few trusted providers to run the service. They process data on our behalf, under their own terms
+        and security:
+      </p>
+    </div>
+    <ul class="text-haze mt-4 list-disc space-y-2 pl-5 leading-relaxed">
+      <li>
+        <span class="text-snowcap">Supabase</span> — authentication and the database that stores your account and plans.
+      </li>
+      <li>
+        <span class="text-snowcap">Resend</span> — sends the confirmation email when you request account deletion.
+      </li>
+      <li><span class="text-snowcap">Cloudflare</span> — hosting and content delivery for the application.</li>
+    </ul>
+
+    <h2 class="font-display text-snowcap mt-10 text-2xl font-bold">How long we keep it</h2>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        We keep your account and plan data for as long as your account exists. When you delete your account, your email,
+        plans, aid stations, and gear are permanently removed.
+      </p>
+      <p>
+        For security and abuse prevention, we keep a minimal record that a deletion happened: a one-way hash of your
+        email (not the email itself), the time of deletion, and the request's IP address. This record cannot be used to
+        recover your data.
+      </p>
+    </div>
+
+    <h2 class="font-display text-snowcap mt-10 text-2xl font-bold">Your rights</h2>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>Under the GDPR you can:</p>
+    </div>
+    <ul class="text-haze mt-4 list-disc space-y-2 pl-5 leading-relaxed">
+      <li>access the personal data we hold about you;</li>
+      <li>correct inaccurate data — you can edit your plans directly in the app;</li>
+      <li>
+        <span class="text-snowcap">erase your data</span> — delete your account and everything in it at any time from
+        <a
+          class="text-trail-violet hover:text-snowcap underline underline-offset-2 transition-colors"
+          href="/account/delete/confirm">Settings → Remove account</a
+        >;
+      </li>
+      <li>receive a copy of your data, or restrict or object to processing;</li>
+      <li>
+        lodge a complaint with your supervisory authority — in Poland, the President of the Personal Data Protection
+        Office (UODO).
+      </li>
+    </ul>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        To exercise any right that isn't self-service, email
+        <a
+          class="text-trail-violet hover:text-snowcap underline underline-offset-2 transition-colors"
+          href={`mailto:${contactEmail}`}>{contactEmail}</a
+        >.
+      </p>
+    </div>
+
+    <h2 id="cookies" class="font-display text-snowcap mt-10 text-2xl font-bold">Cookies</h2>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        Ultra Planner uses only strictly-necessary cookies — the session cookies that keep you signed in. We do not use
+        analytics, advertising, or tracking cookies, so there is no cookie-consent banner: the cookies we set are
+        required for the service to work. You can clear them any time through your browser, which signs you out.
+      </p>
+    </div>
+
+    <h2 class="font-display text-snowcap mt-10 text-2xl font-bold">Changes to this policy</h2>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        If we change how we handle data, we'll update this page and the "Last updated" date above. Material changes will
+        be reflected here before they take effect.
+      </p>
+    </div>
+
+    <h2 class="font-display text-snowcap mt-10 text-2xl font-bold">Contact</h2>
+    <div class="text-haze mt-4 space-y-4 leading-relaxed">
+      <p>
+        Questions about your data or this policy? Email
+        <a
+          class="text-trail-violet hover:text-snowcap underline underline-offset-2 transition-colors"
+          href={`mailto:${contactEmail}`}>{contactEmail}</a
+        >.
+      </p>
+    </div>
+  </section>
+</PublicLayout>

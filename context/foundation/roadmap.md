@@ -41,11 +41,11 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-09 | tooltips                    | see on-hover/focus field-help on the non-obvious plan-form inputs                            | S-02          | (UX enhancement; no FR)                             | done     |
 | S-10 | public-pages-and-brand      | land on a branded public welcome / about / contact site; sign-in routes to the dashboard     | S-06          | FR-015 (PRD v6)                                     | done     |
 | S-11 | account-deletion            | permanently delete their account + all data, confirmed by an emailed link                    | S-06          | FR-014 (PRD v6, planned)                            | done     |
-| S-12 | excel-export                | export a plan to an Excel file                                                               | S-02          | (was §Non-Goal; un-parking)                         | todo     |
+| S-12 | excel-export                | export a plan to an Excel file                                                               | S-02          | (was §Non-Goal; un-parked + shipped)                | done     |
 | S-13 | collapsible-plan-sections   | collapse / expand the plan-builder sections to cut scrolling                                 | S-01          | (UX enhancement)                                   | done     |
 | S-14 | gear-total-summary          | see race-wide gear totals (units per item) in the plan-table total row                       | S-03          | (UX enhancement)                                   | done     |
 
-> **Note (2026-06-19):** S-01–S-06 were the original MVP roadmap; S-07–S-14 were added in a `version: 2` reconciliation after several post-MVP changes shipped (some pulled forward from §Non-Goals / §Parked, some net-new). S-07–S-10 are already shipped + archived; S-11–S-14 are the current backlog. Post-MVP bug fixes are listed under `## Done → Maintenance / fixes`.
+> **Note (2026-06-19):** S-01–S-06 were the original MVP roadmap; S-07–S-14 were added in a `version: 2` reconciliation after several post-MVP changes shipped (some pulled forward from §Non-Goals / §Parked, some net-new). S-07–S-10 are already shipped + archived; S-11–S-14 have now all shipped (S-12 `excel-export` landed 2026-06-19). Post-MVP bug fixes are listed under `## Done → Maintenance / fixes`.
 
 ## Streams
 
@@ -206,9 +206,9 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 - **Outcome:** Runner can export a plan (the generated segment-by-segment table) to an Excel file.
 - **Change ID:** excel-export
-- **PRD refs:** was §Non-Goals ("XLS / Excel export") — un-parking; PRD update needed.
+- **PRD refs:** was §Non-Goals ("XLS / Excel export") — un-parked + shipped; PRD §Non-Goals reconciled 2026-06-19.
 - **Prerequisites:** S-02
-- **Status:** todo
+- **Status:** done (2026-06-19) — "Export to Excel" button on the read-only plan view; client-side single-sheet `.xlsx` (params + segment table + gear/fuel).
 
 ### S-13: Collapsible plan-builder sections
 
@@ -254,7 +254,7 @@ Prior questions resolved:
 - **Undo for plan deletion** — Why parked: PRD FR-011 ships hard delete with confirmation; undo is v2.
 - ~~**GPX import**~~ — **Shipped** as **S-07** (`gpx-import`, archived 2026-06-18); pulled forward from §Non-Goals.
 - **Elevation-adjusted time model / uphill-downhill profiling** — Why parked: `shape-notes.md` §Forward (v2 technical roadmap); MVP uses Naismith's rule with a fixed k only.
-- **XLS / Excel export** — **Un-parking**: now planned as **S-12** (`excel-export`). PRD §Non-Goals entry needs updating when it lands.
+- **XLS / Excel export** — **Shipped** as **S-12** (`excel-export`, 2026-06-19). PRD §Non-Goals reconciled to "Shipped".
 - **Shared / collaborative plans** — Why parked: PRD §Non-Goals — primary persona is the individual runner; collaboration is a deferred secondary-persona concern.
 - **Offline mode** — Why parked: PRD §Non-Goals — auto-save + multi-device access require a backend; offline adds a third storage layer not worth it for a pre-race planning tool.
 
@@ -276,6 +276,7 @@ Prior questions resolved:
 - **S-10: Visitor lands on a branded public welcome/about/contact site; sign-in routes to the dashboard; a shared nav spans public + app pages.** — Archived 2026-06-19 → `context/archive/2026-06-19-public-pages-and-brand/`. Lesson: —.
 - **S-11: permanently delete their account + all data, confirmed by an emailed link** — Archived 2026-06-19 → `context/archive/2026-06-19-account-deletion/`. Lesson: —.
 - **S-14: The plan-table total row shows how many of each gear item is needed for the whole race (e.g. "12× gel, 4× drink, 6× salt cap").** — Archived 2026-06-19 → `context/archive/2026-06-19-gear-total-summary/`. Lesson: —.
+- **S-12: Runner can export a plan (the generated segment-by-segment table) to an Excel file.** — Archived 2026-06-19 → `context/archive/2026-06-19-excel-export/`. Lesson: —.
 
 ### Maintenance / fixes (post-MVP)
 

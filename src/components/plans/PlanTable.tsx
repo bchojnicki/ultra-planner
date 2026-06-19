@@ -1,11 +1,12 @@
 import { Fragment, useState, useSyncExternalStore } from "react";
-import type { GearAllocationResult, GearItem, GearSegmentSelection, PlanTableResult } from "@/types";
+import type { GearAllocationResult, GearItem, GearSegmentSelection, Plan, PlanTableResult } from "@/types";
 import type { SaveStatus } from "@/components/hooks/useAutosave";
 import { enabledFacilities } from "@/lib/aid-station-facilities";
 import { sumAllocationUnits } from "@/lib/gear-totals";
 import HelpTooltip from "@/components/ui/HelpTooltip";
 import { FIELD_HELP } from "@/lib/field-help";
 import { fmtKm, fmtM } from "@/lib/format";
+import { fmtDuration, fuelBreakdown } from "@/lib/plan-format";
 
 const SELECTION_STATUS_TEXT: Record<SaveStatus, string> = {
   idle: "",
@@ -19,12 +20,6 @@ const SELECTION_STATUS_TEXT: Record<SaveStatus, string> = {
 export interface SelectionPatch {
   limit_units: number | null;
   override_units: number | null;
-}
-
-// Display-only rounding — the calc keeps full float precision (accuracy guardrail).
-function fmtDuration(min: number): string {
-  const total = Math.round(min);
-  return `${Math.floor(total / 60)}h ${String(total % 60).padStart(2, "0")}m`;
 }
 
 // Arrival clock. The server runs on Cloudflare workerd (always UTC) while the
@@ -41,16 +36,6 @@ function fmtClock(iso: string, local: boolean): string {
 
 function unitsOf(alloc: GearAllocationResult): Record<string, number> {
   return Object.fromEntries(alloc.units.map((u) => [u.gear_item_id, u.units]));
-}
-
-// "1× Tailwind, 2× SIS gel" — every item to carry for the stage, listed once
-// (a drink contributes to both fluid and carbs, but appears here a single time).
-function fuelBreakdown(items: GearItem[], units: Record<string, number>): string {
-  return items
-    .map((it) => ({ it, u: units[it.id] ?? 0 }))
-    .filter((x) => x.u > 0)
-    .map((x) => `${x.u}× ${x.it.name}`)
-    .join(", ");
 }
 
 function parseUnit(v: string): number | null {
@@ -74,6 +59,10 @@ interface Props {
   // totals) but suppress the editing affordances — the per-row gear expand toggle
   // and the save-status line. The expand panels already require onSelectionChange.
   readOnly?: boolean;
+  // The owning plan — only the read-only view (/plans/[id]) passes it, which is what
+  // gates the Excel export button to that surface (excel-export). Needed for the
+  // params block and the download filename.
+  plan?: Plan;
 }
 
 // A signed-delta secondary line: "392/400 g (−8)". Under-target is amber, on/over is muted.
@@ -165,8 +154,11 @@ export default function PlanTable({
   onSelectionChange,
   selectionStatus = "idle",
   readOnly = false,
+  plan,
 }: Props) {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState(false);
   // false during SSR + the first hydration render (matches the server), true once
   // hydrated — flips arrival times from UTC (SSR-stable) to the viewer's local time
   // without a hydration mismatch and without setState-in-effect.
@@ -205,15 +197,64 @@ export default function PlanTable({
     });
   }
 
+  // Lazy-load SheetJS only on click so it never enters the island's client:load
+  // bundle, build the workbook from the already-computed data, and download it.
+  async function handleExport() {
+    if (!plan || exporting) return;
+    setExportError(false);
+    setExporting(true);
+    try {
+      const { buildPlanWorkbook, planExportFilename } = await import("@/lib/plan-export");
+      const bytes = buildPlanWorkbook({ plan, result, items: gearItems, allocations: allocs });
+      const blob = new Blob([bytes], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = planExportFilename(plan);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      // The lazy SheetJS chunk failed to load or the build threw — surface it
+      // to the runner instead of failing silently (mirrors GpxImport's handling).
+      setExportError(true);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <section className="mt-6 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold">Plan table</h2>
-        {gearActive && !readOnly ? (
-          <span data-testid="gear-save-status" className="text-xs text-blue-100/60" aria-live="polite">
-            {SELECTION_STATUS_TEXT[selectionStatus]}
-          </span>
-        ) : null}
+        <div className="flex items-center gap-3">
+          {gearActive && !readOnly ? (
+            <span data-testid="gear-save-status" className="text-xs text-blue-100/60" aria-live="polite">
+              {SELECTION_STATUS_TEXT[selectionStatus]}
+            </span>
+          ) : null}
+          {readOnly && plan ? (
+            <>
+              {exportError ? (
+                <span data-testid="export-error" className="text-xs text-red-300" aria-live="polite">
+                  Export failed — please try again.
+                </span>
+              ) : null}
+              <button
+                type="button"
+                data-testid="export-excel"
+                onClick={() => void handleExport()}
+                disabled={exporting}
+                className="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-white/20 disabled:opacity-50"
+              >
+                {exporting ? "Exporting…" : "Export to Excel"}
+              </button>
+            </>
+          ) : null}
+        </div>
       </div>
       <div className="overflow-x-auto">
         <table data-testid="plan-table" className="w-full border-collapse text-left text-sm">
