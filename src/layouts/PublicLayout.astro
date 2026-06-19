@@ -1,0 +1,31 @@
+---
+// Public marketing shell — distinct from the app shell. Sets the "Summit at first
+// light" brand background, loads the brand fonts, and frames pages with the shared
+// nav + footer. Fonts are scoped here (the wrapper sets font-body), so the
+// authenticated app's typography is untouched.
+import Layout from "@/layouts/Layout.astro";
+import PublicNav from "@/components/public/PublicNav.astro";
+import Footer from "@/components/public/Footer.astro";
+
+import "@fontsource/space-grotesk/500.css";
+import "@fontsource/space-grotesk/700.css";
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/space-mono/400.css";
+import "@fontsource/space-mono/700.css";
+
+interface Props {
+  title?: string;
+}
+const { title = "Ultra Planner" } = Astro.props;
+---
+
+<Layout title={title}>
+  <div class="font-body bg-summit-night text-haze flex min-h-screen flex-col">
+    <PublicNav />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </div>
+</Layout>

@@ -1,0 +1,44 @@
+---
+// Shared public top nav. Auth-aware via Astro.locals.user (same source as Topbar):
+// shows Sign in when logged-out, Dashboard + Sign out when logged-in.
+const { user } = Astro.locals;
+---
+
+<header class="bg-summit-night/80 border-b border-white/10 backdrop-blur-xl">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-8">
+    <a
+      href="/"
+      class="font-display text-snowcap focus-visible:ring-trail-violet text-lg font-bold tracking-tight transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2"
+    >
+      Ultra Planner
+    </a>
+    <div class="flex items-center gap-5 text-sm">
+      <a href="/about" class="text-haze hover:text-snowcap transition-colors">About</a>
+      <a href="/contact" class="text-haze hover:text-snowcap transition-colors">Contact</a>
+      {
+        user ? (
+          <>
+            <a href="/dashboard" class="text-trail-violet hover:text-snowcap transition-colors">
+              Dashboard
+            </a>
+            <form method="POST" action="/api/auth/signout">
+              <button
+                type="submit"
+                class="text-haze hover:text-snowcap focus-visible:ring-trail-violet transition-colors focus:outline-none focus-visible:ring-2"
+              >
+                Sign out
+              </button>
+            </form>
+          </>
+        ) : (
+          <a
+            href="/auth/signin"
+            class="bg-trail-violet/15 text-snowcap hover:bg-trail-violet/25 focus-visible:ring-trail-violet rounded-lg border border-white/20 px-3 py-1.5 transition-colors focus:outline-none focus-visible:ring-2"
+          >
+            Sign in
+          </a>
+        )
+      }
+    </div>
+  </nav>
+</header>
