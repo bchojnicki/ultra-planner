@@ -3,8 +3,8 @@ change_id: account-deletion
 title: Self-service account deletion (email-confirmed, cascades all user data)
 created: 2026-06-19
 updated: 2026-06-19
-status: impl_reviewed
-archived_at: null
+status: archived
+archived_at: 2026-06-19T13:53:16Z
 ---
 
 ## Notes
