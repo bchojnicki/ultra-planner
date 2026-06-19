@@ -1,10 +1,10 @@
 ---
 project: "Ultra Planner"
-version: 1
+version: 2
 status: draft
 created: 2026-06-01
-updated: 2026-06-18
-prd_version: 4
+updated: 2026-06-19
+prd_version: 5
 main_goal: speed
 top_blocker: capacity
 ---
@@ -36,6 +36,16 @@ Building an ultra-marathon race plan is a workflow problem: every serious runner
 | S-04 | plan-dashboard-view         | see saved plans and open one in read-only view                                               | S-02          | US-07, FR-009, US-03                                | done     |
 | S-05 | delete-saved-plan           | permanently delete a saved plan with confirmation                                            | S-04          | US-09, FR-011                                       | done     |
 | S-06 | email-otp-auth              | sign up / sign in with an emailed one-time code and reach a gated app                        | —             | US-02, US-03, FR-001, FR-002                        | done     |
+| S-07 | gpx-import                  | import a GPX route to auto-fill distance/elevation and pre-create aid stations from waypoints | S-01          | (was §Non-Goal; pulled forward to v2)               | done     |
+| S-08 | edit-aid-stations           | edit any field of an existing aid station inline; re-sort + recompute segments                | S-01          | US-10, FR-007 (PRD v5)                              | done     |
+| S-09 | tooltips                    | see on-hover/focus field-help on the non-obvious plan-form inputs                            | S-02          | (UX enhancement; no PRD change)                     | done     |
+| S-10 | public-pages-and-brand      | land on a branded public welcome / about / contact site; sign-in routes to the dashboard     | S-06          | (marketing/UX; no PRD change)                       | done     |
+| S-11 | account-deletion            | permanently delete their account + all data, confirmed by an emailed link                    | S-06          | PRD FR TBD (right-to-erasure)                       | todo     |
+| S-12 | excel-export                | export a plan to an Excel file                                                               | S-02          | (was §Non-Goal; un-parking)                         | todo     |
+| S-13 | collapsible-plan-sections   | collapse / expand the plan-builder sections to cut scrolling                                 | S-01          | (UX enhancement)                                   | todo     |
+| S-14 | gear-total-summary          | see race-wide gear totals (units per item) in the plan-table total row                       | S-03          | (UX enhancement)                                   | todo     |
+
+> **Note (2026-06-19):** S-01–S-06 were the original MVP roadmap; S-07–S-14 were added in a `version: 2` reconciliation after several post-MVP changes shipped (some pulled forward from §Non-Goals / §Parked, some net-new). S-07–S-10 are already shipped + archived; S-11–S-14 are the current backlog. Post-MVP bug fixes are listed under `## Done → Maintenance / fixes`.
 
 ## Streams
 
@@ -150,6 +160,72 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Risk:** The present scaffold is password-based, so this slice **replaces** it with the OTP flow (`signInWithOtp` → emailed 6-digit code → `verifyOtp`) rather than verifying it. Sign-up and sign-in unify into one flow (no separate signup form, no password-reset, no `confirm-email` step). The main thing to validate end-to-end is Supabase email OTP + SSR cookie handling on Cloudflare Workers (see infrastructure.md risk register).
 - **Status:** done
 
+### S-07: GPX import
+
+- **Outcome:** Runner can upload a GPX route to auto-fill total distance and elevation gain/loss, and pre-create an aid station from every waypoint in the file (manual entry still available when there are no waypoints).
+- **Change ID:** gpx-import
+- **PRD refs:** was §Non-Goals ("GPX parsing is the primary MVP-complexity driver, deferred to v2+") — pulled forward and shipped.
+- **Prerequisites:** S-01
+- **Status:** done
+
+### S-08: Edit an existing aid station
+
+- **Outcome:** Runner can edit any field of a saved aid station inline (cumulative distance/elevation, time, facilities, crew notes), re-sorted if distance changed and with affected segments recomputed.
+- **Change ID:** edit-aid-stations
+- **PRD refs:** US-10, FR-007 (added PRD v5, 2026-06-18)
+- **Prerequisites:** S-01
+- **Note:** Motivated by S-07 — waypoint import creates bare stations (distance/elevation/name only), so edit is the path to enrich them.
+- **Status:** done
+
+### S-09: Field-help tooltips
+
+- **Outcome:** Runner sees a small "?" affordance on the non-obvious plan-form inputs that, on hover / keyboard-focus / touch, explains the field (cumulative vs total distance, hourly targets, carb ratio, etc.).
+- **Change ID:** tooltips
+- **PRD refs:** none — UX enhancement, not a scope/non-goal item.
+- **Prerequisites:** S-02
+- **Status:** done
+
+### S-10: Public pages + brand
+
+- **Outcome:** A visitor lands on a custom branded welcome page (mountain-outline "Summit at first light" direction) with public About + Contact pages; sign-in routes to the dashboard, and a shared auth-aware nav spans public and app pages.
+- **Change ID:** public-pages-and-brand
+- **PRD refs:** none — marketing/UX.
+- **Prerequisites:** S-06
+- **Status:** done
+
+### S-11: Account deletion
+
+- **Outcome:** A logged-in runner can permanently delete their account from a Settings menu; the destructive action is confirmed by an emailed link, and deletion cascades to all their plans, aid stations, gear, and selections.
+- **Change ID:** account-deletion
+- **PRD refs:** TBD — likely a new FR (account lifecycle / right-to-erasure); resolve during planning.
+- **Prerequisites:** S-06
+- **Note:** DB already cascades from `auth.users` (ON DELETE CASCADE). Open unknowns: admin/service-role delete on Workers, and the email-link mechanism. Research first.
+- **Status:** todo
+
+### S-12: Excel export
+
+- **Outcome:** Runner can export a plan (the generated segment-by-segment table) to an Excel file.
+- **Change ID:** excel-export
+- **PRD refs:** was §Non-Goals ("XLS / Excel export") — un-parking; PRD update needed.
+- **Prerequisites:** S-02
+- **Status:** todo
+
+### S-13: Collapsible plan-builder sections
+
+- **Outcome:** Runner can collapse / expand the Race parameters, Aid stations, and Gear sections of the plan builder to cut scrolling on long plans.
+- **Change ID:** collapsible-plan-sections
+- **PRD refs:** none — UX enhancement.
+- **Prerequisites:** S-01
+- **Status:** todo
+
+### S-14: Race-wide gear totals
+
+- **Outcome:** The plan-table total row shows how many of each gear item is needed for the whole race (e.g. "12× gel, 4× drink, 6× salt cap").
+- **Change ID:** gear-total-summary
+- **PRD refs:** none — UX enhancement.
+- **Prerequisites:** S-03
+- **Status:** todo
+
 ## Backlog Handoff
 
 | Roadmap ID | Change ID                   | Suggested issue title                                    | Ready for `/10x-plan` | Notes                                   |
@@ -164,19 +240,21 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Open Roadmap Questions
 
-None open. Prior questions resolved:
+**Pending (2026-06-19):** the **PRD is not yet reconciled** with shipped reality — GPX import (S-07) and public pages (S-10) lack FRs, the §Non-Goals entries for GPX import and XLS/Excel export are stale, and account-deletion (S-11) needs a right-to-erasure FR. Roadmap was reconciled in `version: 2`; PRD update is the next doc task.
+
+Prior questions resolved:
 
 1. ~~Auth method: email + password vs. passwordless.~~ **Resolved (PRD v4, 2026-06-17)** — **passwordless email OTP** (6-digit code via `signInWithOtp`/`verifyOtp`). This reverses the v3 email+password reconciliation (which had only matched the bootstrapped scaffold) and restores the original `shape-notes.md` passwordless intent, choosing an OTP code over a magic link for cross-device / email-client reliability. S-06 replaces the password scaffold.
 2. ~~"Total expected finish time" as a race parameter.~~ **Resolved** — added to FR-003's parameter list, consistent with Business Logic.
 
 ## Parked
 
-- **Full editing of saved-plan parameters** — Why parked: PRD Secondary Success Criterion and US-07 scope the MVP to load + read-only view; editing is explicitly v2.
+- **Full editing of saved-plan parameters** — Partially shipped: inline **aid-station** editing landed as **S-08** (US-10/FR-007). Full race-parameter editing of a saved plan is still v2.
 - **Rename a saved plan (FR-010)** — Why parked: PRD demotes FR-010 to nice-to-have (v2), bundled with the full edit flow.
 - **Undo for plan deletion** — Why parked: PRD FR-011 ships hard delete with confirmation; undo is v2.
-- **GPX import** — Why parked: PRD §Non-Goals — manual entry only; GPX parsing is the primary MVP-complexity driver, deferred to v2+.
+- ~~**GPX import**~~ — **Shipped** as **S-07** (`gpx-import`, archived 2026-06-18); pulled forward from §Non-Goals.
 - **Elevation-adjusted time model / uphill-downhill profiling** — Why parked: `shape-notes.md` §Forward (v2 technical roadmap); MVP uses Naismith's rule with a fixed k only.
-- **XLS / Excel export** — Why parked: PRD §Non-Goals — the app is the plan; format conversion adds surface area without improving planning quality.
+- **XLS / Excel export** — **Un-parking**: now planned as **S-12** (`excel-export`). PRD §Non-Goals entry needs updating when it lands.
 - **Shared / collaborative plans** — Why parked: PRD §Non-Goals — primary persona is the individual runner; collaboration is a deferred secondary-persona concern.
 - **Offline mode** — Why parked: PRD §Non-Goals — auto-save + multi-device access require a backend; offline adds a third storage layer not worth it for a pre-race planning tool.
 
@@ -191,3 +269,14 @@ None open. Prior questions resolved:
 - **S-04: Runner can see all their saved plans on a dashboard and open one in read-only view; a runner with no plans sees an empty-state prompt to create their first plan.** — Archived 2026-06-16 → `context/archive/2026-06-16-plan-dashboard-view/`. Lesson: —.
 - **S-05: Runner can permanently delete a saved plan from the dashboard after explicitly confirming in a dialog.** — Archived 2026-06-17 → `context/archive/2026-06-16-delete-saved-plan/`. Lesson: —.
 - **S-06: Runner can sign up / sign in with a 6-digit one-time code emailed to them, sign out, and is redirected to the sign-in screen when reaching a gated route unauthenticated. No password is stored.** — Archived 2026-06-18 → `context/archive/2026-06-17-email-otp-auth/`. Lesson: —.
+- **S-07: Runner can import a GPX route to auto-fill total distance/elevation and pre-create aid stations from its waypoints.** — Archived 2026-06-18 → `context/archive/2026-06-17-gpx-import/`. Lesson: —.
+- **S-08: Runner can edit any field of an existing aid station inline, with re-sort on distance change and segment recompute.** — Archived 2026-06-18 → `context/archive/2026-06-18-edit-aid-stations/`. Lesson: —.
+- **S-09: Runner sees on-hover/focus field-help on the non-obvious plan-form inputs.** — Archived 2026-06-18 → `context/archive/2026-06-18-tooltips/`. Lesson: —.
+- **S-10: Visitor lands on a branded public welcome/about/contact site; sign-in routes to the dashboard; a shared nav spans public + app pages.** — Archived 2026-06-19 → `context/archive/2026-06-19-public-pages-and-brand/`. Lesson: —.
+
+### Maintenance / fixes (post-MVP)
+
+Bug fixes, not user-visible feature slices (see archive for detail):
+
+- **Aid-station distance/elevation shown unrounded in the editor + view list** — Archived 2026-06-19 → `context/archive/2026-06-19-fix-aid-station-rounding/`.
+- **Gear edit panel rendered under the last segment instead of the edited one** — Archived 2026-06-19 → `context/archive/2026-06-19-fix-gear-panel-position/`.
