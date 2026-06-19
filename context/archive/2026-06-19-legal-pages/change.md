@@ -1,10 +1,10 @@
 ---
 change_id: legal-pages
 title: Add Privacy Policy (RODO) and Terms of Use pages
-status: impl_reviewed
+status: archived
 created: 2026-06-19
 updated: 2026-06-19
-archived_at: null
+archived_at: 2026-06-19T19:36:22Z
 ---
 
 ## Notes
