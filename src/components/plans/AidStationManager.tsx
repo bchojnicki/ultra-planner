@@ -281,9 +281,7 @@ export default function AidStationManager({ planId, initialStations, totalDistan
   }
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl">
-      <h2 className="mb-4 text-lg font-semibold">Aid stations</h2>
-
+    <>
       <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <div className="mb-1 flex items-center">
@@ -528,6 +526,6 @@ export default function AidStationManager({ planId, initialStations, totalDistan
           })
         )}
       </ul>
-    </section>
+    </>
   );
 }
