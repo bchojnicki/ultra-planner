@@ -65,20 +65,21 @@ function sortStations(list: AidStation[]): AidStation[] {
   return [...list].sort((a, b) => a.cumulative_distance_km - b.cumulative_distance_km);
 }
 
-// Build an AidStationUpdate-shaped patch from a draft. Numeric fields are included
-// only when well-formed; flags always; notes normalized ("" → null).
-function buildPatch(draft: EditDraft) {
+// Build an AidStationUpdate-shaped patch from a draft. A numeric field is included
+// only when the user actually edited it (it's in `touched`) AND it's well-formed —
+// so a rounded seed never overwrites the stored full precision of an untouched
+// field. Flags always; notes normalized ("" → null).
+function buildPatch(draft: EditDraft, touched: Set<keyof EditDraft>) {
+  const inc = (k: keyof EditDraft) => touched.has(k) && num(draft[k] as string) !== undefined;
   return {
-    ...(num(draft.cumulative_distance_km) !== undefined
-      ? { cumulative_distance_km: Number(draft.cumulative_distance_km) }
-      : {}),
-    ...(num(draft.cumulative_elevation_gain_m) !== undefined
+    ...(inc("cumulative_distance_km") ? { cumulative_distance_km: Number(draft.cumulative_distance_km) } : {}),
+    ...(inc("cumulative_elevation_gain_m")
       ? { cumulative_elevation_gain_m: Number(draft.cumulative_elevation_gain_m) }
       : {}),
-    ...(num(draft.cumulative_elevation_loss_m) !== undefined
+    ...(inc("cumulative_elevation_loss_m")
       ? { cumulative_elevation_loss_m: Number(draft.cumulative_elevation_loss_m) }
       : {}),
-    ...(num(draft.time_spent_min) !== undefined ? { time_spent_min: Number(draft.time_spent_min) } : {}),
+    ...(inc("time_spent_min") ? { time_spent_min: Number(draft.time_spent_min) } : {}),
     ...draft.flags,
     notes: draft.notes.trim() === "" ? null : draft.notes.trim(),
   };
@@ -105,6 +106,12 @@ export default function AidStationManager({ planId, initialStations, totalDistan
   // advanced on each successful save). Used to revert the row if the editor
   // closes with an invalid distance, so a cancelled optimistic edit can't linger.
   const editSnapshot = useRef<AidStation | null>(null);
+  // Which numeric draft fields the user actually edited this session, plus whether
+  // any change happened at all. These drive a change-only PATCH so the rounded seed
+  // never quantizes an untouched field's stored precision, and so an open/close with
+  // no edits writes nothing.
+  const editTouched = useRef<Set<keyof EditDraft>>(new Set());
+  const editDirty = useRef(false);
 
   // Cancel any pending debounced PATCH if the island tears down.
   useEffect(() => {
@@ -177,12 +184,14 @@ export default function AidStationManager({ planId, initialStations, totalDistan
   function beginEdit(s: AidStation) {
     setEditingId(s.id);
     editSnapshot.current = s;
+    editTouched.current = new Set();
+    editDirty.current = false;
     setEditError(null);
     setEditStatus("idle");
     setDraft({
-      cumulative_distance_km: String(s.cumulative_distance_km),
-      cumulative_elevation_gain_m: String(s.cumulative_elevation_gain_m),
-      cumulative_elevation_loss_m: String(s.cumulative_elevation_loss_m),
+      cumulative_distance_km: fmtKm(s.cumulative_distance_km),
+      cumulative_elevation_gain_m: fmtM(s.cumulative_elevation_gain_m),
+      cumulative_elevation_loss_m: fmtM(s.cumulative_elevation_loss_m),
       time_spent_min: String(s.time_spent_min),
       notes: s.notes ?? "",
       flags: {
@@ -217,6 +226,12 @@ export default function AidStationManager({ planId, initialStations, totalDistan
   // patch optimistically (so the table tracks live, in place — no re-sort yet) and
   // debounce the save.
   function onDraftChange(next: EditDraft) {
+    if (draft) {
+      for (const { key } of EDIT_NUM_FIELDS) {
+        if (next[key] !== draft[key]) editTouched.current.add(key);
+      }
+    }
+    editDirty.current = true;
     setDraft(next);
     if (!editingId) return;
     const distErr = distanceError(editingId, next.cumulative_distance_km);
@@ -226,7 +241,7 @@ export default function AidStationManager({ planId, initialStations, totalDistan
       setEditStatus("idle");
       return;
     }
-    const patch = buildPatch(next);
+    const patch = buildPatch(next, editTouched.current);
     const optimistic = stations.map((s) => (s.id === editingId ? { ...s, ...patch } : s));
     setStations(optimistic);
     onStationsChange?.(optimistic);
@@ -250,13 +265,15 @@ export default function AidStationManager({ planId, initialStations, totalDistan
         if (snap) base = stations.map((s) => (s.id === editingId ? snap : s));
       } else {
         if (editTimer.current) clearTimeout(editTimer.current);
-        void savePatch(editingId, buildPatch(draft));
+        if (editDirty.current) void savePatch(editingId, buildPatch(draft, editTouched.current));
       }
     }
     const sorted = sortStations(base);
     setStations(sorted);
     onStationsChange?.(sorted);
     editSnapshot.current = null;
+    editTouched.current = new Set();
+    editDirty.current = false;
     setEditingId(null);
     setDraft(null);
     setEditError(null);

@@ -183,29 +183,29 @@ None — no data or schema changes. Stored values are untouched; rounding is dis
 
 #### Automated
 
-- [x] 1.1 Type checking passes (`npx astro check`)
-- [x] 1.2 Linting passes (`npm run lint`)
-- [x] 1.3 Build succeeds (`npm run build`)
-- [x] 1.4 Existing Playwright suite passes (`npx playwright test`)
+- [x] 1.1 Type checking passes (`npx astro check`) — 07740d0
+- [x] 1.2 Linting passes (`npm run lint`) — 07740d0
+- [x] 1.3 Build succeeds (`npm run build`) — 07740d0
+- [x] 1.4 Existing Playwright suite passes (`npx playwright test`) — 07740d0
 
 #### Manual
 
-- [x] 1.5 View-plan mode shows rounded station distance/elevation (not a long float)
-- [x] 1.6 Plan table output visually identical to before
-- [x] 1.7 Editor collapsed station line unchanged
+- [x] 1.5 View-plan mode shows rounded station distance/elevation (not a long float) — 07740d0
+- [x] 1.6 Plan table output visually identical to before — 07740d0
+- [x] 1.7 Editor collapsed station line unchanged — 07740d0
 
 ### Phase 2: Edit-panel input — rounded seed + change-only PATCH
 
 #### Automated
 
-- [ ] 2.1 Type checking passes (`npx astro check`)
-- [ ] 2.2 Linting passes (`npm run lint`)
-- [ ] 2.3 Build succeeds (`npm run build`)
-- [ ] 2.4 Existing Playwright suite passes (`npx playwright test`)
+- [x] 2.1 Type checking passes (`npx astro check`)
+- [x] 2.2 Linting passes (`npm run lint`)
+- [x] 2.3 Build succeeds (`npm run build`)
+- [x] 2.4 Existing Playwright suite passes (`npx playwright test`)
 
 #### Manual
 
-- [ ] 2.5 Edit panel inputs show rounded distance/elevation
-- [ ] 2.6 Editing only a flag/notes and closing does NOT change stored distance/elevation
-- [ ] 2.7 Editing a distance/elevation value still saves correctly and re-sorts
-- [ ] 2.8 Distance validation + autosave/optimistic update unaffected
+- [x] 2.5 Edit panel inputs show rounded distance/elevation
+- [x] 2.6 Editing only a flag/notes and closing does NOT change stored distance/elevation
+- [x] 2.7 Editing a distance/elevation value still saves correctly and re-sorts
+- [x] 2.8 Distance validation + autosave/optimistic update unaffected
