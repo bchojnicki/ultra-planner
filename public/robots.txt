@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /auth
+Disallow: /account
+Disallow: /dashboard
+Disallow: /plans
+
+Sitemap: https://ultra-planner.app/sitemap-index.xml

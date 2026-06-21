@@ -9,7 +9,18 @@ import cloudflare from "@astrojs/cloudflare";
 // https://astro.build/config
 export default defineConfig({
   output: "server",
-  integrations: [react(), sitemap()],
+  site: "https://ultra-planner.app",
+  integrations: [
+    react(),
+    // Only index the public marketing/legal pages. Auth, account, dashboard, and
+    // per-plan routes are private or per-user and must stay out of search results.
+    sitemap({
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        return !["/auth", "/account", "/dashboard", "/plans"].some((prefix) => path.startsWith(prefix));
+      },
+    }),
+  ],
   vite: {
     plugins: [tailwindcss()],
   },
