@@ -126,10 +126,12 @@ function countTestid(html: string, testid: string): number {
 
 describe("PlanTable explanatory + zero-station states", () => {
   it("R1 renders the missing_params explanatory state, not the table", () => {
+    // Sentinel message — the render branch echoes result.message regardless of copy,
+    // so we assert that pass-through rather than duplicating plan-table.ts's wording.
     const errResult: PlanTableResult = {
       ok: false,
       error: "missing_params",
-      message: "Enter total distance, elevation gain, and expected finish time to generate your plan.",
+      message: "test-only: missing-params explanatory message",
     };
     const html = renderToStaticMarkup(createElement(PlanTable, { result: errResult }));
     expect(html).toContain('data-testid="plan-table-error"');
@@ -141,8 +143,7 @@ describe("PlanTable explanatory + zero-station states", () => {
     const errResult: PlanTableResult = {
       ok: false,
       error: "rest_exceeds_budget",
-      message:
-        "Planned rest time meets or exceeds the expected finish time. Reduce time at aid stations or increase the expected finish time.",
+      message: "test-only: rest-exceeds-budget explanatory message",
     };
     const html = renderToStaticMarkup(createElement(PlanTable, { result: errResult }));
     expect(html).toContain('data-testid="plan-table-error"');

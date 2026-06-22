@@ -175,18 +175,21 @@ describe("computePlanTable — edge cases", () => {
   });
 
   it("U3 a station beyond the total distance is dropped; the rest of the table is unchanged", () => {
+    // Reuse the same surviving-station object in both runs so endStation (which
+    // carries a random id) compares equal under the full deep-equality check below.
+    const live = makeStation({ id: "as-live", cumulative_distance_km: 40 });
     const withBeyond = computePlanTable(makePlan(), [
-      makeStation({ cumulative_distance_km: 40 }),
-      makeStation({ cumulative_distance_km: 150 }),
+      live,
+      makeStation({ id: "as-beyond", cumulative_distance_km: 150 }),
     ]);
-    const without = computePlanTable(makePlan(), [makeStation({ cumulative_distance_km: 40 })]);
+    const without = computePlanTable(makePlan(), [live]);
     expect(withBeyond.ok && without.ok).toBe(true);
     if (!withBeyond.ok || !without.ok) return;
     expect(withBeyond.rows.map((row) => row.label)).toEqual(["Start → AS1", "AS1 → Finish"]);
     expect(withBeyond.rows.map((row) => row.segment_distance_km)).toEqual([40, 60]);
-    expect(withBeyond.rows.map((row) => row.segment_distance_km)).toEqual(
-      without.rows.map((row) => row.segment_distance_km),
-    );
+    // The beyond-finish station leaves the table fully identical, cell for cell.
+    expect(withBeyond.rows).toEqual(without.rows);
+    expect(withBeyond.totals).toEqual(without.totals);
   });
 
   it("U4 non-monotonic cumulative elevation gain → segment gain clamps to 0, never negative", () => {
