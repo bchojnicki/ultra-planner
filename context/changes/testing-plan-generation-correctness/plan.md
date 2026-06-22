@@ -289,13 +289,13 @@ None — no schema or data change.
 
 #### Automated
 
-- [x] 2.1 New render tests pass: `npx vitest run tests/unit/plan-table-render.test.ts`
-- [x] 2.2 Full unit suite passes: `npx vitest run tests/unit`
-- [x] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 New render tests pass: `npx vitest run tests/unit/plan-table-render.test.ts` — 2706f14
+- [x] 2.2 Full unit suite passes: `npx vitest run tests/unit` — 2706f14
+- [x] 2.3 Lint passes: `npm run lint` — 2706f14
 
 #### Manual
 
-- [x] 2.4 R1 asserts presence of error testid and absence of table testid
-- [x] 2.5 R3 asserts exactly one plan-row (valid one-row table)
-- [x] 2.6 §6.1 render note added; three deferred items recorded
-- [x] 2.7 No new dependency added to `package.json`
+- [x] 2.4 R1 asserts presence of error testid and absence of table testid — 2706f14
+- [x] 2.5 R3 asserts exactly one plan-row (valid one-row table) — 2706f14
+- [x] 2.6 §6.1 render note added; three deferred items recorded — 2706f14
+- [x] 2.7 No new dependency added to `package.json` — 2706f14
