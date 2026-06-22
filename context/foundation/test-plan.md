@@ -179,6 +179,16 @@ the calc's *defensive* behavior (sort, drop, clamp-to-0) **as intended** — a
 later change to those branches must consciously update the test. Reference:
 the `boundary cases` block (U1–U6) in `tests/unit/plan-table.test.ts`.
 
+**Render-state pattern (Phase 1, Risk #1).** To assert a React component's
+*output* with no jsdom/RTL/new deps, render it with `renderToStaticMarkup`
+(from `react-dom/server`) in the `node` env and assert on the HTML string:
+`expect(html).toContain('data-testid="…"')` for presence and
+`.not.toContain(…)` for absence (e.g. the `ok:false` explanatory state shows
+`plan-table-error` and **not** `plan-table`). Count repeated rows by splitting
+on the testid. Pass only the props the branch needs — optional props can be
+omitted. Reference: the `explanatory + zero-station states` block (R1–R3) in
+`tests/unit/plan-table-render.test.ts`.
+
 ### 6.2 Adding an integration test
 
 - **Location**: `tests/integration/<feature>.test.ts` (`node` env, runs

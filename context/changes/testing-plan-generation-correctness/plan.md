@@ -274,28 +274,28 @@ None — no schema or data change.
 
 #### Automated
 
-- [x] 1.1 New calc tests pass: `npx vitest run tests/unit/plan-table.test.ts`
-- [x] 1.2 Full unit suite passes: `npx vitest run tests/unit`
-- [x] 1.3 Lint passes: `npm run lint`
-- [x] 1.4 Type-check passes
+- [x] 1.1 New calc tests pass: `npx vitest run tests/unit/plan-table.test.ts` — 3cca68f
+- [x] 1.2 Full unit suite passes: `npx vitest run tests/unit` — 3cca68f
+- [x] 1.3 Lint passes: `npm run lint` — 3cca68f
+- [x] 1.4 Type-check passes — 3cca68f
 
 #### Manual
 
-- [x] 1.5 Each new case carries a hand-derived oracle comment; no expected value copied from calc output
-- [x] 1.6 U4 and U6 written as "lock current behavior", not bug reports
-- [x] 1.7 §6.1 cookbook calc-boundary entry updated
+- [x] 1.5 Each new case carries a hand-derived oracle comment; no expected value copied from calc output — 3cca68f
+- [x] 1.6 U4 and U6 written as "lock current behavior", not bug reports — 3cca68f
+- [x] 1.7 §6.1 cookbook calc-boundary entry updated — 3cca68f
 
 ### Phase 2: Render-state tests (R1–R3) + deferred items
 
 #### Automated
 
-- [ ] 2.1 New render tests pass: `npx vitest run tests/unit/plan-table-render.test.ts`
-- [ ] 2.2 Full unit suite passes: `npx vitest run tests/unit`
-- [ ] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 New render tests pass: `npx vitest run tests/unit/plan-table-render.test.ts`
+- [x] 2.2 Full unit suite passes: `npx vitest run tests/unit`
+- [x] 2.3 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 R1 asserts presence of error testid and absence of table testid
-- [ ] 2.5 R3 asserts exactly one plan-row (valid one-row table)
-- [ ] 2.6 §6.1 render note added; three deferred items recorded
-- [ ] 2.7 No new dependency added to `package.json`
+- [x] 2.4 R1 asserts presence of error testid and absence of table testid
+- [x] 2.5 R3 asserts exactly one plan-row (valid one-row table)
+- [x] 2.6 §6.1 render note added; three deferred items recorded
+- [x] 2.7 No new dependency added to `package.json`

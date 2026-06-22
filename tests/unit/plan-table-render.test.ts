@@ -115,3 +115,53 @@ describe("PlanTable footer gear total", () => {
     expect(html).not.toContain('data-testid="gear-toggle"');
   });
 });
+
+// --- Explanatory + zero-station render states (Risk #1, rollout Phase 1). The
+// component echoes result.message for ok:false (PRD US-01 AC) and renders the
+// zero-station valid plan as a one-row table — proving it is not empty/broken. ---
+
+function countTestid(html: string, testid: string): number {
+  return html.split(`data-testid="${testid}"`).length - 1;
+}
+
+describe("PlanTable explanatory + zero-station states", () => {
+  it("R1 renders the missing_params explanatory state, not the table", () => {
+    const errResult: PlanTableResult = {
+      ok: false,
+      error: "missing_params",
+      message: "Enter total distance, elevation gain, and expected finish time to generate your plan.",
+    };
+    const html = renderToStaticMarkup(createElement(PlanTable, { result: errResult }));
+    expect(html).toContain('data-testid="plan-table-error"');
+    expect(html).toContain(errResult.message);
+    expect(html).not.toContain('data-testid="plan-table"');
+  });
+
+  it("R2 renders the rest_exceeds_budget explanatory state", () => {
+    const errResult: PlanTableResult = {
+      ok: false,
+      error: "rest_exceeds_budget",
+      message:
+        "Planned rest time meets or exceeds the expected finish time. Reduce time at aid stations or increase the expected finish time.",
+    };
+    const html = renderToStaticMarkup(createElement(PlanTable, { result: errResult }));
+    expect(html).toContain('data-testid="plan-table-error"');
+    expect(html).toContain(errResult.message);
+    expect(html).not.toContain('data-testid="plan-table"');
+  });
+
+  it("R3 zero-station valid plan renders exactly one Start → Finish row plus totals", () => {
+    const base = result();
+    if (!base.ok) throw new Error("expected ok");
+    const zeroStation: PlanTableResult = {
+      ok: true,
+      rows: [row("Start → Finish")],
+      totals: base.totals,
+    };
+    const html = renderToStaticMarkup(createElement(PlanTable, { result: zeroStation }));
+    expect(html).toContain('data-testid="plan-table"');
+    expect(countTestid(html, "plan-row")).toBe(1);
+    expect(html).toContain("Start → Finish");
+    expect(html).toContain('data-testid="plan-totals"');
+  });
+});
