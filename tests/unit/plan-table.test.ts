@@ -143,6 +143,105 @@ describe("computePlanTable — edge cases", () => {
     expect(r.rows[0].label).toBe("Start → Finish");
     expect(r.totals.rest_minutes).toBe(0);
   });
+
+  // --- Boundary cases (Risk #1, rollout Phase 1). Oracles hand-derived from the
+  // PRD Business Logic; U4/U6 lock the calc's current defensive behavior as intended. ---
+
+  it("U1 out-of-order stations are sorted by cumulative distance; labels AS1..ASn ascending (US-04)", () => {
+    // Supplied shuffled 60/30/80 → sorted Start,30,60,80,Finish → legs 30/30/20/20.
+    const r = computePlanTable(makePlan(), [
+      makeStation({ cumulative_distance_km: 60, cumulative_elevation_gain_m: 1200 }),
+      makeStation({ cumulative_distance_km: 30, cumulative_elevation_gain_m: 600 }),
+      makeStation({ cumulative_distance_km: 80, cumulative_elevation_gain_m: 1600 }),
+    ]);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.rows.map((row) => row.label)).toEqual(["Start → AS1", "AS1 → AS2", "AS2 → AS3", "AS3 → Finish"]);
+    expect(r.rows.map((row) => row.segment_distance_km)).toEqual([30, 30, 20, 20]);
+  });
+
+  it("U2 two stations at the same cumulative distance → zero-length leg skipped, no phantom row", () => {
+    // Both at 40 km (rest 10 + 5). Legs: Start→AS1 = 40, AS1→AS2 = 0 (skipped), AS2→Finish = 60.
+    const r = computePlanTable(makePlan(), [
+      makeStation({ cumulative_distance_km: 40, time_spent_min: 10 }),
+      makeStation({ cumulative_distance_km: 40, time_spent_min: 5 }),
+    ]);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.rows.map((row) => row.label)).toEqual(["Start → AS1", "AS2 → Finish"]);
+    expect(r.rows.map((row) => row.segment_distance_km)).toEqual([40, 60]);
+    expect(r.rows.every((row) => row.segment_distance_km > 0)).toBe(true);
+    expect(r.totals.rest_minutes).toBe(15); // both stations still count toward rest
+  });
+
+  it("U3 a station beyond the total distance is dropped; the rest of the table is unchanged", () => {
+    const withBeyond = computePlanTable(makePlan(), [
+      makeStation({ cumulative_distance_km: 40 }),
+      makeStation({ cumulative_distance_km: 150 }),
+    ]);
+    const without = computePlanTable(makePlan(), [makeStation({ cumulative_distance_km: 40 })]);
+    expect(withBeyond.ok && without.ok).toBe(true);
+    if (!withBeyond.ok || !without.ok) return;
+    expect(withBeyond.rows.map((row) => row.label)).toEqual(["Start → AS1", "AS1 → Finish"]);
+    expect(withBeyond.rows.map((row) => row.segment_distance_km)).toEqual([40, 60]);
+    expect(withBeyond.rows.map((row) => row.segment_distance_km)).toEqual(
+      without.rows.map((row) => row.segment_distance_km),
+    );
+  });
+
+  it("U4 non-monotonic cumulative elevation gain → segment gain clamps to 0, never negative", () => {
+    // Start 0, AS1@30 = 1500, AS2@60 = 900 (decreases), Finish@100 = 2000.
+    // Segment gains: 1500, max(0, 900−1500)=0, max(0, 2000−900)=1100.
+    const r = computePlanTable(makePlan(), [
+      makeStation({ cumulative_distance_km: 30, cumulative_elevation_gain_m: 1500 }),
+      makeStation({ cumulative_distance_km: 60, cumulative_elevation_gain_m: 900 }),
+    ]);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.rows).toHaveLength(3);
+    expect(r.rows[1].segment_elevation_gain_m).toBe(0);
+    expect(r.rows.every((row) => row.segment_elevation_gain_m >= 0)).toBe(true);
+    // The clamped leg still has positive distance, so its weight (and moving time) stays positive.
+    expect(r.rows[1].moving_minutes).toBeGreaterThan(0);
+  });
+
+  it("U5 an invalid start_time → missing_params error", () => {
+    const r = computePlanTable(makePlan({ start_time: "not-a-date" }), []);
+    expect(r.ok).toBe(false);
+    if (r.ok) return;
+    expect(r.error).toBe("missing_params");
+  });
+
+  it("U6 an Infinity cumulative distance is dropped; no output cell is NaN", () => {
+    const r = computePlanTable(makePlan(), [
+      makeStation({ cumulative_distance_km: 40 }),
+      makeStation({ cumulative_distance_km: Number.POSITIVE_INFINITY }),
+    ]);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.rows).toHaveLength(2); // Infinity station dropped by the `< finish` filter
+    const numericCells = r.rows.flatMap((row) => [
+      row.segment_distance_km,
+      row.segment_elevation_gain_m,
+      row.segment_elevation_loss_m,
+      row.moving_minutes,
+      row.fluid_ml,
+      row.carb_g,
+      row.sodium_mg,
+    ]);
+    expect(numericCells.every((n) => Number.isFinite(n))).toBe(true);
+    expect(r.rows.every((row) => !Number.isNaN(Date.parse(row.arrival)))).toBe(true);
+    const totalCells = [
+      r.totals.distance_km,
+      r.totals.elevation_gain_m,
+      r.totals.elevation_loss_m,
+      r.totals.moving_minutes,
+      r.totals.fluid_ml,
+      r.totals.carb_g,
+      r.totals.sodium_mg,
+    ];
+    expect(totalCells.every((n) => Number.isFinite(n))).toBe(true);
+  });
 });
 
 describe("computePlanTable — elevation loss derivation (gpx-import)", () => {
