@@ -3,6 +3,7 @@
 // The math expectations are hand-derived from the haversine/delta-sum contract,
 // independent of the implementation. parseGpx needs a DOM, hence the jsdom env
 // pragma above; the math functions are pure and DOM-free.
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   distance3dKm,
@@ -135,5 +136,61 @@ describe("parseGpx", () => {
 
   it("throws on malformed XML", () => {
     expect(() => parseGpx("<gpx><trk>")).toThrow();
+  });
+});
+
+// --- End-to-end fixture (G1) + true-geodetic anchor (G2), rollout Phase 2, Risk #2. ---
+// Closes the gap that the three pure functions are only tested in isolation, never on a
+// whole .gpx file. Oracle is independent: DEG_LAT_M is re-derived from first principles
+// above; each leg's 3D distance is the documented contract sqrt(2d² + Δele²) hand-assembled
+// from the equator course (every leg = 1° of longitude); gain/loss are exact integers.
+// Fixture: tests/fixtures/sample-course.gpx.
+
+// Resolved from the project root (vitest's working directory), not import.meta.url —
+// the jsdom env reports a non-file URL for this module.
+const FIXTURE_XML = readFileSync("tests/fixtures/sample-course.gpx", "utf-8");
+
+// Hand-derived oracle (L = one degree at the equator = DEG_LAT_M):
+const L = DEG_LAT_M;
+const leg = (dEle: number): number => Math.sqrt(L * L + dEle * dEle);
+const legKm = [leg(100), leg(200), leg(150), leg(100)].map((m) => m / 1000); // Δele: +100,+200,-150,+100
+const totalKm = legKm.reduce((a, b) => a + b, 0);
+const as1Km = legKm[0] + legKm[1]; // cumulative to P2 (waypoint AS1)
+const as2Km = legKm[0] + legKm[1] + legKm[2]; // cumulative to P3 (waypoint AS2)
+
+describe("GPX extraction end-to-end (fixture)", () => {
+  const { track, waypoints } = parseGpx(FIXTURE_XML);
+
+  it("G1a parses every trkpt across both trksegs and both named waypoints", () => {
+    expect(track).toHaveLength(5);
+    expect(track.map((p) => p.ele)).toEqual([0, 100, 300, 150, 250]);
+    expect(waypoints.map((w) => w.name)).toEqual(["AS1", "AS2"]);
+  });
+
+  it("G1b totals reconcile to the hand-computed distance, gain, and loss", () => {
+    expect(distance3dKm(track)).toBeCloseTo(totalKm, 4);
+    expect(elevationGainLoss(track)).toEqual({ gain_m: 400, loss_m: 150 });
+  });
+
+  it("G1c projects on-point waypoints to their exact cumulative values, sorted by distance", () => {
+    const stations = projectWaypointsToStations(track, waypoints);
+    expect(stations.map((s) => s.notes)).toEqual(["AS1", "AS2"]);
+    expect(stations[0].cumulative_distance_km).toBeCloseTo(as1Km, 4);
+    expect(stations[0].cumulative_elevation_gain_m).toBe(300); // +100 +200
+    expect(stations[0].cumulative_elevation_loss_m).toBe(0);
+    expect(stations[1].cumulative_distance_km).toBeCloseTo(as2Km, 4);
+    expect(stations[1].cumulative_elevation_gain_m).toBe(300); // leg P2→P3 is negative
+    expect(stations[1].cumulative_elevation_loss_m).toBe(150);
+  });
+
+  it("G2 measures a 1° latitude leg against the published geodetic distance (~111.19 km)", () => {
+    // External oracle: 1° of latitude ≈ 111.19 km on a 6,371 km sphere — a published
+    // literal, NOT the re-derived DEG_LAT_M, so it pins the earth-radius constant itself
+    // beyond the small-angle limit the other tests share with the source.
+    const km = distance3dKm([
+      { lat: 0, lon: 0, ele: 0 },
+      { lat: 1, lon: 0, ele: 0 },
+    ]);
+    expect(km).toBeCloseTo(111.19, 1);
   });
 });

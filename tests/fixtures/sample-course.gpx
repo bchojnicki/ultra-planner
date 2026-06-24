@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Synthetic, hand-computable course fixture for tests/unit/gpx.test.ts (G1).
+  All track points sit on the equator (lat=0), one degree of longitude apart, so
+  each leg's 2D great-circle distance equals one degree (= DEG_LAT_M, the constant
+  re-derived in the test). Elevation deltas are exact integers:
+    P0->P1 +100, P1->P2 +200, P2->P3 -150, P3->P4 +100  =>  gain 400, loss 150.
+  Waypoint AS1 sits exactly on P2; AS2 sits exactly on P3. The oracle lives in the
+  test, not here — see the "GPX extraction end-to-end (fixture)" block.
+-->
+<gpx version="1.1" creator="ultra-planner-test-fixture" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="0.0" lon="2.0"><ele>300</ele><name>AS1</name></wpt>
+  <wpt lat="0.0" lon="3.0"><ele>150</ele><name>AS2</name></wpt>
+  <trk>
+    <trkseg>
+      <trkpt lat="0.0" lon="0.0"><ele>0</ele></trkpt>
+      <trkpt lat="0.0" lon="1.0"><ele>100</ele></trkpt>
+      <trkpt lat="0.0" lon="2.0"><ele>300</ele></trkpt>
+    </trkseg>
+    <trkseg>
+      <trkpt lat="0.0" lon="3.0"><ele>150</ele></trkpt>
+      <trkpt lat="0.0" lon="4.0"><ele>250</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-22 (Phase 1 researched)
+> Last updated: 2026-06-22 (Phase 1 complete; §2 Risk #1 reframed per research)
 
 ## 1. Strategy
 
@@ -48,7 +48,7 @@ research's job, see §1 principle #3).
 
 | # | Risk (failure scenario) | Impact | Likelihood | Source (evidence — not anchor) |
 |---|---|---|---|---|
-| 1 | Plan generation mishandles degenerate or malformed input — zero aid stations, a single station, or **cumulative distances that decrease** — producing a negative segment distance, a crash, or silently wrong numbers instead of the explanatory state the PRD requires | High | High | interview Q4; PRD US-01 AC (zero-station explanatory state); PRD Business Logic (segment-weight derivation) |
+| 1 | Plan generation mishandles a degenerate aid-station set — zero stations, duplicate cumulative distances, a station beyond the total, non-monotonic cumulative elevation, or out-of-order entry — or a malformed param (invalid start time, rest over budget), producing silently wrong numbers or a broken table instead of the explanatory state the PRD requires. (Reframed 2026-06-22 per Phase 1 research: "distances decrease → negative segment / crash" is not a real failure mode — stations are an unordered set the calc sorts, and Zod rejects negatives; the genuine gaps are the degenerate-set and explanatory-state cases above.) | High | High | interview Q4; PRD US-01 AC (zero-station explanatory state); PRD Business Logic (segment-weight derivation) |
 | 2 | GPX elevation extraction is wrong at the source, so total distance/elevation **and every downstream segment time and nutrition number** inherit the error silently | High | Medium | interview Q1; PRD FR-013 / Business Logic; hot-spot dir `src/lib` (5 commits/30d) |
 | 3 | The account-deletion confirmation token can be replayed, used after expiry, or used to delete the wrong account; the emailed link is not truly single-use, or the fresh-OTP re-auth gate is bypassable | High | Medium | interview Q3; PRD FR-014; hot-spot dir `src/pages/api/account/deletion` (5 commits/30d) |
 | 4 | A logged-in runner reaches or mutates **another** runner's plan, aid station, or gear via a route that checks "authenticated" but not "owner" — especially routes using the service-role admin client that bypass row-level security (abuse / IDOR) | High | Medium | PRD Access Control + privacy NFR; abuse/security lens; hot-spot dirs `src/lib` (`supabaseAdmin`), `src/lib/services` (3 commits/30d) |
@@ -74,7 +74,7 @@ never renumber.
 
 | Risk | What would prove protection | Must challenge | Context `/10x-research` must ground | Likely cheapest layer | Anti-pattern to avoid |
 |---|---|---|---|---|---|
-| #1 | Zero stations renders the explanatory state (no crash/empty table); a single station has defined behavior; a decreasing cumulative distance is rejected or surfaced, never silently fed to the calc as a negative segment | "Happy path works ⇒ boundaries work"; "client-side validation is enough — the calc/server need not guard" | The calc entry point; where per-segment distance and segment weight are derived; what Zod/input validation exists; what the zero-station UI state actually is | unit (derivation/calc) + integration (rendered zero-station state) | Happy-path-only assertions; expected values copied from the implementation under test |
+| #1 | Zero stations renders the explanatory state (no crash/empty table); a single station has defined behavior; a degenerate set (duplicate distance, beyond-total, non-monotonic elevation, out-of-order) is sorted/dropped/clamped, never silently fed to the calc as a negative segment | "Happy path works ⇒ boundaries work"; "client-side validation is enough — the calc/server need not guard" (confirmed by research: no server cross-field validation, no DB CHECK; the pure calc is the only guard) | The calc entry point; where per-segment distance and segment weight are derived; what Zod/input validation exists; what the zero-station UI state actually is | unit (calc derivation) + unit render (`react-dom/server` explanatory/zero-station state — not integration) | Happy-path-only assertions; expected values copied from the implementation under test |
 | #2 | A GPX file whose total gain/loss is **independently hand-computed** yields exactly those totals (within rounding); waypoint cumulative elevations match the fixture | "The existing gpx test passing ⇒ elevation is correct" — it may assert the parser's own output (oracle problem); "more track points ⇒ more accurate" smoothing assumptions | How gain/loss is accumulated (threshold? smoothing?); where computed totals are persisted; how a waypoint maps to an aid-station cumulative elevation | unit (pure parse function against a fixture with an external oracle) | An assertion lifted from parser output; a snapshot of computed totals with no independent oracle |
 | #3 | An expired token is rejected; a used token cannot be reused; a token issued for user A cannot delete user B; the emailed link is single-use; the fresh-OTP re-auth gate is enforced server-side | "Final state is 'deleted' ⇒ the guard ran"; "a 30-minute expiry being set ⇒ it is enforced on use" | The token table schema and hashing; where expiry and single-use are checked; the service-role admin delete path; the re-auth (fresh OTP) gate | integration (extend `tests/integration/account-deletion-tokens.test.ts`) | Testing only the happy delete path; over-mocking the token store so the expiry/reuse guard never executes |
 | #4 | A logged-in non-owner gets a 403/404 (not the data) on read/update/delete of another runner's plan, aid station, or gear; routes using the admin client still enforce ownership | "RLS covers it ⇒ every route is safe" — a service-role client bypasses RLS; "authenticated ⇒ authorized" | Which routes use the anon-key SSR client vs `supabaseAdmin`; where ownership is checked in app code vs RLS; the RLS policies in `supabase/migrations` | integration (two users, cross-access attempts; extend `tests/integration/rls-ownership.test.ts`) | Testing only that the owner can access (happy path); trusting RLS for routes that run as service-role |
@@ -89,8 +89,8 @@ orchestrator updates Status as artifacts appear on disk.
 
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|---|---|---|---|---|---|
-| 1 | Plan-generation correctness & boundaries | Prove the wedge calc handles degenerate/malformed input gracefully and computes correct numbers against an independent oracle | #1 | unit + render (no integration/e2e) | researched | `context/changes/testing-plan-generation-correctness/` |
-| 2 | Input-pipeline integrity (GPX + segment recompute) | Prove GPX-extracted totals/elevation are correct vs a known fixture and that aid-station mutations re-derive segments and clear stale selections | #2, #5 | unit + integration | not started | — |
+| 1 | Plan-generation correctness & boundaries | Prove the wedge calc handles degenerate/malformed input gracefully and computes correct numbers against an independent oracle | #1 | unit + render (no integration/e2e) | complete | `context/changes/testing-plan-generation-correctness/` |
+| 2 | Input-pipeline integrity (GPX + segment recompute) | Prove GPX-extracted totals/elevation are correct vs a known fixture and that aid-station mutations re-derive segments and clear stale selections | #2, #5 | unit + integration | change opened | `context/changes/testing-input-pipeline-integrity/` |
 | 3 | Authorization & account-deletion safety | Prove ownership is enforced at the API boundary (incl. admin-client routes) and the deletion token is single-use, expiring, and actor-bound | #4, #3 | integration | not started | — |
 | 4 | Gear allocation edge cases | Prove carb-led allocation with caps/overrides/redistribution/gap-fill is correct and re-suggests on layout change | #6 | unit + integration | not started | — |
 
@@ -210,10 +210,24 @@ omitted. Reference: the `explanatory + zero-station states` block (R1–R3) in
 
 ### 6.4 Adding a test for GPX / input parsing
 
-- TBD — see §3 Phase 2 for the GPX-elevation independent-oracle pattern
-  (a fixture whose total gain/loss is hand-computed, not read back from the
-  parser). Existing seams: `tests/unit/gpx.test.ts`,
-  `tests/integration/gpx-import-flow.test.ts`.
+- **Location**: `tests/unit/gpx.test.ts` (`// @vitest-environment jsdom` — `parseGpx`
+  needs a DOM; the math functions are pure/DOM-free). Static fixtures live in
+  `tests/fixtures/*.gpx`.
+- **Independent-oracle pattern (Phase 2, Risk #2)**: author a **synthetic, hand-computable**
+  `.gpx` fixture — put track points on the equator one degree of longitude apart so each
+  leg's 2D distance equals `DEG_LAT_M` (re-derived in the test from `π/180·6_371_000`, never
+  imported from the source), and use integer elevation deltas. Compute the expected total
+  distance/gain/loss **on paper from the coordinates** and assert the full
+  `parseGpx → distance3dKm/elevationGainLoss/projectWaypointsToStations` chain against them
+  (place a waypoint exactly on a track point for an unambiguous cumulative oracle). Add a
+  true-geodetic check (1° latitude ≈ 111.19 km, a published literal) to pin the radius
+  constant beyond the small-angle limit. Read fixtures with `readFileSync("tests/fixtures/…")`
+  (cwd-relative — the jsdom env reports a non-file `import.meta.url`).
+- **Reference test**: the `GPX extraction end-to-end (fixture)` block in `tests/unit/gpx.test.ts`.
+- **Run locally**: `npx vitest run tests/unit/gpx.test.ts`.
+- **Note**: the full file→DB persistence path is covered by
+  `tests/integration/gpx-import-flow.test.ts` (a round-trip, not a GPX-math oracle); the
+  browser file-upload→DB flow is deferred to e2e.
 
 ### 6.5 Adding a test for an authorization / ownership boundary
 
