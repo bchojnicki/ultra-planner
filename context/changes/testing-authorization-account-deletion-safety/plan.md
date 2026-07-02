@@ -254,13 +254,13 @@ None — no schema or production code changes. The deferred TOCTOU fix (its own 
 
 #### Automated
 
-- [x] 3.1 §6.5 no longer contains "TBD" for the authorization pattern
-- [x] 3.2 §3 Phase-3 Status updated and file "Last updated" line reflects this change
-- [x] 3.3 Follow-up change folder exists: `ls context/changes/<toctou-fix-id>/change.md`
-- [x] 3.4 Prettier passes on edited markdown: `npm run format`
+- [x] 3.1 §6.5 no longer contains "TBD" for the authorization pattern — 05ecd8e
+- [x] 3.2 §3 Phase-3 Status updated and file "Last updated" line reflects this change — 05ecd8e
+- [x] 3.3 Follow-up change folder exists: `ls context/changes/<toctou-fix-id>/change.md` — 05ecd8e
+- [x] 3.4 Prettier passes on edited markdown: `npm run format` — 05ecd8e
 
 #### Manual
 
-- [x] 3.5 §2/§3 wording matches research's backport corrections
-- [x] 3.6 Route-layer e2e deferral is explicit (deferred vs overlooked distinguishable)
-- [x] 3.7 TOCTOU finding names file:line + recommended fix and links the follow-up change
+- [x] 3.5 §2/§3 wording matches research's backport corrections — 05ecd8e
+- [x] 3.6 Route-layer e2e deferral is explicit (deferred vs overlooked distinguishable) — 05ecd8e
+- [x] 3.7 TOCTOU finding names file:line + recommended fix and links the follow-up change — 05ecd8e
