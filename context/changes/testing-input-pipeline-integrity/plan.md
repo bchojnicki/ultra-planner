@@ -296,13 +296,13 @@ None — no schema or data change.
 
 #### Automated
 
-- [x] 2.1 New reconciliation tests pass: `npx vitest run tests/unit/gear-allocation.test.ts`
-- [x] 2.2 Full unit suite passes: `npx vitest run tests/unit`
-- [x] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 New reconciliation tests pass: `npx vitest run tests/unit/gear-allocation.test.ts` — 39a35ba
+- [x] 2.2 Full unit suite passes: `npx vitest run tests/unit` — 39a35ba
+- [x] 2.3 Lint passes: `npm run lint` — 39a35ba
 
 #### Manual
 
-- [x] 2.4 S1 asserts the reorder/interior-merge limitation as current behavior, with a deferred-fix comment
-- [x] 2.5 No assertion claims selections always follow the correct leg
-- [x] 2.6 Two deferred items recorded in `change.md`
-- [x] 2.7 No new dependency added to `package.json`
+- [x] 2.4 S1 asserts the reorder/interior-merge limitation as current behavior, with a deferred-fix comment — 39a35ba
+- [x] 2.5 No assertion claims selections always follow the correct leg — 39a35ba
+- [x] 2.6 Two deferred items recorded in `change.md` — 39a35ba
+- [x] 2.7 No new dependency added to `package.json` — 39a35ba
