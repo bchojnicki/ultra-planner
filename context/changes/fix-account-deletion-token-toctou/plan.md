@@ -172,26 +172,26 @@ None — no schema, type, or data changes. Rollback is a pure code revert.
 
 #### Automated
 
-- [x] 1.1 Type checking passes for changed files (`npm run lint` + `npx astro sync && npx tsc --noEmit`, no new errors)
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Full integration suite still green: `npx vitest run tests/integration`
+- [x] 1.1 Type checking passes for changed files (`npm run lint` + `npx astro sync && npx tsc --noEmit`, no new errors) — 59dcd5b
+- [x] 1.2 Linting passes: `npm run lint` — 59dcd5b
+- [x] 1.3 Full integration suite still green: `npx vitest run tests/integration` — 59dcd5b
 
 #### Manual
 
-- [x] 1.4 `execute.ts` order is consume → audit → delete; no `markTokenUsed` import/use
-- [x] 1.5 `findValidDeletionToken` unchanged; `confirm.astro` still renders valid/invalid state
+- [x] 1.4 `execute.ts` order is consume → audit → delete; no `markTokenUsed` import/use — 59dcd5b
+- [x] 1.5 `findValidDeletionToken` unchanged; `confirm.astro` still renders valid/invalid state — 59dcd5b
 
 ### Phase 2: Regression Tests + Close-Out
 
 #### Automated
 
-- [ ] 2.1 New consume tests pass: `npx vitest run tests/integration/account-deletion-consume.test.ts`
-- [ ] 2.2 Full integration suite green: `npx vitest run tests/integration`
-- [ ] 2.3 Linting passes: `npm run lint`
-- [ ] 2.4 Prettier passes on edited markdown: `npx prettier --check context/foundation/test-plan.md`
+- [x] 2.1 New consume tests pass: `npx vitest run tests/integration/account-deletion-consume.test.ts`
+- [x] 2.2 Full integration suite green: `npx vitest run tests/integration`
+- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.4 Prettier passes on edited markdown: `npx prettier --check context/foundation/test-plan.md`
 
 #### Manual
 
-- [ ] 2.5 Deliberate-break makes both sequential and concurrent tests fail, then reverted
-- [ ] 2.6 Sequential test proves rejection via `used_at` unchanged + row present (not row-absence)
-- [ ] 2.7 §6.6 note reads as resolved and links this change
+- [x] 2.5 Deliberate-break makes both sequential and concurrent tests fail, then reverted
+- [x] 2.6 Sequential test proves rejection via `used_at` unchanged + row present (not row-absence)
+- [x] 2.7 §6.6 note reads as resolved and links this change

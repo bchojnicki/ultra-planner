@@ -291,19 +291,24 @@ here capturing anything surprising the rollout phase taught.)
 
 **Phase 3 (Authorization & account-deletion safety, 2026-07-02).**
 
-- **Deferred defect — TOCTOU single-use race.** `markTokenUsed`
-  (`src/lib/services/account-deletion.ts:85-91`) is a bare
-  `UPDATE ... SET used_at = now()` with **no `used_at IS NULL` predicate and no
-  affected-row check**, and the read (`findValidDeletionToken`) and burn are two
-  separate statements with no DB-level atomic guard (no partial unique index on
-  unused tokens). Two concurrent executes of the same raw token can both pass the
-  read gate. Sequential replay is blocked; concurrent replay is not. This is a
-  code weakness, not a coverage gap — recorded here and deferred to a dedicated
-  fix change (compare-and-set `.update({used_at}).is("used_at", null)` +
-  affected-row check, or a partial unique index): see
-  `context/changes/fix-account-deletion-token-toctou/`. A characterization test
-  was deliberately **not** added (inherently flaky against local Supabase; would
-  document the bug as expected).
+- **TOCTOU single-use race — RESOLVED 2026-07-02.** The old burn `markTokenUsed`
+  (`src/lib/services/account-deletion.ts`) was a bare `UPDATE ... SET used_at =
+now()` with **no `used_at IS NULL` predicate**, and the read
+  (`findValidDeletionToken`) and burn were two separate statements, so two
+  concurrent executes of the same raw token could both pass the read gate
+  (sequential replay blocked; concurrent replay not). **Fixed** by
+  `context/changes/fix-account-deletion-token-toctou/`: a new atomic
+  `consumeDeletionToken` does the single conditional UPDATE
+  (`.is("used_at", null).gt("expires_at", now).select()`), race-free under READ
+  COMMITTED (row-lock + EvalPlanQual → exactly one winner), and `execute.ts`
+  consumes-first (burn → audit → delete). The "partial unique index" idea was a
+  red herring (`token_hash` is already the PK, so it can't stop a repeated UPDATE
+  of the same row). Regression: `tests/integration/account-deletion-consume.test.ts`
+  proves single-use sequentially (second consume rejected by `used_at`, row
+  present, timestamp unchanged) and concurrently (`Promise.all` → one winner) —
+  deterministic once the burn is atomic. `markTokenUsed` is retained as a
+  lower-level helper for the Phase-3 isolated single-use test, off the production
+  path.
 - **Route/HTTP layer is e2e-only.** Endpoint handlers import `astro:env/server`
   and cannot be imported under Vitest, so route-level IDOR mapping
   (`PGRST116`→404, `42501`→403, missing session→401), the fresh-OTP re-auth gate
