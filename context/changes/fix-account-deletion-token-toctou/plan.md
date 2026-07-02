@@ -185,13 +185,13 @@ None — no schema, type, or data changes. Rollback is a pure code revert.
 
 #### Automated
 
-- [x] 2.1 New consume tests pass: `npx vitest run tests/integration/account-deletion-consume.test.ts`
-- [x] 2.2 Full integration suite green: `npx vitest run tests/integration`
-- [x] 2.3 Linting passes: `npm run lint`
-- [x] 2.4 Prettier passes on edited markdown: `npx prettier --check context/foundation/test-plan.md`
+- [x] 2.1 New consume tests pass: `npx vitest run tests/integration/account-deletion-consume.test.ts` — 34795a7
+- [x] 2.2 Full integration suite green: `npx vitest run tests/integration` — 34795a7
+- [x] 2.3 Linting passes: `npm run lint` — 34795a7
+- [x] 2.4 Prettier passes on edited markdown: `npx prettier --check context/foundation/test-plan.md` — 34795a7
 
 #### Manual
 
-- [x] 2.5 Deliberate-break makes both sequential and concurrent tests fail, then reverted
-- [x] 2.6 Sequential test proves rejection via `used_at` unchanged + row present (not row-absence)
-- [x] 2.7 §6.6 note reads as resolved and links this change
+- [x] 2.5 Deliberate-break makes both sequential and concurrent tests fail, then reverted — 34795a7
+- [x] 2.6 Sequential test proves rejection via `used_at` unchanged + row present (not row-absence) — 34795a7
+- [x] 2.7 §6.6 note reads as resolved and links this change — 34795a7
