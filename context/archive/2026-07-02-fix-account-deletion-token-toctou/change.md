@@ -1,10 +1,10 @@
 ---
 change_id: fix-account-deletion-token-toctou
 title: "Fix TOCTOU single-use race in account-deletion token consumption"
-status: impl_reviewed
+status: archived
 created: 2026-07-02
 updated: 2026-07-02
-archived_at: null
+archived_at: 2026-07-02T15:21:57Z
 ---
 
 ## Notes
