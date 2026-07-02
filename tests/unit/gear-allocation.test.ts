@@ -2,8 +2,8 @@
 // Expectations are hand-derived from the carb-led allocation rules, independent of
 // the implementation, so a regression in the unit math fails loudly. Pure — no DB.
 import { describe, expect, it } from "vitest";
-import type { GearItem, GearSegmentSelection } from "../../src/types";
-import { computeGearAllocation, staleSegmentIndexes } from "../../src/lib/gear-allocation";
+import type { GearItem, GearSegmentSelection, PlanTableResult } from "../../src/types";
+import { computeAllocations, computeGearAllocation, staleSegmentIndexes } from "../../src/lib/gear-allocation";
 
 const TS = "2026-09-01T06:00:00.000Z";
 
@@ -230,5 +230,75 @@ describe("staleSegmentIndexes", () => {
 
   it("returns nothing on growth (no existing index falls out of range)", () => {
     expect(staleSegmentIndexes(3, 5, existing)).toEqual([]);
+  });
+
+  // Known limitation (rollout Phase 2, Risk #5): the rule is positional and count-based, so
+  // it does NOT detect a selection whose underlying leg changed while the count stayed equal
+  // (a reorder — see the unchanged-count case above) or shifted under an interior index (an
+  // interior merge). This asserts the CURRENT behavior; a future identity-anchored fix must
+  // consciously update it. See change.md → Deferred items.
+  it("on an interior merge, clears only the out-of-range tail and leaves shifted interior selections (current limitation)", () => {
+    // Deleting a middle station merges two legs: 4 → 3 segments. Only index 3 is out of
+    // range; the selection on interior index 1 survives though its underlying leg changed —
+    // a silent mis-attribution this positional rule cannot catch.
+    const sels = [sel({ gear_item_id: "x", segment_index: 1 }), sel({ gear_item_id: "y", segment_index: 3 })];
+    expect(staleSegmentIndexes(4, 3, sels)).toEqual([3]);
+  });
+});
+
+// Minimal ok:true table — computeAllocations only reads each row's carb/fluid/sodium target.
+function tableResult(carbTargets: number[]): PlanTableResult {
+  return {
+    ok: true,
+    rows: carbTargets.map((carb, i) => ({
+      label: `seg${i}`,
+      segment_distance_km: 10,
+      segment_elevation_gain_m: 0,
+      segment_elevation_loss_m: 0,
+      moving_minutes: 60,
+      arrival: TS,
+      fluid_ml: 0,
+      carb_g: carb,
+      sodium_mg: 0,
+      endStation: null,
+    })),
+    totals: {
+      distance_km: 0,
+      elevation_gain_m: 0,
+      elevation_loss_m: 0,
+      moving_minutes: 0,
+      rest_minutes: 0,
+      fluid_ml: 0,
+      carb_g: 0,
+      sodium_mg: 0,
+      finish_arrival: TS,
+    },
+  };
+}
+
+describe("computeAllocations — positional segment mapping (Phase 2)", () => {
+  // Two segments, each carb target 100 → [gel] (20 g, ratio 2) auto-suggests 5 per row.
+  it("applies a selection only to its segment_index, never another row", () => {
+    const allocs = computeAllocations(
+      tableResult([100, 100]),
+      [gel],
+      [sel({ gear_item_id: "gel", segment_index: 1, override_units: 0 })],
+    );
+    expect(unitsById(allocs[0]).gel).toBe(5); // segment 0 untouched
+    expect(unitsById(allocs[1]).gel).toBe(0); // segment 1 override applied here only
+  });
+
+  it("ignores a selection whose segment_index is out of range (the positional gap behind mis-attribution)", () => {
+    const allocs = computeAllocations(
+      tableResult([100, 100]),
+      [gel],
+      [sel({ gear_item_id: "gel", segment_index: 5, override_units: 0 })],
+    );
+    expect(unitsById(allocs[0]).gel).toBe(5);
+    expect(unitsById(allocs[1]).gel).toBe(5); // out-of-range selection affects nothing
+  });
+
+  it("returns [] when the table did not generate", () => {
+    expect(computeAllocations({ ok: false, error: "missing_params", message: "x" }, [gel], [])).toEqual([]);
   });
 });

@@ -281,28 +281,28 @@ None — no schema or data change.
 
 #### Automated
 
-- [x] 1.1 New GPX tests pass: `npx vitest run tests/unit/gpx.test.ts`
-- [x] 1.2 Full unit suite passes: `npx vitest run tests/unit`
-- [x] 1.3 Lint passes: `npm run lint`
-- [x] 1.4 Type-check passes
+- [x] 1.1 New GPX tests pass: `npx vitest run tests/unit/gpx.test.ts` — a750421
+- [x] 1.2 Full unit suite passes: `npx vitest run tests/unit` — a750421
+- [x] 1.3 Lint passes: `npm run lint` — a750421
+- [x] 1.4 Type-check passes — a750421
 
 #### Manual
 
-- [x] 1.5 Fixture totals hand-derived in a test comment; no expected value read back from gpx.ts
-- [x] 1.6 G1c on-point waypoint assertion uses exact cumulative values
-- [x] 1.7 §6.4 cookbook GPX-fixture entry updated
+- [x] 1.5 Fixture totals hand-derived in a test comment; no expected value read back from gpx.ts — a750421
+- [x] 1.6 G1c on-point waypoint assertion uses exact cumulative values — a750421
+- [x] 1.7 §6.4 cookbook GPX-fixture entry updated — a750421
 
 ### Phase 2: Reconciliation-rule tests (S1–S3) + deferred items
 
 #### Automated
 
-- [ ] 2.1 New reconciliation tests pass: `npx vitest run tests/unit/gear-allocation.test.ts`
-- [ ] 2.2 Full unit suite passes: `npx vitest run tests/unit`
-- [ ] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 New reconciliation tests pass: `npx vitest run tests/unit/gear-allocation.test.ts`
+- [x] 2.2 Full unit suite passes: `npx vitest run tests/unit`
+- [x] 2.3 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 S1 asserts the reorder/interior-merge limitation as current behavior, with a deferred-fix comment
-- [ ] 2.5 No assertion claims selections always follow the correct leg
-- [ ] 2.6 Two deferred items recorded in `change.md`
-- [ ] 2.7 No new dependency added to `package.json`
+- [x] 2.4 S1 asserts the reorder/interior-merge limitation as current behavior, with a deferred-fix comment
+- [x] 2.5 No assertion claims selections always follow the correct leg
+- [x] 2.6 Two deferred items recorded in `change.md`
+- [x] 2.7 No new dependency added to `package.json`
