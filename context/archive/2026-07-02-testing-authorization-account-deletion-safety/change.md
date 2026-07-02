@@ -1,10 +1,10 @@
 ---
 change_id: testing-authorization-account-deletion-safety
 title: "Test rollout Phase 3: authorization (IDOR) & account-deletion token safety"
-status: impl_reviewed
+status: archived
 created: 2026-07-02
 updated: 2026-07-02
-archived_at: null
+archived_at: 2026-07-02T15:23:01Z
 ---
 
 ## Notes
