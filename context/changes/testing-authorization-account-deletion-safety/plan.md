@@ -9,13 +9,14 @@ Rollout **Phase 3** of `context/foundation/test-plan.md` — a **test-only** cha
 - **Two Supabase clients define the whole Risk #4 surface.** `createClient` (`src/lib/supabase.ts:6-25`) uses the anon key with request cookies → RLS enforces ownership; app code never filters by `user_id`. `createAdminClient` (`src/lib/supabaseAdmin.ts:16-24`) uses the service-role key → RLS bypassed. All four `supabaseAdmin` call sites are the self/token-scoped account-deletion endpoints (`request.ts:25`, `verify.ts:23`, `execute.ts:27`, `confirm.astro:13`); **none takes an attacker-controllable resource id.** The risk's "service-role routes bypass RLS → IDOR" framing does not match a real code surface.
 - **Cross-user RLS isolation is already proven** for all four user tables: `plans` + `aid_stations` (SELECT/UPDATE/DELETE no-op + INSERT WITH CHECK, `tests/integration/rls-ownership.test.ts:144-236`); `gear_items` + `gear_segment_selections` (INSERT→42501, SELECT hidden, `tests/integration/gear-flow.test.ts:140-252`). **Only INSERT/SELECT are proven cross-user for the two gear tables.**
 - **The account-deletion token model** (`src/lib/services/account-deletion.ts`) imports no `astro:env` → fully Vitest-importable. `findValidDeletionToken` (`:69-80`) is the consume-side read gate: `.eq("token_hash").is("used_at", null).gt("expires_at", now)`. `markTokenUsed` (`:85-91`) is a **bare** `.update({used_at}).eq("token_hash")` — no `used_at IS NULL` predicate, no affected-row check.
-- **Existing Risk #3 coverage** proves issuance (hashing, ~30-min expiry, throttle) and the full execute sequence with cascade + surviving audit row (`account-deletion-execute.test.ts:95-130`), but the replay assertion (`:124`) runs *after* `markTokenUsed` **and** the cascade delete, so it never isolates the `used_at` guard, and **nothing** back-dates `expires_at` to test expiry on the consume path.
+- **Existing Risk #3 coverage** proves issuance (hashing, ~30-min expiry, throttle) and the full execute sequence with cascade + surviving audit row (`account-deletion-execute.test.ts:95-130`), but the replay assertion (`:124`) runs _after_ `markTokenUsed` **and** the cascade delete, so it never isolates the `used_at` guard, and **nothing** back-dates `expires_at` to test expiry on the consume path.
 - **The `astro:env` boundary** splits the pyramid: service/DB logic → Vitest integration (cheap, deterministic); route/HTTP/session/OTP wiring → Playwright e2e only. No integration test imports a route handler.
 - **Test harness** (reused verbatim): `assertLocal(url)` localhost guard (`ALLOW_REMOTE_DELETION_TEST=1` / `ALLOW_REMOTE_RLS_TEST=1` overrides), CLI-demo `DEFAULT_URL`/keys, `admin` service-role client, `anonClient()` + `signInWithPassword` per runner, `Date.now()`-stamped emails, password `test-password-123!`. `vitest.config.ts` runs `fileParallelism: false`; `npx vitest run tests/integration` requires a locally running Supabase.
 
 ## Desired End State
 
 `npx vitest run tests/integration` passes with new coverage that:
+
 - rejects an **expired** deletion token on the consume path (`findValidDeletionToken` → null after back-dating `expires_at`);
 - proves single-use **in isolation** — `markTokenUsed` alone burns the token with the user still present (no cascade confound) — and that a second user B is untouched;
 - proves cross-user **UPDATE/DELETE** is a no-op on both gear tables and that the `plan_id`-less `upsertGearSelection` delete branch cannot touch another runner's selection.
@@ -240,26 +241,26 @@ None — no schema or production code changes. The deferred TOCTOU fix (its own 
 
 #### Automated
 
-- [x] 2.1 Integration tests pass: `npx vitest run tests/integration/gear-flow.test.ts`
-- [x] 2.2 Full integration suite green: `npx vitest run tests/integration`
-- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Integration tests pass: `npx vitest run tests/integration/gear-flow.test.ts` — 857a23e
+- [x] 2.2 Full integration suite green: `npx vitest run tests/integration` — 857a23e
+- [x] 2.3 Linting passes: `npm run lint` — 857a23e
 
 #### Manual
 
-- [x] 2.4 Delete-branch test proves A's selection survives B's attempt
-- [x] 2.5 UPDATE/DELETE no-op assertions check row state, not just absence of error
+- [x] 2.4 Delete-branch test proves A's selection survives B's attempt — 857a23e
+- [x] 2.5 UPDATE/DELETE no-op assertions check row state, not just absence of error — 857a23e
 
 ### Phase 3: Docs, Deferred-Defect Record & Close-Out
 
 #### Automated
 
-- [ ] 3.1 §6.5 no longer contains "TBD" for the authorization pattern
-- [ ] 3.2 §3 Phase-3 Status updated and file "Last updated" line reflects this change
-- [ ] 3.3 Follow-up change folder exists: `ls context/changes/<toctou-fix-id>/change.md`
-- [ ] 3.4 Prettier passes on edited markdown: `npm run format`
+- [x] 3.1 §6.5 no longer contains "TBD" for the authorization pattern
+- [x] 3.2 §3 Phase-3 Status updated and file "Last updated" line reflects this change
+- [x] 3.3 Follow-up change folder exists: `ls context/changes/<toctou-fix-id>/change.md`
+- [x] 3.4 Prettier passes on edited markdown: `npm run format`
 
 #### Manual
 
-- [ ] 3.5 §2/§3 wording matches research's backport corrections
-- [ ] 3.6 Route-layer e2e deferral is explicit (deferred vs overlooked distinguishable)
-- [ ] 3.7 TOCTOU finding names file:line + recommended fix and links the follow-up change
+- [x] 3.5 §2/§3 wording matches research's backport corrections
+- [x] 3.6 Route-layer e2e deferral is explicit (deferred vs overlooked distinguishable)
+- [x] 3.7 TOCTOU finding names file:line + recommended fix and links the follow-up change
