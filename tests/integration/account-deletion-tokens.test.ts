@@ -17,6 +17,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Database } from "../../src/types";
 import {
   TOKEN_TTL_MINUTES,
+  findValidDeletionToken,
   hasActiveDeletionToken,
   issueDeletionToken,
   sha256Hex,
@@ -102,5 +103,47 @@ describe("account deletion token service", () => {
       .eq("user_id", userId);
     expect(error).toBeNull();
     expect(await hasActiveDeletionToken(admin, userId)).toBe(false);
+  });
+});
+
+// Phase 3 (Risk #3, research gap 1): expiry enforcement on the CONSUME path.
+// Nothing today back-dates expires_at and asserts findValidDeletionToken rejects —
+// the "used after expiry" concern was untested. Isolated user so it can't collide
+// with the ordered throttle tests above.
+describe("account deletion token consume-path expiry gate", () => {
+  const expEmail = `account-deletion-expiry-${Date.now()}@example.com`;
+  let expUserId = "";
+
+  beforeAll(async () => {
+    assertLocal(SUPABASE_URL);
+    const { data, error } = await admin.auth.admin.createUser({
+      email: expEmail,
+      password: "test-password-123!",
+      email_confirm: true,
+    });
+    if (error ?? !data.user) throw error ?? new Error("failed to create user");
+    expUserId = data.user.id;
+  });
+
+  afterAll(async () => {
+    if (expUserId) await admin.auth.admin.deleteUser(expUserId);
+  });
+
+  // Independent oracle: the `.gt("expires_at", now)` gate contract in
+  // findValidDeletionToken — NOT the function's own output. Issue a live token,
+  // confirm it resolves, back-date expires_at into the past, assert it no longer
+  // resolves. Fails if the expiry predicate is removed from the read gate.
+  it("findValidDeletionToken rejects a token whose expires_at is in the past", async () => {
+    const raw = await issueDeletionToken(admin, expUserId, "203.0.113.11");
+
+    // Sanity: the live token resolves before we back-date it.
+    expect(await findValidDeletionToken(admin, raw)).not.toBeNull();
+
+    const past = new Date(Date.now() - 60_000).toISOString();
+    const { error } = await admin.from("account_deletion_tokens").update({ expires_at: past }).eq("user_id", expUserId);
+    expect(error).toBeNull();
+
+    // Expiry enforced at consume time.
+    expect(await findValidDeletionToken(admin, raw)).toBeNull();
   });
 });

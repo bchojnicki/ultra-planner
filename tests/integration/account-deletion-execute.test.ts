@@ -129,3 +129,66 @@ describe("account deletion execute flow", () => {
     await admin.from("account_deletion_events").delete().eq("email_hash", emailHash);
   });
 });
+
+// Phase 3 (Risk #3, research gap 2): single-use enforced by used_at ALONE.
+// The execute test above proves replay-null only AFTER markTokenUsed AND the
+// cascade delete, so it can't distinguish the used_at guard from the row simply
+// being gone. Here we burn the token WITHOUT deleting the user, isolating the
+// guard, and add a one-line actor-binding proof that user B is untouched.
+describe("account deletion single-use isolation (consume path)", () => {
+  const emailA = `account-deletion-singleuse-a-${Date.now()}@example.com`;
+  const emailB = `account-deletion-singleuse-b-${Date.now()}@example.com`;
+  let userIdA = "";
+  let userIdB = "";
+
+  beforeAll(async () => {
+    assertLocal(SUPABASE_URL);
+    const { data: a, error: ea } = await admin.auth.admin.createUser({
+      email: emailA,
+      password: "test-password-123!",
+      email_confirm: true,
+    });
+    if (ea ?? !a.user) throw ea ?? new Error("failed to create user A");
+    userIdA = a.user.id;
+
+    const { data: b, error: eb } = await admin.auth.admin.createUser({
+      email: emailB,
+      password: "test-password-123!",
+      email_confirm: true,
+    });
+    if (eb ?? !b.user) throw eb ?? new Error("failed to create user B");
+    userIdB = b.user.id;
+  });
+
+  afterAll(async () => {
+    if (userIdA) await admin.auth.admin.deleteUser(userIdA);
+    if (userIdB) await admin.auth.admin.deleteUser(userIdB);
+  });
+
+  it("markTokenUsed alone burns the token; user B is untouched", async () => {
+    const raw = await issueDeletionToken(admin, userIdA, "203.0.113.12");
+    const row = await findValidDeletionToken(admin, raw);
+    if (!row) throw new Error("expected a valid token row");
+
+    // Burn the token via the used_at guard only — no deleteUser, no cascade.
+    await markTokenUsed(admin, row.token_hash);
+
+    // Single-use enforced by used_at alone: the read gate now rejects.
+    expect(await findValidDeletionToken(admin, raw)).toBeNull();
+
+    // User A is still present — this is what isolates the used_at guard from the
+    // cascade confound in the destructive test above.
+    const { data: gotA } = await admin.auth.admin.getUserById(userIdA);
+    expect(gotA.user?.id).toBe(userIdA);
+
+    // The token row itself still exists (marked used, not deleted).
+    const { data: rows } = await admin.from("account_deletion_tokens").select("used_at").eq("user_id", userIdA);
+    expect(rows).toHaveLength(1);
+    expect(rows?.[0]?.used_at).not.toBeNull();
+
+    // Actor-binding (research: structural — the token names its own user_id).
+    // Defense-in-depth one-liner: consuming A's token leaves user B untouched.
+    const { data: gotB } = await admin.auth.admin.getUserById(userIdB);
+    expect(gotB.user?.id).toBe(userIdB);
+  });
+});
