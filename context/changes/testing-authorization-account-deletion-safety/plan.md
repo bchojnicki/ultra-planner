@@ -226,28 +226,28 @@ None — no schema or production code changes. The deferred TOCTOU fix (its own 
 
 #### Automated
 
-- [x] 1.1 Integration tests pass: `npx vitest run tests/integration/account-deletion-tokens.test.ts tests/integration/account-deletion-execute.test.ts`
-- [x] 1.2 Type checking passes (`npm run build` or `npx astro sync && npx tsc --noEmit`)
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Expiry test fails if the `.gt("expires_at", now)` gate is removed (deliberate-break spot-check)
+- [x] 1.1 Integration tests pass: `npx vitest run tests/integration/account-deletion-tokens.test.ts tests/integration/account-deletion-execute.test.ts` — 08ffc69
+- [x] 1.2 Type checking passes (`npm run build` or `npx astro sync && npx tsc --noEmit`) — 08ffc69
+- [x] 1.3 Linting passes: `npm run lint` — 08ffc69
+- [x] 1.4 Expiry test fails if the `.gt("expires_at", now)` gate is removed (deliberate-break spot-check) — 08ffc69
 
 #### Manual
 
-- [x] 1.5 Isolated single-use test asserts token-null with the user still present (no `deleteUser` in body)
-- [x] 1.6 Each new assertion comments its independent oracle and net-new rationale
+- [x] 1.5 Isolated single-use test asserts token-null with the user still present (no `deleteUser` in body) — 08ffc69
+- [x] 1.6 Each new assertion comments its independent oracle and net-new rationale — 08ffc69
 
 ### Phase 2: Risk #4 — Gear Cross-User Authorization Residue
 
 #### Automated
 
-- [ ] 2.1 Integration tests pass: `npx vitest run tests/integration/gear-flow.test.ts`
-- [ ] 2.2 Full integration suite green: `npx vitest run tests/integration`
-- [ ] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Integration tests pass: `npx vitest run tests/integration/gear-flow.test.ts`
+- [x] 2.2 Full integration suite green: `npx vitest run tests/integration`
+- [x] 2.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 Delete-branch test proves A's selection survives B's attempt
-- [ ] 2.5 UPDATE/DELETE no-op assertions check row state, not just absence of error
+- [x] 2.4 Delete-branch test proves A's selection survives B's attempt
+- [x] 2.5 UPDATE/DELETE no-op assertions check row state, not just absence of error
 
 ### Phase 3: Docs, Deferred-Defect Record & Close-Out
 

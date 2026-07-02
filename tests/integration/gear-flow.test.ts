@@ -392,3 +392,155 @@ describe("gear services (Phase 2): catalog + selection CRUD and ownership", () =
     await deleteGearItem(clientA, item.id);
   });
 });
+
+// Phase 3 (Risk #4): cross-user UPDATE/DELETE residue. INSERT/SELECT were already
+// proven cross-user above; the UPDATE/DELETE RLS policies (same plan-subquery) and the
+// plan_id-less delete branch were untested. Independent oracle throughout: the RLS
+// policy intent (non-owner sees zero rows), not the code's own output.
+describe("gear cross-user UPDATE/DELETE + plan_id-less delete branch (Phase 3, Risk #4)", () => {
+  let userIdA = "";
+  let userIdB = "";
+  let clientA: Client;
+  let clientB: Client;
+  let planAId = "";
+  const idorEmailA = `s03-idor-a-${stamp}@example.com`;
+  const idorEmailB = `s03-idor-b-${stamp}@example.com`;
+
+  beforeAll(async () => {
+    assertLocal(SUPABASE_URL);
+
+    const { data: a, error: ea } = await admin.auth.admin.createUser({
+      email: idorEmailA,
+      password: PASSWORD,
+      email_confirm: true,
+    });
+    if (ea ?? !a.user) throw ea ?? new Error("failed to create user A");
+    userIdA = a.user.id;
+
+    const { data: b, error: eb } = await admin.auth.admin.createUser({
+      email: idorEmailB,
+      password: PASSWORD,
+      email_confirm: true,
+    });
+    if (eb ?? !b.user) throw eb ?? new Error("failed to create user B");
+    userIdB = b.user.id;
+
+    clientA = anonClient();
+    clientB = anonClient();
+    const { error: sa } = await clientA.auth.signInWithPassword({ email: idorEmailA, password: PASSWORD });
+    if (sa) throw sa;
+    const { error: sb } = await clientB.auth.signInWithPassword({ email: idorEmailB, password: PASSWORD });
+    if (sb) throw sb;
+
+    const plan = await createDraftPlan(clientA, userIdA);
+    planAId = plan.id;
+  });
+
+  afterAll(async () => {
+    if (userIdA) await admin.auth.admin.deleteUser(userIdA);
+    if (userIdB) await admin.auth.admin.deleteUser(userIdB);
+  });
+
+  // Research Risk #4 gap 2: upsertGearSelection's delete branch (gear-selections.ts:34-42)
+  // filters only gear_item_id + segment_index — NO plan_id — relying entirely on the RLS
+  // DELETE policy to scope a non-owner's call to zero rows. Prove B cannot remove A's
+  // selection through that branch.
+  it("runner B cannot remove runner A's selection via the plan_id-less delete branch", async () => {
+    const item = await createGearItem(clientA, {
+      plan_id: planAId,
+      kind: "gel",
+      name: "Gel",
+      carb_g: 22,
+      carb_ratio: 1,
+    });
+    const sel = await upsertGearSelection(clientA, {
+      plan_id: planAId,
+      gear_item_id: item.id,
+      segment_index: 0,
+      limit_units: 1,
+    });
+    expect(sel?.limit_units).toBe(1);
+
+    // B invokes the delete branch (both units null) against A's (item, segment).
+    // RLS scopes B's DELETE to zero rows; no error, but A's row must survive.
+    const cleared = await upsertGearSelection(clientB, {
+      plan_id: planAId,
+      gear_item_id: item.id,
+      segment_index: 0,
+    });
+    expect(cleared).toBeNull();
+
+    const stillThere = await listGearSelections(clientA, planAId);
+    expect(stillThere.filter((s) => s.gear_item_id === item.id && s.segment_index === 0)).toHaveLength(1);
+
+    await deleteGearItem(clientA, item.id);
+  });
+
+  // Research Risk #4 gap 1: only INSERT/SELECT were proven cross-user on gear_items;
+  // the UPDATE/DELETE RLS policies were untested. Prove both are no-ops for a non-owner
+  // and A's row is unchanged.
+  it("runner B cannot UPDATE or DELETE runner A's gear item (RLS no-op)", async () => {
+    const item = await createGearItem(clientA, {
+      plan_id: planAId,
+      kind: "gel",
+      name: "Original",
+      carb_g: 22,
+      carb_ratio: 1,
+    });
+
+    const upd = await clientB.from("gear_items").update({ name: "Hacked" }).eq("id", item.id).select();
+    expect(upd.error).toBeNull();
+    expect(upd.data).toEqual([]); // RLS scoped the UPDATE to zero rows
+
+    const del = await clientB.from("gear_items").delete().eq("id", item.id).select();
+    expect(del.error).toBeNull();
+    expect(del.data).toEqual([]); // RLS scoped the DELETE to zero rows
+
+    // A's item is untouched.
+    const after = await listGearItems(clientA, planAId);
+    expect(after.find((g) => g.id === item.id)?.name).toBe("Original");
+
+    await deleteGearItem(clientA, item.id);
+  });
+
+  // Same UPDATE/DELETE residue for gear_segment_selections, via a direct table call by B.
+  it("runner B cannot UPDATE or DELETE runner A's segment selection (RLS no-op)", async () => {
+    const item = await createGearItem(clientA, {
+      plan_id: planAId,
+      kind: "gel",
+      name: "Gel",
+      carb_g: 22,
+      carb_ratio: 1,
+    });
+    await upsertGearSelection(clientA, {
+      plan_id: planAId,
+      gear_item_id: item.id,
+      segment_index: 0,
+      limit_units: 1,
+    });
+
+    const upd = await clientB
+      .from("gear_segment_selections")
+      .update({ limit_units: 99 })
+      .eq("gear_item_id", item.id)
+      .eq("segment_index", 0)
+      .select();
+    expect(upd.error).toBeNull();
+    expect(upd.data).toEqual([]);
+
+    const del = await clientB
+      .from("gear_segment_selections")
+      .delete()
+      .eq("gear_item_id", item.id)
+      .eq("segment_index", 0)
+      .select();
+    expect(del.error).toBeNull();
+    expect(del.data).toEqual([]);
+
+    // A's selection is untouched (cap still 1, not 99, not deleted).
+    const after = await listGearSelections(clientA, planAId);
+    expect(after.find((s) => s.gear_item_id === item.id && s.segment_index === 0)?.limit_units).toBe(1);
+
+    await deleteGearItem(clientA, item.id);
+  });
+});
