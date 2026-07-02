@@ -1,13 +1,7 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 import { createAdminClient } from "@/lib/supabaseAdmin";
-import {
-  clientIpFrom,
-  findValidDeletionToken,
-  markTokenUsed,
-  recordDeletionEvent,
-  sha256Hex,
-} from "@/lib/services/account-deletion";
+import { clientIpFrom, consumeDeletionToken, recordDeletionEvent, sha256Hex } from "@/lib/services/account-deletion";
 
 export const prerender = false;
 
@@ -16,10 +10,10 @@ export const prerender = false;
 // opened on a different device than the one logged in). Submitted as a form POST from the
 // confirm page.
 //
-// Order is deliberate (see plan): validate token → write audit row → mark token used →
-// HARD delete the auth user (cascades all data) → clear the local session. The audit row
-// is written before the delete so a mid-operation failure still leaves a trace, and the
-// token is marked used before the delete so it can't be replayed.
+// Order is deliberate: atomically consume (burn) the token → write audit row → HARD delete
+// the auth user (cascades all data) → clear the local session. The consume is the sole
+// single-use gate (a compare-and-set that closes the old read-then-burn race); the audit
+// row is still written before the delete so a mid-operation failure leaves a trace.
 export const POST: APIRoute = async (context) => {
   const form = await context.request.formData().catch(() => null);
   const token = ((form?.get("token") as string | null) ?? "").trim();
@@ -32,7 +26,10 @@ export const POST: APIRoute = async (context) => {
   if (!token) return context.redirect("/account/delete/confirm");
 
   try {
-    const row = await findValidDeletionToken(admin, token);
+    // Atomic single-use gate: burn the token and return its row, or null if it was already
+    // used / expired / invalid. A losing concurrent caller gets null here and bounces before
+    // writing any audit row, so exactly one execution proceeds to the delete.
+    const row = await consumeDeletionToken(admin, token);
     if (!row) {
       return context.redirect(`/account/delete/confirm?token=${encodeURIComponent(token)}`);
     }
@@ -49,8 +46,6 @@ export const POST: APIRoute = async (context) => {
       emailHash,
       requestedIp: clientIpFrom(context.request.headers),
     });
-
-    await markTokenUsed(admin, row.token_hash);
 
     const { error: delError } = await admin.auth.admin.deleteUser(row.user_id);
     if (delError) {

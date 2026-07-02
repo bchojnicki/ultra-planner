@@ -79,15 +79,39 @@ export async function findValidDeletionToken(admin: Admin, rawToken: string): Pr
   return data;
 }
 
-// Mark a token consumed. Called BEFORE the user delete so the token can't be
-// replayed even if the subsequent delete errors midway (the row is also cascade-
-// removed when the user is deleted, so this is belt-and-suspenders).
+// Mark a token consumed. Non-atomic (no `used_at IS NULL` guard) — retained as a
+// lower-level helper for tests that isolate the used_at read gate. NOT on the
+// production consume path; the execute endpoint uses consumeDeletionToken instead.
 export async function markTokenUsed(admin: Admin, tokenHash: string): Promise<void> {
   const { error } = await admin
     .from("account_deletion_tokens")
     .update({ used_at: new Date().toISOString() })
     .eq("token_hash", tokenHash);
   if (error) throw error;
+}
+
+// Atomically consume a token: the single-use gate. This is a compare-and-set —
+// one conditional UPDATE takes the row lock and, via Postgres's EvalPlanQual
+// re-check, re-evaluates its WHERE against the winner's committed row, so of two
+// concurrent consumes of the same token EXACTLY ONE gets a row back and the loser
+// matches zero rows (returns null). The `used_at IS NULL` predicate is the
+// load-bearing single-use guard; `expires_at > now()` folds the validity check
+// into the same atomic step so an expired token can never be consumed. Race-free
+// under READ COMMITTED without an explicit transaction. Returns the burned row
+// (with user_id) on win, null on loss / already-used / expired / absent.
+export async function consumeDeletionToken(admin: Admin, rawToken: string): Promise<AccountDeletionToken | null> {
+  const tokenHash = await sha256Hex(rawToken);
+  const now = new Date().toISOString();
+  const { data, error } = await admin
+    .from("account_deletion_tokens")
+    .update({ used_at: now })
+    .eq("token_hash", tokenHash)
+    .is("used_at", null)
+    .gt("expires_at", now)
+    .select()
+    .maybeSingle();
+  if (error) throw error;
+  return data;
 }
 
 // Write the cascade-surviving audit row (account_deletion_events has no FK to
