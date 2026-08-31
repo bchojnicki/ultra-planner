@@ -1,9 +1,9 @@
 {
   "package": "@przeprogramowani/10x-cli",
-  "version": "1.10.0",
+  "version": "1.20.0",
   "manifestVersion": 3,
-  "lastApplied": "2026-06-29T07:37:59.944Z",
-  "lessonId": "m0l0",
+  "lastApplied": "2026-08-31T06:06:29.541Z",
+  "lessonId": "m3l4",
   "course": "10xdevs3",
   "tool": "claude-code",
   "files": {
@@ -132,18 +132,22 @@
       },
       "10x-roadmap": {
         "files": [
-          "SKILL.md"
+          "SKILL.md",
+          "references/milestone-state.md"
         ],
         "contentHashes": {
-          "SKILL.md": "f11fe77dce54986b43cbec367209a943a812b7c81bb0d9b9b9f84e7eb212138f"
+          "SKILL.md": "13bcf9574200b62da4ae38879b68e5c0555cd67bcafcb071fb98bb4c5c84b50e",
+          "references/milestone-state.md": "d84aad50043d0fdffd69336dcb1d5b72daa6258db43da8f155cbc1176e9a1f09"
         }
       },
       "10x-new": {
         "files": [
-          "SKILL.md"
+          "SKILL.md",
+          "references/change-md.md"
         ],
         "contentHashes": {
-          "SKILL.md": "ce01ddf560d39a53f4f07eca01ac20ee6326a088b28eaf56b014574e883fd57f"
+          "SKILL.md": "8bbe7d326e94571d207de315483df8dafdac92ca986bd83d77d50e7a369a2ef8",
+          "references/change-md.md": "c3f2678136edaee584f555cdbe80de207dee467e840f3d66554dd90092e7fc52"
         }
       },
       "10x-plan": {
@@ -153,7 +157,7 @@
         ],
         "contentHashes": {
           "references/progress-format.md": "acd3841cb4b2baa3066f5ec4997d0c21b8791fcd432a66777fd8bcb38119e218",
-          "SKILL.md": "8a0fb60803173a825c808cb90b7875a2073f914cb31de2428db7e0483e1fe2f0"
+          "SKILL.md": "1338e92057e69b96ceedf1d76097edcbefbd11a0baedfc093887529ab0d7e2e5"
         }
       },
       "10x-plan-review": {
@@ -169,7 +173,7 @@
           "SKILL.md"
         ],
         "contentHashes": {
-          "SKILL.md": "0eef6f1de1714910550176285ed184b8dd3e2481f99c163677a245101aedc8bc"
+          "SKILL.md": "08a8079cb42b569b35075aa7da6da56e9dca85a3e6bff6f272e7894511cdd119"
         }
       },
       "10x-archive": {
@@ -177,7 +181,7 @@
           "SKILL.md"
         ],
         "contentHashes": {
-          "SKILL.md": "993e9ba98fa067238e9b5851db6a094fea85317518f7c35baa0dda20c9aec637"
+          "SKILL.md": "7ee1f191807f0e63721463682cd4e849dd671fade2b7c27e58c8b3440f10d9e7"
         }
       },
       "10x-impl-review": {
@@ -185,7 +189,7 @@
           "SKILL.md"
         ],
         "contentHashes": {
-          "SKILL.md": "daf014f7060e6db75ac037d223fb1e05c0e7e4169cef5013da551e36d53957f6"
+          "SKILL.md": "35f411842641123a9a9bcab3928794d259ae9451595b78783169af82a35317c6"
         }
       },
       "10x-frame": {
@@ -219,7 +223,7 @@
           "SKILL.md"
         ],
         "contentHashes": {
-          "SKILL.md": "58943e0630cc874e019aa1f196bf8e0cf6ca95f9f3fb238c533b1ab2a32b0802"
+          "SKILL.md": "142707eba64cdb7a7bc9901e2de9a221c3a41a2cc0109f49820f684e2ec5a1ad"
         }
       },
       "10x-e2e": {
@@ -237,7 +241,7 @@
           "references/e2e-prompt-template.md": "7d934d3b6f0e3f36e7abdf0ab7ff4a23b645d12cb80603e3a962ce7d6babb95b",
           "references/e2e-quality-rules.md": "d161cf3659ae5321b7f597987664e4017aecc7e15f5caa7a15a1eaf73bf4162b",
           "references/seed-test-pattern.md": "90fa8778a557d0c88320e839c6a8879735b3390b68ed89b3487258f2562b2f80",
-          "SKILL.md": "994b511efafdcbe7526bb32a9908b330bd78326c42c5e41896983e497c61cd54"
+          "SKILL.md": "85a9ab63aedcac669951aa90a98e7e3d4e4e5fa59b0340ee3f62505bbfed4ad1"
         }
       },
       "10x-opportunity-map": {
@@ -1527,7 +1531,7 @@
       "configs": []
     },
     "m3l3": {
-      "appliedAt": "2026-06-22T15:53:57.560Z",
+      "appliedAt": "2026-08-31T05:37:40.560Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1603,11 +1607,13 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
         "10x-new": {
           "files": [
+            "references/change-md.md",
             "SKILL.md"
           ]
         },
@@ -1670,7 +1676,7 @@
       "configs": []
     },
     "m3l4": {
-      "appliedAt": "2026-06-22T15:53:59.999Z",
+      "appliedAt": "2026-08-31T06:06:29.540Z",
       "skills": {
         "10x-init": {
           "files": [
@@ -1746,11 +1752,13 @@
         },
         "10x-roadmap": {
           "files": [
+            "references/milestone-state.md",
             "SKILL.md"
           ]
         },
         "10x-new": {
           "files": [
+            "references/change-md.md",
             "SKILL.md"
           ]
         },

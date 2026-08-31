@@ -35,8 +35,9 @@ pnpm-debug.log*
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
-# Playwright MCP browser session artifacts
+# Playwright MCP / CLI browser session artifacts
 .playwright-mcp/
+.playwright-cli/
 
 # Local scratch GPX files at the repo root (test fixtures under tests/fixtures/ stay tracked)
 /*.gpx
