@@ -1,10 +1,10 @@
 ---
 change_id: testing-input-pipeline-integrity
 title: "Test rollout Phase 2: input-pipeline integrity (GPX + segment recompute)"
-status: impl_reviewed
+status: archived
 created: 2026-06-24
-updated: 2026-07-02
-archived_at: null
+updated: 2026-08-31
+archived_at: 2026-08-31T05:26:36Z
 ---
 
 ## Notes
