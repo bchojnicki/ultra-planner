@@ -3,10 +3,17 @@ name: Deploy
 on:
   push:
     branches: [main, master]
+  workflow_dispatch:
+
+# Never let two deploys race; a newer push supersedes an in-flight one.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -15,6 +22,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx astro sync
+      - run: npm run lint
       - run: npm run build
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
